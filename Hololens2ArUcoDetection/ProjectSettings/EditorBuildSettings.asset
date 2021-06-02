@@ -4,5 +4,11 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/ArUcoDetection.unity
+    guid: 6e511bc868e671f4391dbe6b9adeed25
+  - enabled: 0
+    path: Assets/Scenes/MultipleDetectors.unity
+    guid: cd23096f69d765c4b871ddda8cfe8f08
   m_configObjects: {}
