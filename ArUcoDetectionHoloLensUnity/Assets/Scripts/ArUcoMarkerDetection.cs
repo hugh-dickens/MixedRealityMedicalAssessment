@@ -276,6 +276,8 @@ namespace ArUcoDetectionHoloLensUnity
                     try
                     {
                         DestroyImmediate(markerWrist.GetComponent<WorldAnchor>());
+                        DestroyImmediate(markerElbow.GetComponent<WorldAnchor>());
+                        DestroyImmediate(markerShoulder.GetComponent<WorldAnchor>());
                         _isWorldAnchored = false;
                     }
                     catch (Exception)
@@ -311,6 +313,7 @@ namespace ArUcoDetectionHoloLensUnity
                 Vector3 position1 = CvUtils.Vec3FromFloat3(detections[0].Position);
                 Vector3 position2 = CvUtils.Vec3FromFloat3(detections[1].Position);
                 Vector3 position3 = CvUtils.Vec3FromFloat3(detections[2].Position);
+                // This part must be working since the IDs print
                 MarkerIDWrist = detections[0].Id;
                 MarkerTextWrist.SetText(MarkerIDWrist.ToString());
                 MarkerIDElbow = detections[1].Id;
@@ -341,7 +344,7 @@ namespace ArUcoDetectionHoloLensUnity
                 Matrix4x4 transformUnityWorld2 = cameraToWorldUnity2 * transformUnityCamera2;
 
                 // Apply updated transform to gameobject in world
-                markerWrist.transform.SetPositionAndRotation(
+                markerElbow.transform.SetPositionAndRotation(
                     CvUtils.GetVectorFromMatrix(transformUnityWorld2),
                     CvUtils.GetQuatFromMatrix(transformUnityWorld2));
 
@@ -354,7 +357,7 @@ namespace ArUcoDetectionHoloLensUnity
                 Matrix4x4 transformUnityWorld3 = cameraToWorldUnity3 * transformUnityCamera3;
 
                 // Apply updated transform to gameobject in world
-                markerWrist.transform.SetPositionAndRotation(
+                markerShoulder.transform.SetPositionAndRotation(
                     CvUtils.GetVectorFromMatrix(transformUnityWorld3),
                     CvUtils.GetQuatFromMatrix(transformUnityWorld3));
             }
@@ -364,6 +367,8 @@ namespace ArUcoDetectionHoloLensUnity
             {
                 // Add a world anchor to the attached gameobject
                 markerWrist.AddComponent<WorldAnchor>();
+                markerElbow.AddComponent<WorldAnchor>();
+                markerShoulder.AddComponent<WorldAnchor>();
                 _isWorldAnchored = true;
             }
             myText.text = "Began streaming sensor frames. Double tap to end streaming.";
