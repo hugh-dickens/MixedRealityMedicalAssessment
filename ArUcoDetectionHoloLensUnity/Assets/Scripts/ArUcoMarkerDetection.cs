@@ -73,11 +73,16 @@ namespace ArUcoDetectionHoloLensUnity
         public int MarkerIDWrist = 0;
         public int MarkerIDElbow = 1;
         public int MarkerIDShoulder = 2;
+        public float Angle;
         //public GameObject MarkerText;
 
         public TextMeshPro MarkerTextWrist;
         public TextMeshPro MarkerTextElbow;
         public TextMeshPro MarkerTextShoulder;
+        public TextMeshPro AngleText;
+
+
+        //public TextMeshPro AngleRecordingText;
 
 #if ENABLE_WINMD_SUPPORT
         // Enable winmd support to include winmd files. Will not
@@ -285,7 +290,7 @@ namespace ArUcoDetectionHoloLensUnity
                         throw;
                     }
                 }
-            
+
                 // COMMENTED OUT the foreach loop
                 /*foreach (var detectedMarker in detections)
                 {
@@ -310,16 +315,17 @@ namespace ArUcoDetectionHoloLensUnity
                 //// HARDCODED to try and track all 3 ArUco markers instead of 1. THis is effectively the same as a for loop with 
                 /// naming being slightly easier for now - will change.
                 // Get pose from OpenCV and format for Unity
+                
                 Vector3 position1 = CvUtils.Vec3FromFloat3(detections[0].Position);
                 Vector3 position2 = CvUtils.Vec3FromFloat3(detections[1].Position);
                 Vector3 position3 = CvUtils.Vec3FromFloat3(detections[2].Position);
-                // This part must be working since the IDs print
+                
                 MarkerIDWrist = detections[0].Id;
-                MarkerTextWrist.SetText(MarkerIDWrist.ToString());
+                // MarkerTextWrist.SetText(MarkerIDWrist.ToString());
                 MarkerIDElbow = detections[1].Id;
-                MarkerTextElbow.SetText(MarkerIDElbow.ToString());
+                // MarkerTextElbow.SetText(MarkerIDElbow.ToString());
                 MarkerIDShoulder = detections[2].Id;
-                MarkerTextShoulder.SetText(MarkerIDShoulder.ToString());
+                //MarkerTextShoulder.SetText(MarkerIDShoulder.ToString());
                 position1.y *= -1f;
                 position2.y *= -1f;
                 position3.y *= -1f;
@@ -336,6 +342,10 @@ namespace ArUcoDetectionHoloLensUnity
                     CvUtils.GetVectorFromMatrix(transformUnityWorld1),
                     CvUtils.GetQuatFromMatrix(transformUnityWorld1));
 
+                // Added this in to print the position instead of the ID
+                MarkerTextWrist.SetText(markerWrist.transform.position.ToString());
+                
+
                 Quaternion rotation2 = CvUtils.RotationQuatFromRodrigues(CvUtils.Vec3FromFloat3(detections[1].Rotation));
                 Matrix4x4 cameraToWorldUnity2 = CvUtils.Mat4x4FromFloat4x4(detections[1].CameraToWorldUnity);
                 Matrix4x4 transformUnityCamera2 = CvUtils.TransformInUnitySpace(position2, rotation2);
@@ -348,6 +358,8 @@ namespace ArUcoDetectionHoloLensUnity
                     CvUtils.GetVectorFromMatrix(transformUnityWorld2),
                     CvUtils.GetQuatFromMatrix(transformUnityWorld2));
 
+                // Added this in to print the position instead of the ID
+                MarkerTextElbow.SetText(markerElbow.transform.position.ToString());
 
                 Quaternion rotation3 = CvUtils.RotationQuatFromRodrigues(CvUtils.Vec3FromFloat3(detections[2].Rotation));
                 Matrix4x4 cameraToWorldUnity3 = CvUtils.Mat4x4FromFloat4x4(detections[2].CameraToWorldUnity);
@@ -360,6 +372,19 @@ namespace ArUcoDetectionHoloLensUnity
                 markerShoulder.transform.SetPositionAndRotation(
                     CvUtils.GetVectorFromMatrix(transformUnityWorld3),
                     CvUtils.GetQuatFromMatrix(transformUnityWorld3));
+
+                // Added this in to print the position instead of the ID
+                MarkerTextShoulder.SetText(markerShoulder.transform.position.ToString());
+
+                // This turns the coordinates into vectors
+
+                Vector3 vec1 = markerWrist.transform.position - markerElbow.transform.position;
+                Vector3 vec2 = markerShoulder.transform.position - markerElbow.transform.position;
+
+                // calculate and display the angle in the public variable
+                Angle = Vector3.Angle(vec1, vec2);
+                // Currently this will print the angle above the shoulder joint instead of in an external UI - just for testing
+                AngleText.SetText(Angle.ToString());
             }
             // If no markers in scene, anchor marker go to last position - not 100% sure what this does. May need to add seperate world
             // anchors to each markerJoints.
