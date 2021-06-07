@@ -1020,7 +1020,7 @@ MonoBehaviour:
   deviceType: 1
   sensorTypePv: 0
   arUcoDictionaryName: 8
-  markerSize: 0.1
+  markerSize: 0.038
   calibParams: {fileID: 805832266}
   markerWrist: {fileID: 519181811}
   markerElbow: {fileID: 285611438}
