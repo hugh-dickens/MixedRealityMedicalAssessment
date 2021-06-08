@@ -369,22 +369,22 @@ PrefabInstance:
     - target: {fileID: 948697719170404064, guid: 2e5d73686abb4b440940c1d00e105576,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.1
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: 948697719170404064, guid: 2e5d73686abb4b440940c1d00e105576,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.1
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: 948697719170404064, guid: 2e5d73686abb4b440940c1d00e105576,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.1
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: 948697719170404064, guid: 2e5d73686abb4b440940c1d00e105576,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.176
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 948697719170404064, guid: 2e5d73686abb4b440940c1d00e105576,
         type: 3}
@@ -478,17 +478,17 @@ PrefabInstance:
     - target: {fileID: 948697719170404064, guid: 2e5d73686abb4b440940c1d00e105576,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.1
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: 948697719170404064, guid: 2e5d73686abb4b440940c1d00e105576,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.1
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: 948697719170404064, guid: 2e5d73686abb4b440940c1d00e105576,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.1
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: 948697719170404064, guid: 2e5d73686abb4b440940c1d00e105576,
         type: 3}
@@ -840,7 +840,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 728791148}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
   m_Name: 
@@ -1020,7 +1020,7 @@ MonoBehaviour:
   deviceType: 1
   sensorTypePv: 0
   arUcoDictionaryName: 8
-  markerSize: 0.038
+  markerSize: 0.04
   calibParams: {fileID: 805832266}
   markerWrist: {fileID: 519181811}
   markerElbow: {fileID: 285611438}
@@ -1705,22 +1705,22 @@ PrefabInstance:
     - target: {fileID: 948697719170404064, guid: 2e5d73686abb4b440940c1d00e105576,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 0.1
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: 948697719170404064, guid: 2e5d73686abb4b440940c1d00e105576,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.1
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: 948697719170404064, guid: 2e5d73686abb4b440940c1d00e105576,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.1
+      value: 0.04
       objectReference: {fileID: 0}
     - target: {fileID: 948697719170404064, guid: 2e5d73686abb4b440940c1d00e105576,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.202
+      value: -0.102
       objectReference: {fileID: 0}
     - target: {fileID: 948697719170404064, guid: 2e5d73686abb4b440940c1d00e105576,
         type: 3}
