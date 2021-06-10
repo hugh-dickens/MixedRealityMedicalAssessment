@@ -278,7 +278,7 @@ namespace ArUcoDetectionHoloLensUnity
             
             if (detections.Count == 3)
             {
-                myText.text = "Angle:";
+                //myText.text = "Angle:";
                 // Remove world anchor from game object
                 if (_isWorldAnchored)
                 {
@@ -452,7 +452,7 @@ namespace ArUcoDetectionHoloLensUnity
 
                             // Added this in to print the position instead of the ID
                             //MarkerTextWrist.SetText(markerWrist.transform.position.ToString());
-                            MarkerTextShoulder.SetText("shoulder");
+                            MarkerTextShoulder.SetText("Shoulder");
                         }
                         
 
@@ -466,8 +466,8 @@ namespace ArUcoDetectionHoloLensUnity
                 // calculate and display the angle in the public variable
                 Angle = Vector3.Angle(vec1, vec2);
                 // Currently this will print the angle above the shoulder joint instead of in an external UI - just for testing
-                //AngleText.SetText(Angle.ToString());
-                myText.text = Angle.ToString();
+                AngleText.SetText(Angle.ToString());
+                //myText.text = Angle.ToString();
             }
             // If no markers in scene, anchor marker go to last position - not 100% sure what this does. May need to add seperate world
             // anchors to each markerJoints.
