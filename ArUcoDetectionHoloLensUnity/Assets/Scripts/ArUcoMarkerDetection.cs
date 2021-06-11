@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -143,12 +144,12 @@ namespace ArUcoDetectionHoloLensUnity
         /// <returns></returns>
         IEnumerator DelayCoroutine()
         {
-            Debug.Log("Started Coroutine at timestamp : " + Time.time);
+            UnityEngine.Debug.Log("Started Coroutine at timestamp : " + Time.time);
 
             // YieldInstruction that waits for 2 seconds.
             yield return new WaitForSeconds(2);
 
-            Debug.Log("Finished Coroutine at timestamp : " + Time.time);
+            UnityEngine.Debug.Log("Finished Coroutine at timestamp : " + Time.time);
         }
 
         // Update is called once per frame
@@ -188,18 +189,18 @@ namespace ArUcoDetectionHoloLensUnity
             myText.text = "Initializing MediaFrameSourceGroups...";
 
             // PV
-            Debug.Log("HoloLensForCVUnity.ArUcoDetection.StartHoloLensMediaFrameSourceGroup: Setting up sensor frame streamer");
+            UnityEngine.Debug.Log("HoloLensForCVUnity.ArUcoDetection.StartHoloLensMediaFrameSourceGroup: Setting up sensor frame streamer");
             _sensorType = (SensorType)sensorTypePv;
             _sensorFrameStreamerPv = new SensorFrameStreamer();
             _sensorFrameStreamerPv.Enable(_sensorType);
 
             // Spatial perception
-            Debug.Log("HoloLensForCVUnity.ArUcoDetection.StartHoloLensMediaFrameSourceGroup: Setting up spatial perception");
+            UnityEngine.Debug.Log("HoloLensForCVUnity.ArUcoDetection.StartHoloLensMediaFrameSourceGroup: Setting up spatial perception");
             _spatialPerception = new SpatialPerception();
 
             // Enable media frame source groups
             // PV
-            Debug.Log("HoloLensForCVUnity.ArUcoDetection.StartHoloLensMediaFrameSourceGroup: Setting up the media frame source group");
+            UnityEngine.Debug.Log("HoloLensForCVUnity.ArUcoDetection.StartHoloLensMediaFrameSourceGroup: Setting up the media frame source group");
 
             // Check if using research mode sensors
             if (sensorTypePv == CvUtils.SensorTypeUnity.PhotoVideo)
@@ -227,7 +228,7 @@ namespace ArUcoDetectionHoloLensUnity
             myText.text = "Starting MediaFrameSourceGroups...";
 
             // Photo video
-            Debug.Log("HoloLensForCVUnity.ArUcoDetection.StartHoloLensMediaFrameSourceGroup: Starting the media frame source group");
+            UnityEngine.Debug.Log("HoloLensForCVUnity.ArUcoDetection.StartHoloLensMediaFrameSourceGroup: Starting the media frame source group");
             await _pvMediaFrameSourceGroup.StartAsync();
             _mediaFrameSourceGroupsStarted = true;
 
@@ -242,7 +243,7 @@ namespace ArUcoDetectionHoloLensUnity
             }
             catch (Exception)
             {
-                Debug.Log("ArUcoDetectionHoloLensUnity.ArUcoMarkerDetection: Could not get pointer to Unity spatial coordinate system.");
+                UnityEngine.Debug.Log("ArUcoDetectionHoloLensUnity.ArUcoMarkerDetection: Could not get pointer to Unity spatial coordinate system.");
                 throw;
             }
 
@@ -392,6 +393,13 @@ namespace ArUcoDetectionHoloLensUnity
 
                 //else
                 //{
+                // Create new stopwatch.
+                Stopwatch stopwatch = new Stopwatch();
+
+                // Begin timing.
+                stopwatch.Start();
+
+                float AngleTemp = Angle;
 
                 foreach (var index in detections)
                 {
@@ -464,17 +472,26 @@ namespace ArUcoDetectionHoloLensUnity
                 // This turns the coordinates into vectors
                 Vector3 vec1 = markerWrist.transform.position - markerElbow.transform.position;
                 Vector3 vec2 = markerShoulder.transform.position - markerElbow.transform.position;
-
                 // calculate and display the angle in the public variable
                 Angle = Vector3.Angle(vec1, vec2);
+
                 // Round the angle to an integer for display
                 int angleInt = (int)Math.Round(Angle);
                 // Currently this will print the angle next to the elbow joint instead of in an external UI - just for testing
                 AngleText.SetText("Angle: {0}", angleInt);
                 //myText.text = Angle.ToString();
 
+                
+                // Stop timing.
+                stopwatch.Stop();
+
+                TimeSpan stopwatchElapsed = stopwatch.Elapsed;
+                float deltaT = Convert.ToSingle(stopwatchElapsed.TotalMilliseconds);
+                AngularVelocity = (Angle - AngleTemp) / (deltaT);
+                // Round the angle to an integer for display
+                int angularInt = (int)Math.Round(AngularVelocity);
                 // compute angular velocity and print it by the wrist
-                AngularVelocityText.SetText("Angular Velocity:");
+                AngularVelocityText.SetText("Angular Velocity: {0}", angularInt);
             }
             // If no markers in scene, anchor marker go to last position - not 100% sure what this does. May need to add seperate world
             // anchors to each markerJoints.
@@ -564,7 +581,7 @@ namespace ArUcoDetectionHoloLensUnity
             // Capture on gesture events with delegate handler
             _gestureRecognizer.Tapped += GestureRecognizer_Tapped;
 
-            Debug.Log("Gesture recognizer initialized.");
+            UnityEngine.Debug.Log("Gesture recognizer initialized.");
         }
 
         // On tapped event, stop all frame source groups
