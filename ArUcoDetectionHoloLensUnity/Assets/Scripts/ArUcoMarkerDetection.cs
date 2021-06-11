@@ -70,18 +70,18 @@ namespace ArUcoDetectionHoloLensUnity
         private bool _mediaFrameSourceGroupsStarted = false;
         private int _frameCount = 0;
         public int skipFrames = 1; // previously 3
-        public int MarkerIDWrist = 0;
-        public int MarkerIDElbow = 0;
-        public int MarkerIDShoulder = 0;
+        public int MarkerIDWrist = 18;
+        public int MarkerIDElbow = 17;
+        public int MarkerIDShoulder = 16;
         public float Angle;
+        public float AngularVelocity;
         //public GameObject MarkerText;
 
         public TextMeshPro MarkerTextWrist;
         public TextMeshPro MarkerTextElbow;
         public TextMeshPro MarkerTextShoulder;
         public TextMeshPro AngleText;
-
-        
+        public TextMeshPro AngularVelocityText;
 
 
         //public TextMeshPro AngleRecordingText;
@@ -321,8 +321,9 @@ namespace ArUcoDetectionHoloLensUnity
                 // Get pose from OpenCV and format for Unity
 
                 // This code works - been altered to only assign in this order on first detection of ArUco codes
-                if (MarkerIDWrist == 0)
+                /* if (MarkerIDWrist == 0)
                 {
+
                     MarkerIDWrist = detections[0].Id;
                     // MarkerTextWrist.SetText(MarkerIDWrist.ToString());
                     MarkerIDElbow = detections[1].Id;
@@ -387,77 +388,78 @@ namespace ArUcoDetectionHoloLensUnity
                     // Added this in to print the position instead of the ID
                     //MarkerTextShoulder.SetText(markerShoulder.transform.position.ToString());
                     MarkerTextShoulder.SetText("shoulder");
-                }
-                else
+                } */ //If statement removal!!!
+
+                //else
+                //{
+
+                foreach (var index in detections)
                 {
-
-                    foreach (var index in detections)
+                    if (index.Id == MarkerIDWrist)
                     {
-                        if (index.Id == MarkerIDWrist)
-                        {
-                            Vector3 position1 = CvUtils.Vec3FromFloat3(index.Position);
-                            position1.y *= -1f;
-                            Quaternion rotation1 = CvUtils.RotationQuatFromRodrigues(CvUtils.Vec3FromFloat3(index.Rotation));
-                            Matrix4x4 cameraToWorldUnity1 = CvUtils.Mat4x4FromFloat4x4(index.CameraToWorldUnity);
-                            Matrix4x4 transformUnityCamera1 = CvUtils.TransformInUnitySpace(position1, rotation1);
+                        Vector3 position1 = CvUtils.Vec3FromFloat3(index.Position);
+                        position1.y *= -1f;
+                        Quaternion rotation1 = CvUtils.RotationQuatFromRodrigues(CvUtils.Vec3FromFloat3(index.Rotation));
+                        Matrix4x4 cameraToWorldUnity1 = CvUtils.Mat4x4FromFloat4x4(index.CameraToWorldUnity);
+                        Matrix4x4 transformUnityCamera1 = CvUtils.TransformInUnitySpace(position1, rotation1);
 
-                            // Use camera to world transform to get world pose of marker
-                            Matrix4x4 transformUnityWorld1 = cameraToWorldUnity1 * transformUnityCamera1;
+                        // Use camera to world transform to get world pose of marker
+                        Matrix4x4 transformUnityWorld1 = cameraToWorldUnity1 * transformUnityCamera1;
 
-                            // Apply updated transform to gameobject in world
-                            markerWrist.transform.SetPositionAndRotation(
-                                CvUtils.GetVectorFromMatrix(transformUnityWorld1),
-                                CvUtils.GetQuatFromMatrix(transformUnityWorld1));
+                        // Apply updated transform to gameobject in world
+                        markerWrist.transform.SetPositionAndRotation(
+                            CvUtils.GetVectorFromMatrix(transformUnityWorld1),
+                            CvUtils.GetQuatFromMatrix(transformUnityWorld1));
 
-                            // Added this in to print the position instead of the ID
-                            //MarkerTextWrist.SetText(markerWrist.transform.position.ToString());
-                            MarkerTextWrist.SetText("wrist");
-
-                        }
-                        else if (index.Id == MarkerIDElbow)
-                        {
-                            Vector3 position2 = CvUtils.Vec3FromFloat3(index.Position);
-                            position2.y *= -1f;
-                            Quaternion rotation2 = CvUtils.RotationQuatFromRodrigues(CvUtils.Vec3FromFloat3(index.Rotation));
-                            Matrix4x4 cameraToWorldUnity2 = CvUtils.Mat4x4FromFloat4x4(index.CameraToWorldUnity);
-                            Matrix4x4 transformUnityCamera2 = CvUtils.TransformInUnitySpace(position2, rotation2);
-
-                            // Use camera to world transform to get world pose of marker
-                            Matrix4x4 transformUnityWorld2 = cameraToWorldUnity2 * transformUnityCamera2;
-
-                            // Apply updated transform to gameobject in world
-                            markerElbow.transform.SetPositionAndRotation(
-                                CvUtils.GetVectorFromMatrix(transformUnityWorld2),
-                                CvUtils.GetQuatFromMatrix(transformUnityWorld2));
-
-                            // Added this in to print the position instead of the ID
-                            //MarkerTextWrist.SetText(markerWrist.transform.position.ToString());
-                            MarkerTextElbow.SetText("Elbow");
-                        }
-                        else
-                        {
-                            Vector3 position3 = CvUtils.Vec3FromFloat3(index.Position);
-                            position3.y *= -1f;
-                            Quaternion rotation3 = CvUtils.RotationQuatFromRodrigues(CvUtils.Vec3FromFloat3(index.Rotation));
-                            Matrix4x4 cameraToWorldUnity3 = CvUtils.Mat4x4FromFloat4x4(index.CameraToWorldUnity);
-                            Matrix4x4 transformUnityCamera3 = CvUtils.TransformInUnitySpace(position3, rotation3);
-
-                            // Use camera to world transform to get world pose of marker
-                            Matrix4x4 transformUnityWorld3 = cameraToWorldUnity3 * transformUnityCamera3;
-
-                            // Apply updated transform to gameobject in world
-                            markerShoulder.transform.SetPositionAndRotation(
-                                CvUtils.GetVectorFromMatrix(transformUnityWorld3),
-                                CvUtils.GetQuatFromMatrix(transformUnityWorld3));
-
-                            // Added this in to print the position instead of the ID
-                            //MarkerTextWrist.SetText(markerWrist.transform.position.ToString());
-                            MarkerTextShoulder.SetText("Shoulder");
-                        }
-                        
+                        // Added this in to print the position instead of the ID
+                        //MarkerTextWrist.SetText(markerWrist.transform.position.ToString());
+                        MarkerTextWrist.SetText("wrist");
 
                     }
+                    else if (index.Id == MarkerIDElbow)
+                    {
+                        Vector3 position2 = CvUtils.Vec3FromFloat3(index.Position);
+                        position2.y *= -1f;
+                        Quaternion rotation2 = CvUtils.RotationQuatFromRodrigues(CvUtils.Vec3FromFloat3(index.Rotation));
+                        Matrix4x4 cameraToWorldUnity2 = CvUtils.Mat4x4FromFloat4x4(index.CameraToWorldUnity);
+                        Matrix4x4 transformUnityCamera2 = CvUtils.TransformInUnitySpace(position2, rotation2);
+
+                        // Use camera to world transform to get world pose of marker
+                        Matrix4x4 transformUnityWorld2 = cameraToWorldUnity2 * transformUnityCamera2;
+
+                        // Apply updated transform to gameobject in world
+                        markerElbow.transform.SetPositionAndRotation(
+                            CvUtils.GetVectorFromMatrix(transformUnityWorld2),
+                            CvUtils.GetQuatFromMatrix(transformUnityWorld2));
+
+                        // Added this in to print the position instead of the ID
+                        //MarkerTextWrist.SetText(markerWrist.transform.position.ToString());
+                        MarkerTextElbow.SetText("Elbow");
+                    }
+                    else
+                    {
+                        Vector3 position3 = CvUtils.Vec3FromFloat3(index.Position);
+                        position3.y *= -1f;
+                        Quaternion rotation3 = CvUtils.RotationQuatFromRodrigues(CvUtils.Vec3FromFloat3(index.Rotation));
+                        Matrix4x4 cameraToWorldUnity3 = CvUtils.Mat4x4FromFloat4x4(index.CameraToWorldUnity);
+                        Matrix4x4 transformUnityCamera3 = CvUtils.TransformInUnitySpace(position3, rotation3);
+
+                        // Use camera to world transform to get world pose of marker
+                        Matrix4x4 transformUnityWorld3 = cameraToWorldUnity3 * transformUnityCamera3;
+
+                        // Apply updated transform to gameobject in world
+                        markerShoulder.transform.SetPositionAndRotation(
+                            CvUtils.GetVectorFromMatrix(transformUnityWorld3),
+                            CvUtils.GetQuatFromMatrix(transformUnityWorld3));
+
+                        // Added this in to print the position instead of the ID
+                        //MarkerTextWrist.SetText(markerWrist.transform.position.ToString());
+                        MarkerTextShoulder.SetText("Shoulder");
+                    }
+                        
+
                 }
+                //} ----- ELSE statement removal
            
                 // This turns the coordinates into vectors
                 Vector3 vec1 = markerWrist.transform.position - markerElbow.transform.position;
@@ -465,9 +467,14 @@ namespace ArUcoDetectionHoloLensUnity
 
                 // calculate and display the angle in the public variable
                 Angle = Vector3.Angle(vec1, vec2);
-                // Currently this will print the angle above the shoulder joint instead of in an external UI - just for testing
-                AngleText.SetText(Angle.ToString());
+                // Round the angle to an integer for display
+                int angleInt = (int)Math.Round(Angle);
+                // Currently this will print the angle next to the elbow joint instead of in an external UI - just for testing
+                AngleText.SetText("Angle: {0}", angleInt);
                 //myText.text = Angle.ToString();
+
+                // compute angular velocity and print it by the wrist
+                AngularVelocityText.SetText("Angular Velocity:");
             }
             // If no markers in scene, anchor marker go to last position - not 100% sure what this does. May need to add seperate world
             // anchors to each markerJoints.
