@@ -66,7 +66,7 @@ namespace ArUcoDetectionHoloLensUnity
         /// List of prefab instances of detected aruco markers.
         /// </summary>
         //private List<GameObject> _markerGOs; - might need to do this instead for the private list of game objects instead of having 3 public 
-                                                /// game object variables.
+        /// game object variables.
 
         private bool _mediaFrameSourceGroupsStarted = false;
         private int _frameCount = 0;
@@ -472,6 +472,29 @@ namespace ArUcoDetectionHoloLensUnity
                 // This turns the coordinates into vectors
                 Vector3 vec1 = markerWrist.transform.position - markerElbow.transform.position;
                 Vector3 vec2 = markerShoulder.transform.position - markerElbow.transform.position;
+                
+                GameObject myLine1 = new GameObject();
+                myLine1.transform.position = markerWrist.transform.position;
+                myLine1.AddComponent<LineRenderer>();
+                LineRenderer lr1 = myLine1.GetComponent<LineRenderer>();
+                //lr.material = new Material(Shader.Find("Particles/Alpha Blended Premultiply"));
+                
+                lr1.SetWidth(0.001f, 0.001f);
+                lr1.SetPosition(0, markerWrist.transform.position);
+                lr1.SetPosition(1, markerElbow.transform.position);
+                GameObject.Destroy(myLine1, 0.2f);
+
+                GameObject myLine2 = new GameObject();
+                myLine2.transform.position = markerShoulder.transform.position;
+                myLine2.AddComponent<LineRenderer>();
+                LineRenderer lr2 = myLine2.GetComponent<LineRenderer>();
+                //lr.material = new Material(Shader.Find("Particles/Alpha Blended Premultiply"));
+
+                lr2.SetWidth(0.001f, 0.001f);
+                lr2.SetPosition(0, markerShoulder.transform.position);
+                lr2.SetPosition(1, markerElbow.transform.position);
+                GameObject.Destroy(myLine2, 0.2f);
+
                 // calculate and display the angle in the public variable
                 Angle = Vector3.Angle(vec1, vec2);
 
@@ -481,7 +504,6 @@ namespace ArUcoDetectionHoloLensUnity
                 AngleText.SetText("Angle: {0}", angleInt);
                 //myText.text = Angle.ToString();
 
-                
                 // Stop timing.
                 stopwatch.Stop();
 
