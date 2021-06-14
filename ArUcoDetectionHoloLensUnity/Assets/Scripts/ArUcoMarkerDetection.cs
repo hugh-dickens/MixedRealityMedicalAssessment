@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 
+// Using windows runtime APIs
 #if ENABLE_WINMD_SUPPORT
 using Windows.UI.Xaml;
 using Windows.Graphics.Imaging;
@@ -30,8 +31,8 @@ using TMPro;
 namespace ArUcoDetectionHoloLensUnity
 {
     // Using the hololens for cv .winmd file for runtime support
-    // Build HoloLensForCV c++ project (x86) and copy all output files
-    // to Assets->Plugins->x86
+    // Build HoloLensForCV c++ project (ARM) and copy all output files
+    // to Assets->Plugins->ARM
     // https://docs.unity3d.com/2018.4/Documentation/Manual/IL2CPP-WindowsRuntimeSupport.html
     public class ArUcoMarkerDetection : MonoBehaviour
     {
@@ -46,7 +47,7 @@ namespace ArUcoDetectionHoloLensUnity
         public CvUtils.ArUcoDictionaryName arUcoDictionaryName;
 
         // Params for aruco detection
-        // Marker size in meters: 0.08 cm
+        // Marker size in meters: 0.02 m (2cm)
         public float markerSize;
 
         /// <summary>
@@ -56,36 +57,37 @@ namespace ArUcoDetectionHoloLensUnity
         public CameraCalibrationParams calibParams;
 
         /// <summary>
-        /// Game object for to use for marker instantiation
+        /// Game object to use for marker instantiation. These game objects are the cubes associated with the respective arUco codes.
         /// </summary>
         public GameObject markerWrist;
         public GameObject markerElbow;
         public GameObject markerShoulder;
 
         /// <summary>
-        /// List of prefab instances of detected aruco markers.
+        /// List of prefab instances of detected aruco markers. Currently not using this code.
         /// </summary>
         //private List<GameObject> _markerGOs; - might need to do this instead for the private list of game objects instead of having 3 public 
         /// game object variables.
 
         private bool _mediaFrameSourceGroupsStarted = false;
         private int _frameCount = 0;
-        public int skipFrames = 1; // previously 3
+        public int skipFrames = 1; // previously 3, however, this slowed down the tracking.
+        // Set the marker ArUco IDs for each joint - ensure the markers are strapped to the limb in the correct way.
         public int MarkerIDWrist = 18;
         public int MarkerIDElbow = 17;
         public int MarkerIDShoulder = 16;
+        // Used to hold the variables values.
         public float Angle;
         public float AngularVelocity;
-        //public GameObject MarkerText;
+        
 
+        // Used to display the text for joints, angle and angular velocity in the UI of Holo in real time.
         public TextMeshPro MarkerTextWrist;
         public TextMeshPro MarkerTextElbow;
         public TextMeshPro MarkerTextShoulder;
         public TextMeshPro AngleText;
         public TextMeshPro AngularVelocityText;
 
-
-        //public TextMeshPro AngleRecordingText;
 
 #if ENABLE_WINMD_SUPPORT
         // Enable winmd support to include winmd files. Will not
@@ -113,7 +115,8 @@ namespace ArUcoDetectionHoloLensUnity
         private SpatialCoordinateSystem _unityCoordinateSystem;
 #endif
 
-        // Gesture handler
+        // Gesture handler - this is used to allow the termination of stream recording at the end of APP use using 
+        // the double click gesture
         GestureRecognizer _gestureRecognizer;
 
         #region UnityMethods
@@ -131,6 +134,7 @@ namespace ArUcoDetectionHoloLensUnity
             // HoloLens media frame source groups.
             StartCoroutine(DelayCoroutine());
 
+            
             markerWrist.transform.localScale = new Vector3(markerSize, markerSize, markerSize);
             markerElbow.transform.localScale = new Vector3(markerSize, markerSize, markerSize);
             markerShoulder.transform.localScale = new Vector3(markerSize, markerSize, markerSize);
@@ -158,11 +162,11 @@ namespace ArUcoDetectionHoloLensUnity
 #if ENABLE_WINMD_SUPPORT
             _frameCount += 1;
 
-            // Predict every 3rd frame - changed to first
+            // Predict every frame - used to be third
             if (_frameCount == skipFrames)
             {
                 // Potentially this is where I will need to look for 3 ArUco markers instead of just the one. Var declares local 
-                // variables without giving them explicit types, therefore not 100% sure what detections is.
+                // variables without giving them explicit types.
                 // wait until the task is completed => task being completed - using the type of sensor stream detect
                 // the markers with openCV
                 var detections = await Task.Run(() => _pvMediaFrameSourceGroup.DetectArUcoMarkers(_sensorType));
@@ -216,7 +220,7 @@ namespace ArUcoDetectionHoloLensUnity
                 _deviceType,
                 _sensorFrameStreamerPv,
 
-                // Calibration parameters from opencv, compute once for each hololens 2 device
+                // Calibration parameters from opencv, compute once for each hololens 2 device - haven't changed.
                 calibParams.focalLength.x, calibParams.focalLength.y,
                 calibParams.principalPoint.x, calibParams.principalPoint.y,
                 calibParams.radialDistortion.x, calibParams.radialDistortion.y, calibParams.radialDistortion.z,
@@ -274,12 +278,11 @@ namespace ArUcoDetectionHoloLensUnity
             // _pvMediaFrameSourceGroup.DetectArUcoMarkers(_sensorType);
 
 
-            // THIS WAS detections.Count !=0
-            // If we detect a marker, display
-            
+          
+            // wait until all 3 markers are detected.
             if (detections.Count == 3)
             {
-                //myText.text = "Angle:";
+                
                 // Remove world anchor from game object
                 if (_isWorldAnchored)
                 {
@@ -296,7 +299,8 @@ namespace ArUcoDetectionHoloLensUnity
                     }
                 }
 
-                // COMMENTED OUT the foreach loop
+                // This code will randomly assign the detected markers to IDs and then store them as that. It will not automatically associate
+                // an ID with a joint, hence it was removed.
                 /*foreach (var detectedMarker in detections)
                 {
                     // Get pose from OpenCV and format for Unity
@@ -393,16 +397,19 @@ namespace ArUcoDetectionHoloLensUnity
 
                 //else
                 //{
-                // Create new stopwatch.
+
+                // Create new stopwatch. This is used for angular velocity from angle.
                 Stopwatch stopwatch = new Stopwatch();
 
                 // Begin timing.
                 stopwatch.Start();
 
+                // Store the angle from previous iteration into a temporary variable.
                 float AngleTemp = Angle;
 
                 foreach (var index in detections)
                 {
+                    // if statements used to match each ID to the respective joints (codes).
                     if (index.Id == MarkerIDWrist)
                     {
                         Vector3 position1 = CvUtils.Vec3FromFloat3(index.Position);
@@ -444,6 +451,7 @@ namespace ArUcoDetectionHoloLensUnity
                         //MarkerTextWrist.SetText(markerWrist.transform.position.ToString());
                         MarkerTextElbow.SetText("Elbow");
                     }
+                    // this will detect any remaining code in the field of view - if this is a problem then change to else if.
                     else
                     {
                         Vector3 position3 = CvUtils.Vec3FromFloat3(index.Position);
@@ -473,30 +481,35 @@ namespace ArUcoDetectionHoloLensUnity
                 Vector3 vec1 = markerWrist.transform.position - markerElbow.transform.position;
                 Vector3 vec2 = markerShoulder.transform.position - markerElbow.transform.position;
                 
+                // create a line used for the forearm.
                 GameObject myLine1 = new GameObject();
                 myLine1.transform.position = markerWrist.transform.position;
                 myLine1.AddComponent<LineRenderer>();
                 LineRenderer lr1 = myLine1.GetComponent<LineRenderer>();
-                //lr.material = new Material(Shader.Find("Particles/Alpha Blended Premultiply"));
-                
                 lr1.SetWidth(0.001f, 0.001f);
                 lr1.SetPosition(0, markerWrist.transform.position);
                 lr1.SetPosition(1, markerElbow.transform.position);
                 GameObject.Destroy(myLine1, 0.2f);
 
+                // create a line used for the upper arm.
                 GameObject myLine2 = new GameObject();
                 myLine2.transform.position = markerShoulder.transform.position;
                 myLine2.AddComponent<LineRenderer>();
                 LineRenderer lr2 = myLine2.GetComponent<LineRenderer>();
-                //lr.material = new Material(Shader.Find("Particles/Alpha Blended Premultiply"));
-
                 lr2.SetWidth(0.001f, 0.001f);
                 lr2.SetPosition(0, markerShoulder.transform.position);
                 lr2.SetPosition(1, markerElbow.transform.position);
                 GameObject.Destroy(myLine2, 0.2f);
 
-                // calculate and display the angle in the public variable
+                // calculate the angle in the public variable
                 Angle = Vector3.Angle(vec1, vec2);
+
+                // Stop timing and then calculate the angular velocity.
+                stopwatch.Stop();
+                TimeSpan stopwatchElapsed = stopwatch.Elapsed;
+                float deltaT = Convert.ToSingle(stopwatchElapsed.TotalMilliseconds);
+                // simple calculation of angular velocity using dtheta/ dt - change this if inaccurate.
+                AngularVelocity = (Angle - AngleTemp) / (deltaT);
 
                 // Round the angle to an integer for display
                 int angleInt = (int)Math.Round(Angle);
@@ -504,19 +517,12 @@ namespace ArUcoDetectionHoloLensUnity
                 AngleText.SetText("Angle: {0}", angleInt);
                 //myText.text = Angle.ToString();
 
-                // Stop timing.
-                stopwatch.Stop();
-
-                TimeSpan stopwatchElapsed = stopwatch.Elapsed;
-                float deltaT = Convert.ToSingle(stopwatchElapsed.TotalMilliseconds);
-                AngularVelocity = (Angle - AngleTemp) / (deltaT);
                 // Round the angle to an integer for display
                 int angularInt = (int)Math.Round(AngularVelocity);
                 // compute angular velocity and print it by the wrist
                 AngularVelocityText.SetText("Angular Velocity: {0}", angularInt);
             }
-            // If no markers in scene, anchor marker go to last position - not 100% sure what this does. May need to add seperate world
-            // anchors to each markerJoints.
+            
             else
             {
                 // Add a world anchor to the attached gameobject
