@@ -56,6 +56,10 @@ namespace ArUcoDetectionHoloLensUnity
         /// </summary>
         public CameraCalibrationParams calibParams;
 
+        // used for UDP comms to send data back from hololens to PC.
+        public GameObject udp_link;
+        private UDPComm udp;
+
         /// <summary>
         /// Game object to use for marker instantiation. These game objects are the cubes associated with the respective arUco codes.
         /// </summary>
@@ -134,7 +138,8 @@ namespace ArUcoDetectionHoloLensUnity
             // HoloLens media frame source groups.
             StartCoroutine(DelayCoroutine());
 
-            
+            udp = udp_link.GetComponent<UDPComm>();
+
             markerWrist.transform.localScale = new Vector3(markerSize, markerSize, markerSize);
             markerElbow.transform.localScale = new Vector3(markerSize, markerSize, markerSize);
             markerShoulder.transform.localScale = new Vector3(markerSize, markerSize, markerSize);
@@ -521,8 +526,12 @@ namespace ArUcoDetectionHoloLensUnity
                 int angularInt = (int)Math.Round(AngularVelocity);
                 // compute angular velocity and print it by the wrist
                 AngularVelocityText.SetText("Angular Velocity: {0}", angularInt);
+
+                udp_link.GetComponent<UDPComm>().SetAngleValue(Angle);
+                udp_link.GetComponent<UDPComm>().SetAngularValue(AngularVelocity);
+
             }
-            
+
             else
             {
                 // Add a world anchor to the attached gameobject

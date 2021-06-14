@@ -444,19 +444,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 285611437}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &285611439
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 285611438}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d7ffad27be3fa448ad3be708d56b423, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MarkerCube: {fileID: 0}
 --- !u!4 &285611440 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 948697719170404064, guid: 2e5d73686abb4b440940c1d00e105576,
@@ -553,19 +540,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 519181810}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &519181812
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 519181811}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d7ffad27be3fa448ad3be708d56b423, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MarkerCube: {fileID: 0}
 --- !u!4 &519181813 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 948697719170404064, guid: 2e5d73686abb4b440940c1d00e105576,
@@ -1402,6 +1376,7 @@ MonoBehaviour:
   arUcoDictionaryName: 8
   markerSize: 0.02
   calibParams: {fileID: 805832266}
+  udp_link: {fileID: 1142071464}
   markerWrist: {fileID: 519181811}
   markerElbow: {fileID: 285611438}
   markerShoulder: {fileID: 1827800299}
@@ -1620,6 +1595,49 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1 &1142071464
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1142071465}
+  - component: {fileID: 1142071466}
+  m_Layer: 0
+  m_Name: UDPComm
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1142071465
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1142071464}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.0837372, y: -0.038893834, z: -0.019199999}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1142071466
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1142071464}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6e17552686a8f2488e34e5f816037e0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1230192565
 GameObject:
   m_ObjectHideFlags: 0
@@ -2162,19 +2180,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 1827800298}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1827800300
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1827800299}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2d7ffad27be3fa448ad3be708d56b423, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  MarkerCube: {fileID: 0}
 --- !u!4 &1827800301 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 948697719170404064, guid: 2e5d73686abb4b440940c1d00e105576,
@@ -2210,7 +2215,7 @@ Transform:
   m_Children:
   - {fileID: 728791149}
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1941422608
 GameObject:
