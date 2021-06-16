@@ -58,9 +58,6 @@ if __name__ == '__main__':
                 line1, = axs[0].plot(xs, ys1)
                 line2, = axs[1].plot(xs, ys2)
 
-                
-
-
                 def animate(i, ys1, ys2, angle, angularVel):
 
                     data, addr = sock.recvfrom(1024)  # buffr size is 1024 bytes
@@ -86,6 +83,10 @@ if __name__ == '__main__':
                     fargs=(ys1,ys2,angle,angularVel),
                     interval=2,
                     blit=True)
+
+                figure = plt.gcf()  # get current figure
+                figure.set_size_inches(9, 6) # set figure's size manually to your full screen (32x18)0
+                
                 plt.show()
 
                 ### On shutting the live plots, it enters here which displays plots for the whole trial
@@ -109,7 +110,10 @@ if __name__ == '__main__':
                 plt.ylabel('Angular velocity (degrees/s)')
                 plt.xlabel('Samples')
                 ax.plot(angularVel)
-                plt.savefig('TrialData.png')
+
+                figure = plt.gcf()  # get current figure
+                figure.set_size_inches(9, 6) # set figure's size manually to your full screen (32x18)
+                plt.savefig('TrialData.png',bbox_inches='tight', dpi=200)
                 plt.show()
                 
 
