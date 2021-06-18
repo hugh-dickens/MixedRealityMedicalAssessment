@@ -83,7 +83,15 @@ namespace ArUcoDetectionHoloLensUnity
         // Used to hold the variables values.
         public float Angle;
         public float AngularVelocity;
-        
+        private float AngleTemp = 0f;
+        private float deltaT2 = 0f;
+
+        //First we'll need a couple of variables to do the calculation.
+        /*Quaternion rotationLastWrist; //The value of the rotation at the previous update
+        Vector3 rotationDeltaWrist; //The difference in rotation between now and the previous update
+        Vector3 rotationLastShoulder; //The value of the rotation at the previous update
+        Vector3 rotationDeltaShoulder; //The difference in rotation between now and the previous update
+        */
 
         // Used to display the text for joints, angle and angular velocity in the UI of Holo in real time.
         public TextMeshPro MarkerTextWrist;
@@ -194,6 +202,10 @@ namespace ArUcoDetectionHoloLensUnity
         async Task StartHoloLensMediaFrameSourceGroups()
         {
 #if ENABLE_WINMD_SUPPORT
+            // VAriables not used anymore:
+            //rotationLastWrist = transform.rotation;
+            //rotationLastShoulder = transform.rotation.eulerAngles;
+
             // Plugin doesn't work in the Unity editor
             myText.text = "Initializing MediaFrameSourceGroups...";
 
@@ -269,6 +281,12 @@ namespace ArUcoDetectionHoloLensUnity
 #if ENABLE_WINMD_SUPPORT           
         void UpdateArUcoDetections(IList<DetectedArUcoMarker> detections)
         {
+            // Create new stopwatch. This is used for angular velocity from angle.
+            Stopwatch stopwatch = new Stopwatch();
+
+            // Begin timing.
+            stopwatch.Start();
+
             if (!_mediaFrameSourceGroupsStarted ||
                 _pvMediaFrameSourceGroup == null)
             {
@@ -281,8 +299,6 @@ namespace ArUcoDetectionHoloLensUnity
 
             // IList<DetectedArUcoMarker> detectedArUcoMarkers = _pvMediaFrameSourceGroup.GetArUcoDetections();
             // _pvMediaFrameSourceGroup.DetectArUcoMarkers(_sensorType);
-
-
           
             // wait until all 3 markers are detected.
             if (detections.Count == 3)
@@ -403,14 +419,6 @@ namespace ArUcoDetectionHoloLensUnity
                 //else
                 //{
 
-                // Create new stopwatch. This is used for angular velocity from angle.
-                Stopwatch stopwatch = new Stopwatch();
-
-                // Begin timing.
-                stopwatch.Start();
-
-                // Store the angle from previous iteration into a temporary variable.
-                float AngleTemp = Angle;
 
                 foreach (var index in detections)
                 {
@@ -478,14 +486,36 @@ namespace ArUcoDetectionHoloLensUnity
                         MarkerTextShoulder.SetText("Shoulder");
                     }
                         
-
                 }
                 //} ----- ELSE statement removal
            
                 // This turns the coordinates into vectors
                 Vector3 vec1 = markerWrist.transform.position - markerElbow.transform.position;
                 Vector3 vec2 = markerShoulder.transform.position - markerElbow.transform.position;
-                
+
+                /* Stop timing and then calculate the angular velocity.
+                stopwatch.Stop();
+                TimeSpan stopwatchElapsed = stopwatch.Elapsed;
+                float deltaT = Convert.ToSingle(stopwatchElapsed.TotalMilliseconds);
+                */
+
+                /* alternative method - doesnt work very well.
+                var deltaRot = markerWrist.transform.rotation * Quaternion.Inverse( rotationLastWrist );
+                rotationLastWrist = deltaRot;
+                var eulerRot = new Vector3( Mathf.DeltaAngle( 0, deltaRot.eulerAngles.x ), Mathf.DeltaAngle( 0, deltaRot.eulerAngles.y ),Mathf.DeltaAngle( 0, deltaRot.eulerAngles.z ) );
+ 
+                AngularVelocity = eulerRot / Time.fixedDeltaTime;
+                */
+
+                /*Update both variables, so they're accurate every frame.
+                rotationDeltaWrist = markerWrist.transform.rotation.eulerAngles - rotationLastWrist;
+                rotationLastWrist = markerWrist.transform.rotation.eulerAngles;
+                rotationDeltaShoulder = markerShoulder.transform.rotation.eulerAngles - rotationLastShoulder;
+                rotationLastShoulder = markerShoulder.transform.rotation.eulerAngles;
+                AngularVelocity = (rotationDeltaWrist - rotationDeltaShoulder) / deltaT;
+
+                */
+
                 // create a line used for the forearm.
                 GameObject myLine1 = new GameObject();
                 myLine1.transform.position = markerWrist.transform.position;
@@ -511,10 +541,20 @@ namespace ArUcoDetectionHoloLensUnity
 
                 // Stop timing and then calculate the angular velocity.
                 stopwatch.Stop();
-                TimeSpan stopwatchElapsed = stopwatch.Elapsed;
-                float deltaT = Convert.ToSingle(stopwatchElapsed.TotalMilliseconds);
-                // simple calculation of angular velocity using dtheta/ dt - change this if inaccurate.
-                AngularVelocity = (Angle - AngleTemp) / (deltaT);
+                TimeSpan stopwatchElapsed1 = stopwatch.Elapsed;
+                float deltaT = Convert.ToSingle(stopwatchElapsed1.TotalMilliseconds) + deltaT2;
+                // simple calculation of angular velocity using dtheta/ dt - change this if inaccurate. It calculates the 
+                // difference between the angles on two iterations and then the change in time in ms. 
+                float AngleDiff = Angle - AngleTemp;
+                if (AngleDiff<4 || AngleDiff >4)
+                    AngularVelocity = AngleDiff / (deltaT);
+                else
+                    AngularVelocity = AngleDiff * 5 / (deltaT);
+
+                stopwatch.Start();
+                ////// TRY THIS - https://forum.unity.com/threads/manually-calculate-angular-velocity-of-gameobject.289462/
+                //AngularVelocity = (Angle - AngleTemp) / (time.deltaTime);
+                
 
                 // Round the angle to an integer for display
                 int angleInt = (int)Math.Round(Angle);
@@ -525,11 +565,20 @@ namespace ArUcoDetectionHoloLensUnity
                 // Round the angle to an integer for display
                 int angularInt = (int)Math.Round(AngularVelocity);
                 // compute angular velocity and print it by the wrist
+                //AngularVelocityText.SetText("Angular Velocity: {0}", angularInt);
                 AngularVelocityText.SetText("Angular Velocity: {0}", angularInt);
+
 
                 udp_link.GetComponent<UDPComm>().SetAngleValue(Angle);
                 udp_link.GetComponent<UDPComm>().SetAngularValue(AngularVelocity);
 
+                // Store the angle from previous iteration into a temporary variable.
+                AngleTemp = Angle;
+
+                // Stop timing and then calculate the angular velocity.
+                stopwatch.Stop();
+                TimeSpan stopwatchElapsed2 = stopwatch.Elapsed;
+                deltaT2 = Convert.ToSingle(stopwatchElapsed2.TotalMilliseconds);
             }
 
             else
