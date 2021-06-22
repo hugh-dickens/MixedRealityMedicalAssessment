@@ -83,7 +83,7 @@ namespace ArUcoDetectionHoloLensUnity
         // Used to hold the variables values.
         public float Angle;
         public float AngularVelocity;
-        private float AngleTemp = 0f;
+        public float AngleTemp = 0f;
 
 
         // Used to display the text for joints, angle and angular velocity in the UI of Holo in real time.
