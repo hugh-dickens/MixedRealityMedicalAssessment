@@ -13,7 +13,7 @@ class Listener(myo.DeviceListener):
     # ... do something with that
 
 if __name__ == '__main__':
-  myo.init(sdk_path='./myo-sdk-win-0.9.0/')
+  myo.init(sdk_path="C:\\Users\\dicke\\packages\\MyoSDK.2.1.0")
   hub = myo.Hub()
   listener = Listener()
   while hub.run(listener.on_event, 500):
