@@ -28,6 +28,7 @@ import myo
 import numpy as np
 
 
+
 class EmgCollector(myo.DeviceListener):
   """
   Collects EMG data in a queue with *n* maximum number of elements.
@@ -51,13 +52,12 @@ class EmgCollector(myo.DeviceListener):
     with self.lock:
       self.emg_data_queue.append((event.timestamp, event.emg))
 
-
 class Plot(object):
 
   def __init__(self, listener):
     self.n = listener.n
     self.listener = listener
-    self.fig = plt.figure()
+    self.fig = plt.figure(2)
     self.axes = [self.fig.add_subplot('81' + str(i)) for i in range(1, 9)]
     [(ax.set_ylim([-100, 100])) for ax in self.axes]
     self.graphs = [ax.plot(np.arange(self.n), np.zeros(self.n))[0] for ax in self.axes]

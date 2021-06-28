@@ -25,13 +25,18 @@ class AngleCollector():
 
 
   def get_angle_data(self):
-    data, addr = self.sock.recvfrom(1024)  # buffr size is 1024 bytes
-    # Unpacks two floats from data : angle and angular velocity / append to lists
-    unpack = struct.unpack('ff', data)
-    self.angle.append(unpack[0])
-    self.angularVel.append(unpack[1])
-    self.ys1.append(unpack[0])
-    self.ys2.append(unpack[1])
+    # data, addr = self.sock.recvfrom(1024)  # buffr size is 1024 bytes
+    # # Unpacks two floats from data : angle and angular velocity / append to lists
+    # unpack = struct.unpack('ff', data)
+    # self.angle.append(unpack[0])
+    # self.angularVel.append(unpack[1])
+    # self.ys1.append(unpack[0])
+    # self.ys2.append(unpack[1])
+
+    self.angle.append(1)
+    self.angularVel.append(2)
+    self.ys1.append(1)
+    self.ys2.append(2)
     
     self.ys1 = self.ys1[-self.x_len:]
     self.ys2 = self.ys2[-self.x_len:]
@@ -44,6 +49,7 @@ class AngleCollector():
 class plotting(AngleCollector):
 
   def __init__(self):
+    # setup the axes/ graphs
     self.AngleCollector = AngleCollector()
     self.x_len = 300
     self.y1_range = [0,180]
@@ -69,19 +75,19 @@ class plotting(AngleCollector):
     self.line2, = self.axs[1].plot(self.xs, self.ys2)
 
 
-  def animate(self):
+  def animate(self,i):
     ys1, ys2 = self.AngleCollector.get_angle_data()
     # Update line with new Y values
     self.line1.set_ydata(ys1)
     self.line2.set_ydata(ys2)
 
-    return self.line1, self.line2, 
+    return self.line1, self.line2,  ## this line might not be needed
 
   def plot_final(self):
       ### On shutting the live plots, it enters here which displays plots for the whole trial
       # and then saves the data to a .txt file.
-    angle, angularVel = self.AngleCollector.get_final_data      
-    fig = plt.figure()
+    angle, angularVel = self.AngleCollector.get_final_data()
+    fig = plt.figure(1)
     ax = fig.add_subplot(1, 2, 1)
     plt.ylim([0,180])
     plt.xticks(rotation=45, ha='right')
@@ -106,7 +112,7 @@ class plotting(AngleCollector):
     plt.show()
 
   def save_and_quit(self):
-    angle, angularVel = self.AngleCollector.get_final_data  
+    angle, angularVel = self.AngleCollector.get_final_data()
     ## Write to txt file
     f = open("TrialData.txt", "w")
     
@@ -119,7 +125,7 @@ class plotting(AngleCollector):
   def main(self):
     ani = animation.FuncAnimation(self.fig,
         self.animate,
-        fargs=(self.ys1,self.ys2),
+        fargs=(),
         interval=2,
         blit=True)
 
@@ -134,8 +140,7 @@ class plotting(AngleCollector):
 
 def main():
     # listener = AngleCollector()
-    while True:
-        plotting().main()
+    plotting().main()
         
 if __name__ == '__main__':
   main()
