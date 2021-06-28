@@ -1,4 +1,5 @@
-# Minimum script for reading and unpacking messages from UDPComm.cs
+# Minimum script for reading and unpacking messages from UDPComm.cs 
+# this scipt has been integrated into 01_main_scipt.py
 import socket
 import struct
 

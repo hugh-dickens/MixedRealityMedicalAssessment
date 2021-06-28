@@ -127,6 +127,3 @@ if __name__ == '__main__':
                 f.close()
                 # Exit the app
                 sys.exit(0)
-                
-
-    
