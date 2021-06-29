@@ -1,4 +1,4 @@
-﻿using Microsoft.MixedReality.Toolkit;
+﻿/*using Microsoft.MixedReality.Toolkit;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -7,7 +7,6 @@ using UnityEngine;
 using System.Collections;
 using System;
 using System.Runtime.InteropServices;
-using TMPro;
 
 public class UDPComm : MonoBehaviour
 {
@@ -26,11 +25,6 @@ public class UDPComm : MonoBehaviour
     private PacketOperator_t udp_packet;
     private BinaryFormatter msgFormatter;
 
-    // CHANGES - instead want to edit another EMG value with this received val.
-    public int EMG = 0;
-    public TextMeshPro EMG_Value;
-    public TextMeshPro Debugger_text;
-
     // Start() is called before the first frame update
     void Start()
     {
@@ -42,22 +36,20 @@ public class UDPComm : MonoBehaviour
         // The Hololens and PC will need to be on the same subnet to be able to talk to each other,
         // e.g. Hololens 192.168.1.139, PC 192.168.1.100. Achieved through setting manual IPs.
         // DNS and default gateway for a manual IP is 192.168.1.254 I think... netmask is 255.255.255.0, or simply '24'
-        //dst_ip = "192.168.1.100";
-        
+        dst_ip = "192.168.1.100";
+
         // Port that the UDP link will try communicate with on your PC
         // You may need to adjust your firewall to allow traffic on this port.
-        //int client_port = 9995;
+        int client_port = 9995;
 
-        //udp = new UdpClient(dst_ip, client_port);
+        udp = new UdpClient(dst_ip, client_port);
 
         // Initialise the UDP packet
         udp_packet = new PacketOperator_t();
         udp_packet.AngleValue = 0.0f;
         udp_packet.AngularValue = 0.0f;
 
-        
-
-        }
+    }
 
     // Update is called once per frame
     void Update()
@@ -67,38 +59,14 @@ public class UDPComm : MonoBehaviour
         // This is an optional step if you are just streaming data. - removed for my application
         //DateTime curr_time;
         //curr_time = CoreServices.InputSystem.EyeGazeProvider.Timestamp; // output at system rate (~30Hz)
+
         //if (!curr_time.Equals(time_check))
         //{
         // Convert udp packet to raw bytes
-        UdpClient udpClient = new UdpClient();
-        try {
-            udpClient.Connect("192.168.1.100", 9995);
-            byte[] udp_bytes = getBytes(udp_packet);
-            
-                // Send
-            udp.Send(udp_bytes, udp_bytes.Length);
+        byte[] udp_bytes = getBytes(udp_packet);
 
-            //IPEndPoint object will allow us to read datagrams sent from any source.
-            IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
-
-            // Blocks until a message returns on this socket from a remote host.
-            Byte[] receiveBytes = udpClient.Receive(ref RemoteIpEndPoint);
-            string returnData = Encoding.ASCII.GetString(receiveBytes);
-            EMG_Value.SetText(returnData); 
-
-            udpClient.Close();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.ToString());
-        }
-        // RECEIVE
-        /*IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
-        // Blocks until a message returns on this socket from a remote host.
-        Byte[] receiveBytes = udp.Receive(ref RemoteIpEndPoint);
-        string returnData = Encoding.ASCII.GetString(receiveBytes);
-            // udp.BeginReceive(new AsyncCallback(Recv), null);
-        EMG_Value.SetText(returnData);*/
+        // Send
+        udp.Send(udp_bytes, udp_bytes.Length);
 
         //}
         //time_check = curr_time;
@@ -130,21 +98,4 @@ public class UDPComm : MonoBehaviour
         return arr;
     }
 
-    //CallBack
-    /*private void Recv(IAsyncResult res)
-    {
-        // Port that the UDP link will try communicate with on your PC
-        // You may need to adjust your firewall to allow traffic on this port.
-        int client_port = 9995;
-        IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, client_port);
-        byte[] received = udp.EndReceive(res, ref RemoteIpEndPoint);
-        //Process codes
-
-        EMG = Convert.ToInt32(Encoding.UTF8.GetString(received));
-        EMG_Value.SetText(EMG.ToString());
-        udp.BeginReceive(new AsyncCallback(Recv), null);
-        Debugger_text.SetText("Not coming through");
-    }*/
-    
-}
-
+}*/

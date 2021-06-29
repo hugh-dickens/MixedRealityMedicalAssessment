@@ -50,19 +50,19 @@ class packet(object):
     #     self.emg_data_packet.append(data)
 
   def main(self):
-    UDP_IP = ""  # No IP specified, as we receive from any IP address (that's on the same subnet, 192.1.168.xxx)
+    UDP_IP = "192.168.1.100" 
     UDP_PORT = 9995  # Same port as we specified in UDPComm.cs
 
     sock = socket.socket(socket.AF_INET, # Internet
                                 socket.SOCK_DGRAM) # UDP
     counter = 0
     while True:
-      emg_data = str(self.update_packet())
+      emg_data = self.update_packet()
       counter +=1
-      if ((counter % 10000) == 0) & (emg_data is not None):
+      if ((counter % 5000) == 0) & (emg_data is not None):
           print(emg_data)
+          emg_data = str(emg_data)
           sock.sendto(emg_data.encode('utf-8'), (UDP_IP, UDP_PORT)) 
-          ## need to then do something with emg data
 
 def main():
   ### enter the path to your own MyoSDK package and .dll file here. Download 
@@ -76,8 +76,7 @@ def main():
 
 
 if __name__ == '__main__':
-    while True:
-        data = main()
+    data = main()
     
 
         
