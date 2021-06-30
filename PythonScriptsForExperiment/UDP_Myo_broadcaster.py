@@ -50,7 +50,7 @@ class packet(object):
     #     self.emg_data_packet.append(data)
 
   def main(self):
-    UDP_IP = "192.168.1.100" 
+    UDP_IP = "" # REmember this should be the holo ip
     UDP_PORT = 9995  # Same port as we specified in UDPComm.cs
 
     sock = socket.socket(socket.AF_INET, # Internet

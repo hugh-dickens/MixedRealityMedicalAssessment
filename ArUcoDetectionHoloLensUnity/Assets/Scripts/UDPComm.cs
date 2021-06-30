@@ -55,52 +55,32 @@ public class UDPComm : MonoBehaviour
         udp_packet.AngleValue = 0.0f;
         udp_packet.AngularValue = 0.0f;
 
-        
-
         }
 
     // Update is called once per frame
     void Update()
     {
-        // Using timestamp checks to send messages when there is new eye data only.
-        // Hololens update rate (120Hz) is higher than eye gaze update rate (30Hz).
-        // This is an optional step if you are just streaming data. - removed for my application
-        //DateTime curr_time;
-        //curr_time = CoreServices.InputSystem.EyeGazeProvider.Timestamp; // output at system rate (~30Hz)
-        //if (!curr_time.Equals(time_check))
-        //{
-        // Convert udp packet to raw bytes
-        UdpClient udpClient = new UdpClient();
-        try {
-            udpClient.Connect("192.168.1.100", 9995);
-            byte[] udp_bytes = getBytes(udp_packet);
-            
-                // Send
-            udp.Send(udp_bytes, udp_bytes.Length);
+        //Creates a UdpClient for reading incoming data.
+        UdpClient receivingUdpClient = new UdpClient(11000);
 
-            //IPEndPoint object will allow us to read datagrams sent from any source.
-            IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
+        //Creates an IPEndPoint to record the IP Address and port number of the sender.
+        // The IPEndPoint will allow you to read datagrams sent from any source.
+        IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
+        try
+        {
 
             // Blocks until a message returns on this socket from a remote host.
-            Byte[] receiveBytes = udpClient.Receive(ref RemoteIpEndPoint);
-            string returnData = Encoding.ASCII.GetString(receiveBytes);
-            EMG_Value.SetText(returnData); 
+            Byte[] receiveBytes = receivingUdpClient.Receive(ref RemoteIpEndPoint);
 
-            udpClient.Close();
+            string returnData = Encoding.ASCII.GetString(receiveBytes);
+            EMG_Value.SetText(returnData);
+
         }
         catch (Exception e)
         {
             Console.WriteLine(e.ToString());
         }
-        // RECEIVE
-        /*IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
-        // Blocks until a message returns on this socket from a remote host.
-        Byte[] receiveBytes = udp.Receive(ref RemoteIpEndPoint);
-        string returnData = Encoding.ASCII.GetString(receiveBytes);
-            // udp.BeginReceive(new AsyncCallback(Recv), null);
-        EMG_Value.SetText(returnData);*/
 
-        //}
         //time_check = curr_time;
 
     }
@@ -129,22 +109,6 @@ public class UDPComm : MonoBehaviour
         Marshal.FreeHGlobal(ptr);
         return arr;
     }
-
-    //CallBack
-    /*private void Recv(IAsyncResult res)
-    {
-        // Port that the UDP link will try communicate with on your PC
-        // You may need to adjust your firewall to allow traffic on this port.
-        int client_port = 9995;
-        IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, client_port);
-        byte[] received = udp.EndReceive(res, ref RemoteIpEndPoint);
-        //Process codes
-
-        EMG = Convert.ToInt32(Encoding.UTF8.GetString(received));
-        EMG_Value.SetText(EMG.ToString());
-        udp.BeginReceive(new AsyncCallback(Recv), null);
-        Debugger_text.SetText("Not coming through");
-    }*/
     
 }
 
