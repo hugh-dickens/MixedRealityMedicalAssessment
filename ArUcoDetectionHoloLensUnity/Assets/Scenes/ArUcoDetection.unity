@@ -1472,12 +1472,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 1142071464}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 287184a6f235b5543bb8e16920704ea5, type: 3}
+  m_Script: {fileID: 11500000, guid: eaf46289f4b32194d8c91f2d9753385c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  EMG: 0
-  EMG_Value: {fileID: 1443785068}
-  Debugger_text: {fileID: 1162517822}
+  isTxStarted: 0
+  IP: 192.168.1.100
+  rxPort: 8000
+  txPort: 9995
+  debugger: {fileID: 1162517822}
+  emg: {fileID: 1443785068}
 --- !u!1 &1162517819
 GameObject:
   m_ObjectHideFlags: 0

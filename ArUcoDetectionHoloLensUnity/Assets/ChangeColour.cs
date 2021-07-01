@@ -17,9 +17,10 @@ public class ChangeColour : MonoBehaviour
     void Update()
     {
         // find the UDP game object/ script so that EMG value can be found and used for colour of sphere
-        GameObject go = GameObject.Find("UDPComm");
-        UDPExperimenting cs = go.GetComponent<UDPExperimenting>();
-        float EMG_Colour = cs.EMG * 0.001f;
+        //GameObject go = GameObject.Find("UDPComm");
+        //UDPSocket cs = go.GetComponent<UDPSocket>();
+        //float EMG_Colour = cs.EMG * 0.001f;
+        float EMG_Colour = 0.001f;
         // new Color(redFloat, greenFloat, blueFloat)
         // will customise this to reflect EMG high as red, low as green
         // e.g. (redFloat * EMG, 1+(-greenFloat)*EMG, blueFloat)

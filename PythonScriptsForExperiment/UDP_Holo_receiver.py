@@ -25,9 +25,14 @@ if __name__ == '__main__':
 
         data, addr = sock.recvfrom(1024)  # buffr size is 1024 bytes
         # Unpacks two floats from data : angle and angular velocity
-        unpack = struct.unpack('ff', data)
-        angle.append(unpack[0])
-        angularVel.append(unpack[1])
+              
+        print(data)
+        unpack = struct.unpack('c', data)
+        
+        # print(unpack)
+        # unpack = struct.unpack('ff', data)
+        # angle.append(unpack[0])
+        # angularVel.append(unpack[1])
 
             
         
