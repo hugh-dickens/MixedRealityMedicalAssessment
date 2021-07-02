@@ -66,38 +66,28 @@ class Plot(object):
     self.graphs = [ax.plot(np.arange(self.n), np.zeros(self.n))[0] for ax in self.axes]
     plt.ion()
 
-  def update_plot(self):
+  def update_plot_packet(self, sock):
     emg_data = self.listener.get_emg_data()
     emg_data = np.array([x[1] for x in emg_data]).T
+    ABS_emg_data = abs(emg_data)
+    ABS_emg_data = (ABS_emg_data.sum(axis=0)).sum(axis=0) / 16
+    print(ABS_emg_data)
+    EMG_SEND = str(ABS_emg_data)
+    sock.sendto(EMG_SEND.encode('utf-8'), ("192.168.1.139", 9050)) 
     for g, data in zip(self.graphs, emg_data):
       if len(data) < self.n:
         # Fill the left side with zeroes.
         data = np.concatenate([np.zeros(self.n - len(data)), data])
       g.set_ydata(data)
     plt.draw()
-
-  def update_packet(self):
-    emg_data = self.listener.get_emg_data()
-    emg_data = np.array([x[1] for x in emg_data]).T
-    emg_data = abs(emg_data)
-    if len(emg_data) == 8:
-        return (emg_data.sum(axis=0)).sum(axis=0)
   
 
   def main(self):
     sock = socket.socket(socket.AF_INET, # Internet
                                 socket.SOCK_DGRAM) # UDP
-    counter = 0
     while True:
-      self.update_plot()
+      self.update_plot_packet(sock)
       plt.pause(1.0 / 30)
-      emg_data = self.update_packet()
-      counter +=1
-      if ((counter % 5000) == 0) & (emg_data is not None):
-          print(emg_data)
-          emg_data = str(emg_data)
-          sock.sendto(emg_data.encode('utf-8'), ("192.168.1.139", 9050)) 
-
 
 def main():
   ### enter the path to your own MyoSDK package and .dll file here. Download 
