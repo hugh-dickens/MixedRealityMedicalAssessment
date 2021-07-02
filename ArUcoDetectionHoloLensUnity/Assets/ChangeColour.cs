@@ -1,30 +1,30 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class ChangeColour : MonoBehaviour
 {
     Renderer rend;
-    // Start is called before the first frame update
-    void Start()
+    public TextMeshPro val;
+    public GameObject EMG_interface;
+    private UDPComm udp_script;
+    private void Start()
     {
+        udp_script = EMG_interface.GetComponent<UDPComm>();
         rend = GetComponent<Renderer>();
         rend.material.SetColor("_Color", new Color(0, 1, .2f)); // start green
-        
     }
-
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        // find the UDP game object/ script so that EMG value can be found and used for colour of sphere
-        //GameObject go = GameObject.Find("UDPComm");
-        //UDPSocket cs = go.GetComponent<UDPSocket>();
-        //float EMG_Colour = cs.EMG * 0.001f;
-        float EMG_Colour = 0.001f;
+        
+        //float EMG_Colour = udp_script.EMG;
+        val.SetText(udp_script.EMG.ToString());
+        
         // new Color(redFloat, greenFloat, blueFloat)
         // will customise this to reflect EMG high as red, low as green
         // e.g. (redFloat * EMG, 1+(-greenFloat)*EMG, blueFloat)
-        rend.material.SetColor("_Color", new Color(0.2f * EMG_Colour, 1 + (-0.2f) * EMG_Colour, 0.2f));
+        //rend.material.SetColor("_Color", new Color( EMG_Colour, 1 - EMG_Colour, 0.2f));
         
     }
 }

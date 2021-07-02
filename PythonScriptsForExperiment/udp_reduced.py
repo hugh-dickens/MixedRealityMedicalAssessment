@@ -1,3 +1,4 @@
+## Minimal scipt to send and receive data from Hololens with IP's and PORT specified both here and in c# script (UDPComm.cs)
 import socket
 import struct
 
@@ -14,5 +15,5 @@ if __name__ == '__main__':
         data, addr = sock.recvfrom(1024)  # buffr size is 1024 bytes
         # Unpacks two floats from data : angle and angular velocity
         print(data)
-        sock.sendto(bytes("Hello Holo!",'utf-8'), ("192.168.1.139", 8000))
+        sock.sendto(bytes("Hello Holo!",'utf-8'), ("192.168.1.139", 9050))
         

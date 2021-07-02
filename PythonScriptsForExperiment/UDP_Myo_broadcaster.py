@@ -1,5 +1,4 @@
-# Minimum script for reading and unpacking messages from UDPComm.cs 
-# this scipt has been integrated into 01_main_scipt.py
+## Script used to stream EMG data to the hololens interface
 import socket
 import struct
 from collections import deque
@@ -50,9 +49,6 @@ class packet(object):
     #     self.emg_data_packet.append(data)
 
   def main(self):
-    UDP_IP = "" # REmember this should be the holo ip
-    UDP_PORT = 9995  # Same port as we specified in UDPComm.cs
-
     sock = socket.socket(socket.AF_INET, # Internet
                                 socket.SOCK_DGRAM) # UDP
     counter = 0
@@ -62,7 +58,9 @@ class packet(object):
       if ((counter % 5000) == 0) & (emg_data is not None):
           print(emg_data)
           emg_data = str(emg_data)
-          sock.sendto(emg_data.encode('utf-8'), (UDP_IP, UDP_PORT)) 
+          sock.sendto(emg_data.encode('utf-8'), ("192.168.1.139", 9050))   
+          # REmember this should be the holo ip
+          # Same port as we specified in UDPComm.cs 
 
 def main():
   ### enter the path to your own MyoSDK package and .dll file here. Download 

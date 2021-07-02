@@ -8,6 +8,7 @@ using System.Collections;
 using System;
 using System.Runtime.InteropServices;
 using TMPro;
+using System.Threading;
 
 public class UDPComm : MonoBehaviour
 {
@@ -18,16 +19,18 @@ public class UDPComm : MonoBehaviour
         public float AngularValue;
     };
 
+    [HideInInspector] public bool isTxStarted = false;
     //private IPEndPoint udp_send;
     private UdpClient udp;
+    private UdpClient client;
     private string dst_ip;
     private byte[] udp_data;
     private DateTime time_check;
     private PacketOperator_t udp_packet;
     private BinaryFormatter msgFormatter;
 
-    // CHANGES - instead want to edit another EMG value with this received val.
-    public int EMG = 0;
+    Thread receiveThread; // Receiving Thread
+    public int EMG;
     public TextMeshPro EMG_Value;
     public TextMeshPro Debugger_text;
 
@@ -42,45 +45,49 @@ public class UDPComm : MonoBehaviour
         // The Hololens and PC will need to be on the same subnet to be able to talk to each other,
         // e.g. Hololens 192.168.1.139, PC 192.168.1.100. Achieved through setting manual IPs.
         // DNS and default gateway for a manual IP is 192.168.1.254 I think... netmask is 255.255.255.0, or simply '24'
-        //dst_ip = "192.168.1.100";
-        
+        dst_ip = "192.168.1.100";
+
         // Port that the UDP link will try communicate with on your PC
         // You may need to adjust your firewall to allow traffic on this port.
-        //int client_port = 9995;
+        int client_port = 9995;
+        int rxPort = 9050;
 
-        //udp = new UdpClient(dst_ip, client_port);
+        udp = new UdpClient(dst_ip, client_port);
+        client = new UdpClient(rxPort);
 
         // Initialise the UDP packet
         udp_packet = new PacketOperator_t();
         udp_packet.AngleValue = 0.0f;
         udp_packet.AngularValue = 0.0f;
 
-        }
+    }
 
     // Update is called once per frame
     void Update()
     {
-        //Creates a UdpClient for reading incoming data.
-        UdpClient receivingUdpClient = new UdpClient(11000);
+        // Using timestamp checks to send messages when there is new eye data only.
+        // Hololens update rate (120Hz) is higher than eye gaze update rate (30Hz).
+        // This is an optional step if you are just streaming data. - removed for my application
+        //DateTime curr_time;
+        //curr_time = CoreServices.InputSystem.EyeGazeProvider.Timestamp; // output at system rate (~30Hz)
 
-        //Creates an IPEndPoint to record the IP Address and port number of the sender.
-        // The IPEndPoint will allow you to read datagrams sent from any source.
-        IPEndPoint RemoteIpEndPoint = new IPEndPoint(IPAddress.Any, 0);
-        try
-        {
+        //if (!curr_time.Equals(time_check))
+        //{
+        // Convert udp packet to raw bytes
+        byte[] udp_bytes = getBytes(udp_packet);
 
-            // Blocks until a message returns on this socket from a remote host.
-            Byte[] receiveBytes = receivingUdpClient.Receive(ref RemoteIpEndPoint);
+        // Send
+        udp.Send(udp_bytes, udp_bytes.Length);
 
-            string returnData = Encoding.ASCII.GetString(receiveBytes);
-            EMG_Value.SetText(returnData);
+        Debugger_text.SetText("Average EMG:");
+        IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 0);
+        byte[] data = client.Receive(ref anyIP);
+        string text = Encoding.UTF8.GetString(data);
+        EMG_Value.SetText(text);
 
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e.ToString());
-        }
+        //ReceiveData();
 
+        //}
         //time_check = curr_time;
 
     }
@@ -109,6 +116,45 @@ public class UDPComm : MonoBehaviour
         Marshal.FreeHGlobal(ptr);
         return arr;
     }
-    
-}
 
+    private void ReceiveData()
+    {
+        //while (true)
+        //{
+        try
+        {
+            Debugger_text.SetText("Entered");
+            IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 0);
+            byte[] data = udp.Receive(ref anyIP);
+            string text = Encoding.UTF8.GetString(data);
+            EMG = Int32.Parse(text);
+            EMG_Value.SetText(">> " + EMG.ToString());
+            ProcessInput(text);
+        }
+        catch (Exception err)
+        {
+            Debugger_text.SetText(err.ToString());
+        }
+        //}
+    }
+
+    private void ProcessInput(string input)
+    {
+        // PROCESS INPUT RECEIVED STRING HERE
+
+        if (!isTxStarted) // First data arrived so tx started
+        {
+            isTxStarted = true;
+        }
+    }
+
+    //Prevent crashes - close clients and threads properly!
+    void OnDisable()
+    {
+        if (receiveThread != null)
+            receiveThread.Abort();
+
+        client.Close();
+    }
+
+}
