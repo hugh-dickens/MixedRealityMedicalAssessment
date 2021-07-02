@@ -30,7 +30,9 @@ public class UDPComm : MonoBehaviour
     private BinaryFormatter msgFormatter;
 
     Thread receiveThread; // Receiving Thread
-    public int EMG;
+    public float EMG;
+    Renderer rend; // DELETE
+    public TextMeshPro value; // DELETE
     public TextMeshPro EMG_Value;
     public TextMeshPro Debugger_text;
 
@@ -60,6 +62,9 @@ public class UDPComm : MonoBehaviour
         udp_packet.AngleValue = 0.0f;
         udp_packet.AngularValue = 0.0f;
 
+        rend = GetComponent<Renderer>(); 
+        rend.material.SetColor("_Color", new Color(0, 1, .2f)); // start green 
+
     }
 
     // Update is called once per frame
@@ -79,16 +84,16 @@ public class UDPComm : MonoBehaviour
         // Send
         udp.Send(udp_bytes, udp_bytes.Length);
 
-        Debugger_text.SetText("Average EMG:");
+        Debugger_text.SetText("Normalised EMG:");
         IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 0);
         byte[] data = client.Receive(ref anyIP);
         string text = Encoding.UTF8.GetString(data);
-        EMG_Value.SetText(text);
+        float EMG = float.Parse(text);
+        EMG -= 300;
+        EMG *= 0.003f;
+        EMG_Value.SetText(EMG.ToString());
 
-        //ReceiveData();
-
-        //}
-        //time_check = curr_time;
+        rend.material.SetColor("_Color", new Color(EMG, 1-EMG, 0)); 
 
     }
 
@@ -115,37 +120,6 @@ public class UDPComm : MonoBehaviour
         Marshal.Copy(ptr, arr, 0, size);
         Marshal.FreeHGlobal(ptr);
         return arr;
-    }
-
-    private void ReceiveData()
-    {
-        //while (true)
-        //{
-        try
-        {
-            Debugger_text.SetText("Entered");
-            IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 0);
-            byte[] data = udp.Receive(ref anyIP);
-            string text = Encoding.UTF8.GetString(data);
-            EMG = Int32.Parse(text);
-            EMG_Value.SetText(">> " + EMG.ToString());
-            ProcessInput(text);
-        }
-        catch (Exception err)
-        {
-            Debugger_text.SetText(err.ToString());
-        }
-        //}
-    }
-
-    private void ProcessInput(string input)
-    {
-        // PROCESS INPUT RECEIVED STRING HERE
-
-        if (!isTxStarted) // First data arrived so tx started
-        {
-            isTxStarted = true;
-        }
     }
 
     //Prevent crashes - close clients and threads properly!

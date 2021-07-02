@@ -20,6 +20,8 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 
+## Script has been altered to also send UDP packets of EMG data to the Hololens app.
+import socket
 from matplotlib import pyplot as plt
 from collections import deque
 from threading import Lock, Thread
@@ -57,6 +59,7 @@ class Plot(object):
   def __init__(self, listener):
     self.n = listener.n
     self.listener = listener
+    self.emg_data_packet = []
     self.fig = plt.figure(2)
     self.axes = [self.fig.add_subplot('81' + str(i)) for i in range(1, 9)]
     [(ax.set_ylim([-100, 100])) for ax in self.axes]
@@ -73,10 +76,27 @@ class Plot(object):
       g.set_ydata(data)
     plt.draw()
 
+  def update_packet(self):
+    emg_data = self.listener.get_emg_data()
+    emg_data = np.array([x[1] for x in emg_data]).T
+    emg_data = abs(emg_data)
+    if len(emg_data) == 8:
+        return (emg_data.sum(axis=0)).sum(axis=0)
+  
+
   def main(self):
+    sock = socket.socket(socket.AF_INET, # Internet
+                                socket.SOCK_DGRAM) # UDP
+    counter = 0
     while True:
       self.update_plot()
       plt.pause(1.0 / 30)
+      emg_data = self.update_packet()
+      counter +=1
+      if ((counter % 5000) == 0) & (emg_data is not None):
+          print(emg_data)
+          emg_data = str(emg_data)
+          sock.sendto(emg_data.encode('utf-8'), ("192.168.1.139", 9050)) 
 
 
 def main():

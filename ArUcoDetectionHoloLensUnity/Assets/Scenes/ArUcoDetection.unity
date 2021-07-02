@@ -1343,7 +1343,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1065079073
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1643,13 +1643,14 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1142071464}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b6e17552686a8f2488e34e5f816037e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   isTxStarted: 0
   EMG: 0
+  value: {fileID: 0}
   EMG_Value: {fileID: 1443785068}
   Debugger_text: {fileID: 1162517822}
 --- !u!1 &1162517819
@@ -2780,11 +2781,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1981997717}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8dcf6d1a557c4ec41a714a0cf5fe3c65, type: 3}
+  m_Script: {fileID: 11500000, guid: b6e17552686a8f2488e34e5f816037e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  val: {fileID: 1065079075}
-  EMG_interface: {fileID: 1142071464}
+  isTxStarted: 0
+  EMG: 0
+  value: {fileID: 1065079075}
+  EMG_Value: {fileID: 1443785068}
+  Debugger_text: {fileID: 1162517822}
 --- !u!135 &1981997720
 SphereCollider:
   m_ObjectHideFlags: 0

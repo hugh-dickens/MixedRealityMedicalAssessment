@@ -1,4 +1,4 @@
-﻿using System.Collections;
+﻿/*using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -9,6 +9,8 @@ public class ChangeColour : MonoBehaviour
     public TextMeshPro val;
     public GameObject EMG_interface;
     private UDPComm udp_script;
+    public int EMG_colour;
+
     private void Start()
     {
         udp_script = EMG_interface.GetComponent<UDPComm>();
@@ -17,14 +19,13 @@ public class ChangeColour : MonoBehaviour
     }
     private void Update()
     {
-        
-        //float EMG_Colour = udp_script.EMG;
-        val.SetText(udp_script.EMG.ToString());
+        float EMG_Colour = udp_script.EMG;
+        val.SetText(EMG_Colour.ToString());
         
         // new Color(redFloat, greenFloat, blueFloat)
         // will customise this to reflect EMG high as red, low as green
         // e.g. (redFloat * EMG, 1+(-greenFloat)*EMG, blueFloat)
-        //rend.material.SetColor("_Color", new Color( EMG_Colour, 1 - EMG_Colour, 0.2f));
+        rend.material.SetColor("_Color", new Color( EMG_Colour, 1 - EMG_Colour, 0.2f));
         
     }
-}
+}*/
