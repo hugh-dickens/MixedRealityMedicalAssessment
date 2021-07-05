@@ -58,7 +58,7 @@ namespace ArUcoDetectionHoloLensUnity
 
         // used for UDP comms to send data back from hololens to PC.
         public GameObject udp_link;
-        private UDPComm udp;
+        private WorkingUDPComm udp;
 
         /// <summary>
         /// Game object to use for marker instantiation. These game objects are the cubes associated with the respective arUco codes.
@@ -139,7 +139,7 @@ namespace ArUcoDetectionHoloLensUnity
             // HoloLens media frame source groups.
             StartCoroutine(DelayCoroutine());
 
-            udp = udp_link.GetComponent<UDPComm>();
+            udp = udp_link.GetComponent<WorkingUDPComm>();
 
             markerWrist.transform.localScale = new Vector3(markerSize, markerSize, markerSize);
             markerElbow.transform.localScale = new Vector3(markerSize, markerSize, markerSize);
@@ -430,7 +430,7 @@ namespace ArUcoDetectionHoloLensUnity
 
                         // Added this in to print the position instead of the ID
                         //MarkerTextWrist.SetText(markerWrist.transform.position.ToString());
-                        MarkerTextWrist.SetText("wrist");
+                        MarkerTextWrist.SetText("Wrist");
 
                     }
                     else if (index.Id == MarkerIDElbow)
@@ -531,8 +531,8 @@ namespace ArUcoDetectionHoloLensUnity
                 //AngularVelocityText.SetText("Angular Velocity: {0}", angularInt);
                 AngularVelocityText.SetText("Angular Velocity: {0}", angularInt);
 
-                udp_link.GetComponent<UDPComm>().SetAngleValue(Angle);
-                udp_link.GetComponent<UDPComm>().SetAngularValue(AngularVelocity);
+                udp_link.GetComponent<WorkingUDPComm>().SetAngleValue(Angle);
+                udp_link.GetComponent<WorkingUDPComm>().SetAngularValue(AngularVelocity);
 
                 // Store the angle from previous iteration into a temporary variable.
                 AngleTemp = Angle;

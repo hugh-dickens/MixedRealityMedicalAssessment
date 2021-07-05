@@ -3,3 +3,8 @@ In order to run both the angle_live_plots.py and EMG_live_plots.py files:
 	- move to the correct directory
 	- in powershell 1 perform command py .\angle_live_plot.py 
 	- in powershell 2 perform command py .\EMG_live_plots.py
+To run with the Hololens applications:
+	1) Run .py files
+	2) Then run the app (.sln)
+	3) Close angle_live_plots.py 
+	4) Close EMG_live_plots.py

@@ -27,21 +27,21 @@ class AngleCollector():
 
 
   def get_angle_data(self):
-    # data, addr = self.sock.recvfrom(1024)  # buffr size is 1024 bytes
+    data, addr = self.sock.recvfrom(1024)  # buffr size is 1024 bytes
     # Unpacks two floats from data : angle and angular velocity / append to lists
-    # unpack = struct.unpack('ff', data)
-    # self.angle.append(unpack[0])
-    # self.angularVel.append(unpack[1])
-    # self.ys1.append(unpack[0])
-    # self.ys2.append(unpack[1])
+    unpack = struct.unpack('ff', data)
+    self.angle.append(unpack[0])
+    self.angularVel.append(unpack[1])
+    self.ys1.append(unpack[0])
+    self.ys2.append(unpack[1])
 
 # FOR CHECKING WITHOUT THE HOLOLENS 
-    self.x +=0.01
-    self.y +=0.01
-    self.angle.append(self.x)
-    self.angularVel.append(self.y)
-    self.ys1.append(self.x)
-    self.ys2.append(self.y)
+    # self.x +=0.01
+    # self.y +=0.01
+    # self.angle.append(self.x)
+    # self.angularVel.append(self.y)
+    # self.ys1.append(self.x)
+    # self.ys2.append(self.y)
     
     self.ys1 = self.ys1[-self.x_len:]
     self.ys2 = self.ys2[-self.x_len:]

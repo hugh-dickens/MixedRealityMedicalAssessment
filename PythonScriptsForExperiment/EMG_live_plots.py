@@ -59,7 +59,7 @@ class Plot(object):
   def __init__(self, listener):
     self.n = listener.n
     self.listener = listener
-    self.emg_data_packet = []
+    self.emg_data_total = []
     self.fig = plt.figure(2)
     self.axes = [self.fig.add_subplot('81' + str(i)) for i in range(1, 9)]
     [(ax.set_ylim([-100, 100])) for ax in self.axes]
@@ -69,8 +69,9 @@ class Plot(object):
   def update_plot_packet(self, sock):
     emg_data = self.listener.get_emg_data()
     emg_data = np.array([x[1] for x in emg_data]).T
+    self.emg_data_total.append(emg_data)
     ABS_emg_data = abs(emg_data)
-    ABS_emg_data = (ABS_emg_data.sum(axis=0)).sum(axis=0) / 16
+    ABS_emg_data = (ABS_emg_data.sum(axis=0)).sum(axis=0) / 45
     print(ABS_emg_data)
     EMG_SEND = str(ABS_emg_data)
     sock.sendto(EMG_SEND.encode('utf-8'), ("192.168.1.139", 9050)) 
@@ -80,6 +81,17 @@ class Plot(object):
         data = np.concatenate([np.zeros(self.n - len(data)), data])
       g.set_ydata(data)
     plt.draw()
+
+  def get_final_data_EMG(self):
+    return self.emg_data_total
+
+  def save_and_quit_EMG(self):
+    EMG_data_final = self.get_final_data_EMG()
+    ## Write to txt file
+    f = open("EMGData.txt", "w")
+    f.write(str(EMG_data_final))
+    f.write(",")
+    f.close()
   
 
   def main(self):
@@ -88,6 +100,7 @@ class Plot(object):
     while True:
       self.update_plot_packet(sock)
       plt.pause(1.0 / 30)
+      self.save_and_quit_EMG()
 
 def main():
   ### enter the path to your own MyoSDK package and .dll file here. Download 

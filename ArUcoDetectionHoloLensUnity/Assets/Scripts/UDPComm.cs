@@ -1,4 +1,4 @@
-﻿using Microsoft.MixedReality.Toolkit;
+﻿/*using Microsoft.MixedReality.Toolkit;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -31,8 +31,8 @@ public class UDPComm : MonoBehaviour
 
     Thread receiveThread; // Receiving Thread
     public float EMG;
-    Renderer rend; // DELETE
-    public TextMeshPro value; // DELETE
+    Renderer rend; 
+    public TextMeshPro value; 
     public TextMeshPro EMG_Value;
     public TextMeshPro Debugger_text;
 
@@ -131,4 +131,4 @@ public class UDPComm : MonoBehaviour
         client.Close();
     }
 
-}
+}*/

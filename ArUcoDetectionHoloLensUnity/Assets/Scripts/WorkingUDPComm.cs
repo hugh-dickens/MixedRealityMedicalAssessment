@@ -1,4 +1,4 @@
-﻿/*using Microsoft.MixedReality.Toolkit;
+﻿using Microsoft.MixedReality.Toolkit;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -7,8 +7,9 @@ using UnityEngine;
 using System.Collections;
 using System;
 using System.Runtime.InteropServices;
+using TMPro;
 
-public class UDPComm : MonoBehaviour
+public class WorkingUDPComm : MonoBehaviour
 {
     // Define the UDP packet structure
     private struct PacketOperator_t
@@ -19,11 +20,18 @@ public class UDPComm : MonoBehaviour
 
     //private IPEndPoint udp_send;
     private UdpClient udp;
+    private UdpClient client;
     private string dst_ip;
     private byte[] udp_data;
     private DateTime time_check;
     private PacketOperator_t udp_packet;
     private BinaryFormatter msgFormatter;
+
+    public float EMG;
+    public TextMeshPro EMG_Value;
+    public TextMeshPro Debugger_text;
+
+    Renderer rend;
 
     // Start() is called before the first frame update
     void Start()
@@ -41,13 +49,20 @@ public class UDPComm : MonoBehaviour
         // Port that the UDP link will try communicate with on your PC
         // You may need to adjust your firewall to allow traffic on this port.
         int client_port = 9995;
+        int rxPort = 9050;
 
         udp = new UdpClient(dst_ip, client_port);
+        client = new UdpClient(rxPort);
 
         // Initialise the UDP packet
         udp_packet = new PacketOperator_t();
         udp_packet.AngleValue = 0.0f;
         udp_packet.AngularValue = 0.0f;
+
+        Debugger_text.SetText("Normalised EMG:");
+
+        rend = GetComponent<Renderer>();
+        rend.material.SetColor("_Color", new Color(0, 1, .2f)); // start green 
 
     }
 
@@ -68,8 +83,20 @@ public class UDPComm : MonoBehaviour
         // Send
         udp.Send(udp_bytes, udp_bytes.Length);
 
+        
+        IPEndPoint anyIP = new IPEndPoint(IPAddress.Any, 0);
+        byte[] data = client.Receive(ref anyIP);
+        string text = Encoding.UTF8.GetString(data);
+        
+        float EMG = float.Parse(text);
+        EMG -= 300;
+        EMG *= 0.003f;
+        EMG_Value.SetText(EMG.ToString());
+        // EMG_Value.SetText(text);
+
         //}
         //time_check = curr_time;
+        rend.material.SetColor("_Color", new Color(EMG, 1 - EMG, 0));
 
     }
 
@@ -98,4 +125,4 @@ public class UDPComm : MonoBehaviour
         return arr;
     }
 
-}*/
+}
