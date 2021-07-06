@@ -50,6 +50,21 @@ namespace HoloLensForCV
 			cv::Ptr<cv::aruco::Dictionary> dictionary =
 				cv::aruco::getPredefinedDictionary(_dictId);
 
+			/*cv::aruco::Dictionary dictionary;
+			// markers of 6x6 bits
+			dictionary.markerSize = 6;
+			// maximum number of bit corrections
+			dictionary.maxCorrectionBits = 3;
+			// lets create a dictionary of 100 markers
+			for(int i=16; i<19; i++)
+			{
+				// assume generateMarkerBits() generates a new marker in binary format, so that
+				// markerBits is a 6x6 matrix of CV_8UC1 type, only containing 0s and 1s
+				cv::Mat markerBits = generateMarkerBits();
+				cv::Mat markerCompressed = cv::aruco::Dictionary::getByteListFromBits(markerBits);
+				// add the marker as a new row
+				dictionary.bytesList.push_back(markerCompressed);
+			}*/
 			// Create detector parameters
 			cv::Ptr<cv::aruco::DetectorParameters> detectorParams
 				= cv::aruco::DetectorParameters::create();

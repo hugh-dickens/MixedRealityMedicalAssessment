@@ -92,6 +92,9 @@ namespace ArUcoDetectionHoloLensUnity
         public TextMeshPro MarkerTextShoulder;
         public TextMeshPro AngleText;
         public TextMeshPro AngularVelocityText;
+        public TextMeshPro time1;
+        public TextMeshPro time2;
+        public TextMeshPro time3;
 
 
 #if ENABLE_WINMD_SUPPORT
@@ -175,10 +178,26 @@ namespace ArUcoDetectionHoloLensUnity
                 // variables without giving them explicit types.
                 // wait until the task is completed => task being completed - using the type of sensor stream detect
                 // the markers with openCV
+                // Create new stopwatch. This is used for angular velocity from angle.
+                /*Stopwatch stopwatch3 = new Stopwatch();
+                // Begin timing.
+                stopwatch3.Start();*/
+                
                 var detections = await Task.Run(() => _pvMediaFrameSourceGroup.DetectArUcoMarkers(_sensorType));
-
+                /*stopwatch3.Stop();
+                TimeSpan stopwatchElapsed3 = stopwatch3.Elapsed;
+                float deltaT3 = Convert.ToSingle(stopwatchElapsed3.TotalMilliseconds);
+                time1.SetText("Time for Task.Run(): {0}", deltaT3);
+                // Create new stopwatch. This is used for angular velocity from angle.
+                Stopwatch stopwatch4 = new Stopwatch();
+                // Begin timing.
+                stopwatch4.Start();*/
                 // Update the game object pose with current detections - this will have to be 3 seperate game objects/ their poses.
                 UpdateArUcoDetections(detections);
+                /*stopwatch4.Stop();
+                TimeSpan stopwatchElapsed4 = stopwatch4.Elapsed;
+                float deltaT4 = Convert.ToSingle(stopwatchElapsed4.TotalMilliseconds);
+                time2.SetText("Time updateAruco: {0}", deltaT4);*/
 
                 _frameCount = 0;
             }
@@ -308,6 +327,7 @@ namespace ArUcoDetectionHoloLensUnity
                     }
                 }
 
+
                 // This code will randomly assign the detected markers to IDs and then store them as that. It will not automatically associate
                 // an ID with a joint, hence it was removed.
                 /*foreach (var detectedMarker in detections)
@@ -408,7 +428,11 @@ namespace ArUcoDetectionHoloLensUnity
                 //else
                 //{
 
-
+                // Create new stopwatch. This is used for angular velocity from angle.
+                //Stopwatch stopwatch5 = new Stopwatch();
+                // Begin timing.
+                //stopwatch5.Start();
+                
                 foreach (var index in detections)
                 {
                     // if statements used to match each ID to the respective joints (codes).
@@ -430,7 +454,7 @@ namespace ArUcoDetectionHoloLensUnity
 
                         // Added this in to print the position instead of the ID
                         //MarkerTextWrist.SetText(markerWrist.transform.position.ToString());
-                        MarkerTextWrist.SetText("Wrist");
+                        //MarkerTextWrist.SetText("Wrist");
 
                     }
                     else if (index.Id == MarkerIDElbow)
@@ -451,7 +475,7 @@ namespace ArUcoDetectionHoloLensUnity
 
                         // Added this in to print the position instead of the ID
                         //MarkerTextWrist.SetText(markerWrist.transform.position.ToString());
-                        MarkerTextElbow.SetText("Elbow");
+                       // MarkerTextElbow.SetText("Elbow");
                     }
                     // this will detect any remaining code in the field of view - if this is a problem then change to else if.
                     else
@@ -472,12 +496,17 @@ namespace ArUcoDetectionHoloLensUnity
 
                         // Added this in to print the position instead of the ID
                         //MarkerTextWrist.SetText(markerWrist.transform.position.ToString());
-                        MarkerTextShoulder.SetText("Shoulder");
+                        // MarkerTextShoulder.SetText("Shoulder");
                     }
                         
                 }
+
+                //stopwatch5.Stop();
+                //TimeSpan stopwatchElapsed5 = stopwatch5.Elapsed;
+                //float deltaT5 = Convert.ToSingle(stopwatchElapsed5.TotalMilliseconds);
+                //time3.SetText("for each loop: {0}", deltaT5);
                 //} ----- ELSE statement removal
-           
+
                 // This turns the coordinates into vectors
                 Vector3 vec1 = markerWrist.transform.position - markerElbow.transform.position;
                 Vector3 vec2 = markerShoulder.transform.position - markerElbow.transform.position;               
@@ -513,6 +542,7 @@ namespace ArUcoDetectionHoloLensUnity
                 float AngleDiff = Angle - AngleTemp;
                 if (AngleDiff <-3 || AngleDiff>3)
                     // Stop timing and then calculate the angular velocity.
+
                     stopwatch.Stop();
                     TimeSpan stopwatchElapsed1 = stopwatch.Elapsed;
                     float deltaT = Convert.ToSingle(stopwatchElapsed1.TotalMilliseconds);

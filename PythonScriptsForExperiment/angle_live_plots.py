@@ -1,6 +1,7 @@
 from matplotlib import pyplot as plt
 import socket
 import struct
+import csv
 import matplotlib.animation as animation
 
 
@@ -119,6 +120,10 @@ class plotting(AngleCollector):
 
   def save_and_quit(self):
     angle, angularVel = self.AngleCollector.get_final_data()
+    #with open('AngleData.csv', mode='w') as EMG_file:
+    #   Angle_writer = csv.writer(Angle_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+    #   Angle_writer.writerow(angle, angularVel)
     ## Write to txt file
     f = open("TrialData.txt", "w")
     

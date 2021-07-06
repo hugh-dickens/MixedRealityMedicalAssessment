@@ -91,7 +91,7 @@ public class WorkingUDPComm : MonoBehaviour
         float EMG = float.Parse(text);
         EMG -= 300;
         EMG *= 0.003f;
-        EMG_Value.SetText(EMG.ToString());
+        EMG_Value.SetText("EMG: {0}", EMG);
         // EMG_Value.SetText(text);
 
         //}

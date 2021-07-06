@@ -25,6 +25,7 @@ import socket
 from matplotlib import pyplot as plt
 from collections import deque
 from threading import Lock, Thread
+import csv
 
 import myo
 import numpy as np
@@ -72,7 +73,7 @@ class Plot(object):
     self.emg_data_total.append(emg_data)
     ABS_emg_data = abs(emg_data)
     ABS_emg_data = (ABS_emg_data.sum(axis=0)).sum(axis=0) / 45
-    print(ABS_emg_data)
+    # print(ABS_emg_data)
     EMG_SEND = str(ABS_emg_data)
     sock.sendto(EMG_SEND.encode('utf-8'), ("192.168.1.139", 9050)) 
     for g, data in zip(self.graphs, emg_data):
@@ -87,6 +88,11 @@ class Plot(object):
 
   def save_and_quit_EMG(self):
     EMG_data_final = self.get_final_data_EMG()
+
+    # with open('EMGData.csv', mode='w') as EMG_file:
+    #   EMG_writer = csv.writer(EMG_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+
+    #   EMG_writer.writerow(x for x in EMG_data_final)
     ## Write to txt file
     f = open("EMGData.txt", "w")
     f.write(str(EMG_data_final))

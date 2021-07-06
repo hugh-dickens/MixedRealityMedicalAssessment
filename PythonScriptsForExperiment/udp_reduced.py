@@ -14,7 +14,6 @@ if __name__ == '__main__':
 
         data, addr = sock.recvfrom(1024)  # buffr size is 1024 bytes
         # Unpacks two floats from data : angle and angular velocity
-        unpack = struct.unpack('ff', data)
-        print(unpack)
+        print(data)
         sock.sendto(bytes("Hello Holo!",'utf-8'), ("192.168.1.139", 9050))
         
