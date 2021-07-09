@@ -12,8 +12,9 @@ if __name__ == '__main__':
 
     while True:
 
-        data, addr = sock.recvfrom(1024)  # buffr size is 1024 bytes
+        # data, addr = sock.recvfrom(1024)  # buffr size is 1024 bytes
         # Unpacks two floats from data : angle and angular velocity
-        print(data)
-        sock.sendto(bytes("Hello Holo!",'utf-8'), ("192.168.1.139", 9050))
+        # print(data)
+        # sock.sendto(bytes("Hello Holo!",'utf-8'), ("192.168.1.139", 9050))
+        sock.sendto(bytes("-1.5",'utf-8'), ("127.0.0.1", 9050))
         

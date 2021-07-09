@@ -184,6 +184,7 @@ namespace ArUcoDetectionHoloLensUnity
                 stopwatch3.Start();*/
                 
                 var detections = await Task.Run(() => _pvMediaFrameSourceGroup.DetectArUcoMarkers(_sensorType));
+                
                 /*stopwatch3.Stop();
                 TimeSpan stopwatchElapsed3 = stopwatch3.Elapsed;
                 float deltaT3 = Convert.ToSingle(stopwatchElapsed3.TotalMilliseconds);
