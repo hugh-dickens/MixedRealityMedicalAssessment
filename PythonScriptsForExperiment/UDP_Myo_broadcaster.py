@@ -6,6 +6,7 @@ from threading import Lock, Thread
 
 import myo
 import numpy as np
+import csv
 
 class EmgCollector(myo.DeviceListener):
   """
@@ -35,32 +36,48 @@ class packet(object):
     self.n = listener.n
     self.listener = listener
     self.emg_data_packet = []
+    self.emg_total = []
 
   def update_packet(self):
     emg_data = self.listener.get_emg_data()
     emg_data = np.array([x[1] for x in emg_data]).T
     emg_data = abs(emg_data)
     if len(emg_data) == 8:
-        return (emg_data.sum(axis=0)).sum(axis=0)
-    # for data in emg_data:
-    #   if len(data) > self.n:
+      self.emg_total.append(emg_data)
+      return (emg_data.sum(axis=0)).sum(axis=0)
 
-    #     # Fill the left side with zeroes.
-    #     self.emg_data_packet.append(data)
+  def save_and_quit_EMG(self):
+
+    # field names 
+    fields = ['EMG 1', 'EMG 2', 'EMG 3', 'EMG 4', 'EMG 5', 'EMG 6', 'EMG 7', 'EMG 8'] 
+    
+    # data rows of csv file 
+    rows = self.emg_total
+      
+    with open('EMGData.csv', 'w') as f:
+        # using csv.writer method from CSV package
+        write = csv.writer(f)
+        write.writerow(fields)
+        write.writerows(rows)
+
 
   def main(self):
-    sock = socket.socket(socket.AF_INET, # Internet
-                                socket.SOCK_DGRAM) # UDP
-    counter = 0
-    while True:
-      emg_data = self.update_packet()
-      counter +=1
-      if ((counter % 5000) == 0) & (emg_data is not None):
-          print(emg_data)
-          emg_data = str(emg_data)
-          sock.sendto(emg_data.encode('utf-8'), ("192.168.1.139", 9050))   
-          # REmember this should be the holo ip
-          # Same port as we specified in UDPComm.cs 
+    try:
+      sock = socket.socket(socket.AF_INET, # Internet
+                                  socket.SOCK_DGRAM) # UDP
+      counter = 0
+      while True:
+        emg_data = self.update_packet()
+        counter +=1
+        if ((counter % 5000) == 0) & (emg_data is not None):
+            print(emg_data)
+            emg_data = str(emg_data)
+            sock.sendto(emg_data.encode('utf-8'), ("192.168.1.139", 9050))   
+            # print(self.emg_total)       
+            # REmember this should be the holo ip
+            # Same port as we specified in UDPComm.cs 
+    except KeyboardInterrupt:
+      self.save_and_quit_EMG()  
 
 def main():
   ### enter the path to your own MyoSDK package and .dll file here. Download 
