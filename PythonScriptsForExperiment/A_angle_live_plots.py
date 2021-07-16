@@ -3,6 +3,7 @@ import socket
 import struct
 import csv
 import matplotlib.animation as animation
+from datetime import datetime
 
 
 class AngleCollector():
@@ -25,6 +26,7 @@ class AngleCollector():
     self.ys2 = [0]*self.x_len
     self.x = 0
     self.y = 0
+    self.date_time_list =[]
 
 
   def get_angle_data(self):
@@ -35,6 +37,9 @@ class AngleCollector():
     self.angularVel.append(unpack[1])
     self.ys1.append(unpack[0])
     self.ys2.append(unpack[1])
+    datetime_object_angle = str(datetime.now())
+    dt_object2 = datetime_object_angle[11:]
+    self.date_time_list.append(dt_object2)
 
 # FOR CHECKING WITHOUT THE HOLOLENS 
     # self.x +=0.01
@@ -50,7 +55,7 @@ class AngleCollector():
     return self.ys1, self.ys2 
 
   def get_final_data(self):
-    return self.angle, self.angularVel
+    return self.date_time_list,self.angle, self.angularVel
 
 class plotting(AngleCollector):
 
@@ -93,7 +98,7 @@ class plotting(AngleCollector):
   def plot_final(self):
       ### On shutting the live plots, it enters here which displays plots for the whole trial
       # and then saves the data to a .txt file.
-    angle, angularVel = self.AngleCollector.get_final_data()
+    date_time, angle, angularVel = self.AngleCollector.get_final_data()
     fig = plt.figure(1)
     ax = fig.add_subplot(1, 2, 1)
     plt.ylim([0,180])
@@ -119,19 +124,35 @@ class plotting(AngleCollector):
     plt.show()
 
   def save_and_quit(self):
-    angle, angularVel = self.AngleCollector.get_final_data()
+    
+    date_time, angle, angularVel = self.AngleCollector.get_final_data()
     #with open('AngleData.csv', mode='w') as EMG_file:
     #   Angle_writer = csv.writer(Angle_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
     #   Angle_writer.writerow(angle, angularVel)
     ## Write to txt file
-    f = open("TrialData.txt", "w")
+    # f = open("TrialData.txt", "w")
     
-    f.write(str(angle))
-    f.write(",")
-    f.write(str(angularVel))
-    f.write(",")
-    f.close()
+    # f.write(str(angle))
+    # f.write(",")
+    # f.write(str(angularVel))
+    # f.write(",")
+    # f.close()
+
+    # field names 
+    fields = ['Timestamp','Angle', 'Angular Velocity'] 
+    rows = zip(date_time, angle, angularVel)
+    
+      
+    with open('AngleData.csv', 'w') as f:
+        # using csv.writer method from CSV package
+        writer = csv.writer(f)
+        writer.writerow(fields)
+        # for word in yourList:
+        #   wr.writerow([word])
+        for row in rows:
+          writer.writerow(row)
+
 
   def main(self):
     ani = animation.FuncAnimation(self.fig,
