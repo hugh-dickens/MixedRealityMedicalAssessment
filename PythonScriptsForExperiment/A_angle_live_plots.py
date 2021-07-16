@@ -27,6 +27,7 @@ class AngleCollector():
     self.x = 0
     self.y = 0
     self.date_time_list =[]
+    self.milliseconds = []
 
 
   def get_angle_data(self):
@@ -39,7 +40,9 @@ class AngleCollector():
     self.ys2.append(unpack[1])
     datetime_object_angle = str(datetime.now())
     dt_object2 = datetime_object_angle[11:]
+    dt_object3 = datetime_object_angle[20:]
     self.date_time_list.append(dt_object2)
+    self.milliseconds.append(dt_object3)
 
 # FOR CHECKING WITHOUT THE HOLOLENS 
     # self.x +=0.01
@@ -55,7 +58,7 @@ class AngleCollector():
     return self.ys1, self.ys2 
 
   def get_final_data(self):
-    return self.date_time_list,self.angle, self.angularVel
+    return self.date_time_list, self.milliseconds,  self.angle, self.angularVel
 
 class plotting(AngleCollector):
 
@@ -98,7 +101,7 @@ class plotting(AngleCollector):
   def plot_final(self):
       ### On shutting the live plots, it enters here which displays plots for the whole trial
       # and then saves the data to a .txt file.
-    date_time, angle, angularVel = self.AngleCollector.get_final_data()
+    date_time, milliseconds, angle, angularVel = self.AngleCollector.get_final_data()
     fig = plt.figure(1)
     ax = fig.add_subplot(1, 2, 1)
     plt.ylim([0,180])
@@ -125,7 +128,7 @@ class plotting(AngleCollector):
 
   def save_and_quit(self):
     
-    date_time, angle, angularVel = self.AngleCollector.get_final_data()
+    date_time, milliseconds, angle, angularVel = self.AngleCollector.get_final_data()
     #with open('AngleData.csv', mode='w') as EMG_file:
     #   Angle_writer = csv.writer(Angle_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
@@ -140,13 +143,14 @@ class plotting(AngleCollector):
     # f.close()
 
     # field names 
-    fields = ['Timestamp','Angle', 'Angular Velocity'] 
-    rows = zip(date_time, angle, angularVel)
+    fields = ['Timestamp','Milliseconds' , 'Angle', 'Angular Velocity'] 
+    rows = zip(date_time, milliseconds ,angle, angularVel)
+    
     
       
     with open('AngleData.csv', 'w') as f:
         # using csv.writer method from CSV package
-        writer = csv.writer(f)
+        writer = csv.writer(f,delimiter=',')
         writer.writerow(fields)
         # for word in yourList:
         #   wr.writerow([word])

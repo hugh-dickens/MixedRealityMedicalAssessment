@@ -9,6 +9,7 @@ import myo
 import numpy as np
 import csv
 
+
 class EmgCollector(myo.DeviceListener):
   """
   Collects EMG data in a queue with *n* maximum number of elements.
@@ -43,18 +44,23 @@ class packet(object):
     emg_data = self.listener.get_emg_data()
     emg_data = np.array([x[1] for x in emg_data]).T
     emg_data = abs(emg_data)
+    temp_list = []
     if len(emg_data) == 8:
       datetime_object = str(datetime.now())
       dt_object1 = datetime_object[11:]
-      self.emg_total.append(dt_object1)
-      self.emg_total.append(emg_data)
+      dt_object_ms = datetime_object[20:]
+      emg_ave = [sum(i) for i in emg_data]
+      temp_list.append(dt_object1)
+      temp_list.append(dt_object_ms)
+      temp_list.extend(emg_ave)
+      self.emg_total.append(temp_list)
       # print(self.emg_total)
       return (emg_data.sum(axis=0)).sum(axis=0)
 
   def save_and_quit_EMG(self):
 
     # field names 
-    fields = ['Timestamp','EMG 1', 'EMG 2', 'EMG 3', 'EMG 4', 'EMG 5', 'EMG 6', 'EMG 7', 'EMG 8'] 
+    fields = ['Timestamp', 'Milliseconds','EMG 1', 'EMG 2', 'EMG 3', 'EMG 4', 'EMG 5', 'EMG 6', 'EMG 7', 'EMG 8'] 
     
     # data rows of csv file 
     rows = self.emg_total
