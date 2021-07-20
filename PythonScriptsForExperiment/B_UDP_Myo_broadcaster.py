@@ -65,11 +65,18 @@ class packet(object):
     # data rows of csv file 
     rows = self.emg_total
       
-    with open('EMGData.csv', 'w') as f:
+    with open('temp.csv', 'w') as f:
         # using csv.writer method from CSV package
         write = csv.writer(f)
         write.writerow(fields)
         write.writerows(rows)
+    ## remove duplicate data:
+    from more_itertools import unique_everseen
+    with open('temp.csv','r') as f, open('EMGData.csv','w') as out_file:
+      out_file.writelines(unique_everseen(f))
+    # delete the temp file
+    import os
+    os.remove('temp.csv')
 
 
   def main(self):
