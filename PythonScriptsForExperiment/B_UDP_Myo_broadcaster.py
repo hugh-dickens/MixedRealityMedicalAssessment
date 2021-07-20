@@ -81,6 +81,7 @@ class packet(object):
         emg_data = self.update_packet()
         counter +=1
         if ((counter % 5000) == 0) & (emg_data is not None):
+          ### Could try just saving the data here
             print(emg_data)
             emg_data = str(emg_data)
             sock.sendto(emg_data.encode('utf-8'), ("192.168.1.139", 9050))   
@@ -96,7 +97,7 @@ def main():
   # /bin folder if required.
   myo.init(sdk_path="C:\\Users\\dicke\\packages\\MyoSDK.2.1.0")
   hub = myo.Hub()
-  listener = EmgCollector(10)
+  listener = EmgCollector(10)   # TRY changing this to different values - see what happens
   with hub.run_in_background(listener.on_event):
     packet(listener).main()
 

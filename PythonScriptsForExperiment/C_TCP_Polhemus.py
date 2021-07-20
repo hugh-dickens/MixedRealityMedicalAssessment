@@ -24,7 +24,7 @@ class PolhemusAngleCollector():
     self.counter  = 0 
 
   def get_angle(self):
-    # while True:
+    # need a way of fixing which sensor is which joint, at the moment it is just random
 
         output_sensor1 = []
         output_sensor2 = []
