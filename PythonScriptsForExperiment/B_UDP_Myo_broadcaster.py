@@ -8,6 +8,8 @@ from datetime import datetime
 import myo
 import numpy as np
 import csv
+import tkinter as tk 
+import tkinter.font as tkFont
 
 
 class EmgCollector(myo.DeviceListener):
@@ -57,7 +59,7 @@ class packet(object):
       # print(self.emg_total)
       return (emg_data.sum(axis=0)).sum(axis=0)
 
-  def save_and_quit_EMG(self):
+  def save_and_quit_EMG(self, Participant_ID):
 
     # field names 
     fields = ['Timestamp', 'Milliseconds','EMG 1', 'EMG 2', 'EMG 3', 'EMG 4', 'EMG 5', 'EMG 6', 'EMG 7', 'EMG 8'] 
@@ -72,14 +74,16 @@ class packet(object):
         write.writerows(rows)
     ## remove duplicate data:
     from more_itertools import unique_everseen
-    with open('temp.csv','r') as f, open('EMGData.csv','w') as out_file:
+    ID = str(Participant_ID)
+    filename_EMG = "EMGData_%s.csv" % ID
+    with open('temp.csv','r') as f, open(filename_EMG,'w') as out_file:
       out_file.writelines(unique_everseen(f))
     # delete the temp file
     import os
     os.remove('temp.csv')
 
 
-  def main(self):
+  def main(self, Participant_ID):
     try:
       sock = socket.socket(socket.AF_INET, # Internet
                                   socket.SOCK_DGRAM) # UDP
@@ -96,9 +100,9 @@ class packet(object):
             # REmember this should be the holo ip
             # Same port as we specified in UDPComm.cs 
     except KeyboardInterrupt:
-      self.save_and_quit_EMG()  
+      self.save_and_quit_EMG(Participant_ID)  
 
-def main():
+def main(Participant_ID):
   ### enter the path to your own MyoSDK package and .dll file here. Download 
   # with Nuget @ https://www.nuget.org/packages/MyoSDK/2.1.0 and insert .dll file within
   # /bin folder if required.
@@ -106,11 +110,45 @@ def main():
   hub = myo.Hub()
   listener = EmgCollector(10)   # TRY changing this to different values - see what happens
   with hub.run_in_background(listener.on_event):
-    packet(listener).main()
+    packet(listener).main(Participant_ID)
 
 
 if __name__ == '__main__':
-    data = main()
+  Participant_ID = 0
+  window = tk.Tk() 
+
+  fontStyle_title = tkFont.Font(family="Lucida Grande", size=20)
+  fontStyle_ID = tkFont.Font(family="Lucida Grande", size=10)
+
+  lbl_title = tk.Label(window, text="Welcome to the experiment for EMG broadcasting!", font=fontStyle_title)
+  lbl_title.pack()
+
+
+  def on_change(e):
+    Participant_ID = e.widget.get()
+    print(e.widget.get())
+
+  lbl_ID = tk.Label(window, text = "Participant ID:", font = fontStyle_ID )
+  lbl_ID.pack()
+  entry_ID = tk.Entry(window)
+  entry_ID.pack()    
+  # Calling on_change when you press the return key
+  entry_ID.bind("<Return>", on_change)  
+
+  def runFunction():
+    main(Participant_ID)
+      
+  btn_startRecording = tk.Button(
+      text="Click me to start recording!",
+      width=25,
+      height=5,
+      bg="blue",
+      fg="yellow",
+      command = runFunction,
+  )
+  btn_startRecording.pack()
+
+  window.mainloop()
     
 
         

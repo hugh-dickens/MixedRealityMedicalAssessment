@@ -5,6 +5,9 @@ import csv
 import matplotlib.animation as animation
 from datetime import datetime
 
+import tkinter as tk 
+import tkinter.font as tkFont
+
 
 class AngleCollector():
   """
@@ -98,7 +101,7 @@ class plotting(AngleCollector):
 
     return self.line1, self.line2,  ## this line might not be needed
 
-  def plot_final(self):
+  def plot_final(self,Participant_ID):
       ### On shutting the live plots, it enters here which displays plots for the whole trial
       # and then saves the data to a .txt file.
     date_time, milliseconds, angle, angularVel = self.AngleCollector.get_final_data()
@@ -123,32 +126,23 @@ class plotting(AngleCollector):
 
     figure = plt.gcf()  # get current figure
     figure.set_size_inches(9, 6) # set figure's size manually to your full screen (32x18)
-    plt.savefig('TrialData.png',bbox_inches='tight', dpi=200)
+    ID = str(Participant_ID)
+    filename_image = "TrialData_%s.png" % ID
+    plt.savefig(filename_image ,bbox_inches='tight', dpi=200)
     plt.show()
 
-  def save_and_quit(self):
+  def save_and_quit(self, Participant_ID):
     
     date_time, milliseconds, angle, angularVel = self.AngleCollector.get_final_data()
-    #with open('AngleData.csv', mode='w') as EMG_file:
-    #   Angle_writer = csv.writer(Angle_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
-
-    #   Angle_writer.writerow(angle, angularVel)
-    ## Write to txt file
-    # f = open("TrialData.txt", "w")
-    
-    # f.write(str(angle))
-    # f.write(",")
-    # f.write(str(angularVel))
-    # f.write(",")
-    # f.close()
 
     # field names 
     fields = ['Timestamp','Milliseconds' , 'Angle', 'Angular Velocity'] 
     rows = zip(date_time, milliseconds ,angle, angularVel)
-    
-    
+
+    ID = str(Participant_ID)
+    filename_angle = "AngleData_%s.csv" % ID
       
-    with open('AngleData.csv', 'w') as f:
+    with open(filename_angle, 'w') as f:
         # using csv.writer method from CSV package
         writer = csv.writer(f,delimiter=',')
         writer.writerow(fields)
@@ -158,7 +152,7 @@ class plotting(AngleCollector):
           writer.writerow(row)
 
 
-  def main(self):
+  def main(self,Participant_ID):
     ani = animation.FuncAnimation(self.fig,
         self.animate,
         fargs=(),
@@ -170,13 +164,48 @@ class plotting(AngleCollector):
     
     plt.show()
 
-    self.plot_final()
-    self.save_and_quit()
+    self.plot_final(Participant_ID)
+    self.save_and_quit(Participant_ID)
 
 
-def main():
+def main(Participant_ID):
     # listener = AngleCollector()
-    plotting().main()
+    plotting().main(Participant_ID)
         
 if __name__ == '__main__':
-  main()
+  Participant_ID = 0
+  window = tk.Tk() 
+
+  fontStyle_title = tkFont.Font(family="Lucida Grande", size=20)
+  fontStyle_ID = tkFont.Font(family="Lucida Grande", size=10)
+
+  lbl_title = tk.Label(window, text="Welcome to the experiment for angle live plotting!", font=fontStyle_title)
+  lbl_title.pack()
+
+
+  def on_change(e):
+    Participant_ID = e.widget.get()
+    print(e.widget.get())
+
+  lbl_ID = tk.Label(window, text = "Participant ID:", font = fontStyle_ID )
+  lbl_ID.pack()
+  entry_ID = tk.Entry(window)
+  entry_ID.pack()    
+  # Calling on_change when you press the return key
+  entry_ID.bind("<Return>", on_change)  
+
+  def runFunction():
+    main(Participant_ID)
+      
+  btn_startRecording = tk.Button(
+      text="Click me to start recording!",
+      width=25,
+      height=5,
+      bg="blue",
+      fg="yellow",
+      command = runFunction,
+  )
+  btn_startRecording.pack()
+
+  window.mainloop()
+  

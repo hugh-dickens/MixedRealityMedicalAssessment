@@ -4,6 +4,8 @@ import struct
 import numpy as np
 from datetime import datetime
 import csv
+import tkinter as tk 
+import tkinter.font as tkFont
 
 class PolhemusAngleCollector():
   """
@@ -72,15 +74,18 @@ class PolhemusAngleCollector():
   def get_final_data(self):
     return self.date_time_list, self.milliseconds,  self.angle_list
 
-  def save_and_quit(self):
+  def save_and_quit(self, Participant_ID):
     
     date_time, milliseconds, angle = self.get_final_data()
 
     # field names 
     fields = ['Timestamp','Milliseconds' , 'Angle'] 
     rows = zip(date_time, milliseconds ,angle)
+
+    ID = str(Participant_ID)
+    filename_pol = "PolhemusGroundTruth_%s.csv" % ID
     
-    with open('PolhemusGroundTruth.csv', 'w') as f:
+    with open(filename_pol, 'w') as f:
         # using csv.writer method from CSV package
         writer = csv.writer(f,delimiter=',')
         writer.writerow(fields)
@@ -89,17 +94,52 @@ class PolhemusAngleCollector():
         for row in rows:
           writer.writerow(row)
 
-def main():
+def main(Participant_ID):
     main_polhemus = PolhemusAngleCollector()
     try:
         while True:
             main_polhemus.get_angle()
     except KeyboardInterrupt:
-      main_polhemus.save_and_quit()  
+      main_polhemus.save_and_quit(Participant_ID)  
     
         
 if __name__ == '__main__':
-  main()
+
+  Participant_ID = 0
+  window = tk.Tk() 
+
+  fontStyle_title = tkFont.Font(family="Lucida Grande", size=20)
+  fontStyle_ID = tkFont.Font(family="Lucida Grande", size=10)
+
+  lbl_title = tk.Label(window, text="Welcome to the experiment for the Polhemus!", font=fontStyle_title)
+  lbl_title.pack()
+
+
+  def on_change(e):
+    Participant_ID = e.widget.get()
+    print(e.widget.get())
+
+  lbl_ID = tk.Label(window, text = "Participant ID:", font = fontStyle_ID )
+  lbl_ID.pack()
+  entry_ID = tk.Entry(window)
+  entry_ID.pack()    
+  # Calling on_change when you press the return key
+  entry_ID.bind("<Return>", on_change)  
+
+  def runFunction():
+    main(Participant_ID)
+      
+  btn_startRecording = tk.Button(
+      text="Click me to start recording!",
+      width=25,
+      height=5,
+      bg="blue",
+      fg="yellow",
+      command = runFunction,
+  )
+  btn_startRecording.pack()
+
+  window.mainloop()
 
 
 
