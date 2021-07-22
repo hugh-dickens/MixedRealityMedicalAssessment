@@ -10,6 +10,10 @@ import numpy as np
 import csv
 import tkinter as tk 
 import tkinter.font as tkFont
+import os
+from pynput.keyboard import Key, Controller
+import sys
+
 
 
 class EmgCollector(myo.DeviceListener):
@@ -59,31 +63,49 @@ class packet(object):
       # print(self.emg_total)
       return (emg_data.sum(axis=0)).sum(axis=0)
 
-  def save_and_quit_EMG(self, Participant_ID):
+  def save_and_quit_EMG(self):
 
     # field names 
     fields = ['Timestamp', 'Milliseconds','EMG 1', 'EMG 2', 'EMG 3', 'EMG 4', 'EMG 5', 'EMG 6', 'EMG 7', 'EMG 8'] 
     
     # data rows of csv file 
     rows = self.emg_total
+    f = open("ParticipantID.txt", "r")
+    ID = str(f.read())
+    g = open("Condition.txt", "r")
+    condition = str(g.read())
+    h = open("Trial.txt", "r")
+    trial = str(h.read())
+
+    # Directory
+    directory = "./Data_ID_%s/" % ID
+  
+    try:
+        os.mkdir(directory)
+    except OSError as e:
+        print("Directory exists")
+
+    filename_EMG = "%s_%s_%s_EMG.csv" % (ID, condition, trial)
+
+    # with open(directory + filename_GUI, 'w') as f:
       
-    with open('temp.csv', 'w') as f:
+    with open(directory + 'temp.csv', 'w') as f:
         # using csv.writer method from CSV package
         write = csv.writer(f)
         write.writerow(fields)
         write.writerows(rows)
     ## remove duplicate data:
     from more_itertools import unique_everseen
-    ID = str(Participant_ID)
-    filename_EMG = "EMGData_%s.csv" % ID
-    with open('temp.csv','r') as f, open(filename_EMG,'w') as out_file:
+    
+    with open(directory + 'temp.csv','r') as f, open(directory + filename_EMG,'w') as out_file:
       out_file.writelines(unique_everseen(f))
     # delete the temp file
-    import os
-    os.remove('temp.csv')
+    ## check this for errors
+    os.remove(directory + 'temp.csv')
+    sys.exit()
 
 
-  def main(self, Participant_ID):
+  def main(self):
     try:
       sock = socket.socket(socket.AF_INET, # Internet
                                   socket.SOCK_DGRAM) # UDP
@@ -100,9 +122,9 @@ class packet(object):
             # REmember this should be the holo ip
             # Same port as we specified in UDPComm.cs 
     except KeyboardInterrupt:
-      self.save_and_quit_EMG(Participant_ID)  
+      self.save_and_quit_EMG()  
 
-def main(Participant_ID):
+def main():
   ### enter the path to your own MyoSDK package and .dll file here. Download 
   # with Nuget @ https://www.nuget.org/packages/MyoSDK/2.1.0 and insert .dll file within
   # /bin folder if required.
@@ -110,45 +132,87 @@ def main(Participant_ID):
   hub = myo.Hub()
   listener = EmgCollector(10)   # TRY changing this to different values - see what happens
   with hub.run_in_background(listener.on_event):
-    packet(listener).main(Participant_ID)
+    packet(listener).main()
 
 
 if __name__ == '__main__':
-  Participant_ID = 0
-  window = tk.Tk() 
+  main()
+  # Participant_ID = 0
+  # condition = "Default"
+  # trial = 0
+  # window = tk.Tk() 
 
-  fontStyle_title = tkFont.Font(family="Lucida Grande", size=20)
-  fontStyle_ID = tkFont.Font(family="Lucida Grande", size=10)
+  # fontStyle_title = tkFont.Font(family="Lucida Grande", size=20)
+  # fontStyle_ID = tkFont.Font(family="Lucida Grande", size=10)
 
-  lbl_title = tk.Label(window, text="Welcome to the experiment for EMG broadcasting!", font=fontStyle_title)
-  lbl_title.pack()
+  # lbl_title = tk.Label(window, text="Welcome to the experiment for EMG broadcasting!", font=fontStyle_title)
+  # lbl_title.pack()
 
 
-  def on_change(e):
-    Participant_ID = e.widget.get()
-    print(e.widget.get())
+  # def on_change_ID(e1):
+  #   global Participant_ID
+  #   Participant_ID = e1.widget.get()
+  #   # print(Participant_ID)    
 
-  lbl_ID = tk.Label(window, text = "Participant ID:", font = fontStyle_ID )
-  lbl_ID.pack()
-  entry_ID = tk.Entry(window)
-  entry_ID.pack()    
-  # Calling on_change when you press the return key
-  entry_ID.bind("<Return>", on_change)  
+  # lbl_ID = tk.Label(window, text = "Participant ID:", font = fontStyle_ID )
+  # lbl_ID.pack()
+  # entry_ID = tk.Entry(window)
+  # entry_ID.pack()    
+  # # Calling on_change when you press the return key
+  # entry_ID.bind("<Return>", on_change_ID)  
 
-  def runFunction():
-    main(Participant_ID)
+  # def on_change_condition(e2):
+  #     global condition
+  #     condition = e2.widget.get()
+  #     # print(Participant_ID)    
+
+  # lbl_ID = tk.Label(window, text = "Condition (fast, medium, or slow):", font = fontStyle_ID )
+  # lbl_ID.pack()
+  # entry_ID = tk.Entry(window)
+  # entry_ID.pack()    
+  # # Calling on_change when you press the return key
+  # entry_ID.bind("<Return>", on_change_condition)  
+
+  # def on_change_trial(e3):
+  #     global trial
+  #     trial = e3.widget.get()
+  #     # print(Participant_ID)    
+
+  # lbl_ID = tk.Label(window, text = "Trial number:", font = fontStyle_ID )
+  # lbl_ID.pack()
+  # entry_ID = tk.Entry(window)
+  # entry_ID.pack()    
+  # # Calling on_change when you press the return key
+  # entry_ID.bind("<Return>", on_change_trial)  
+
+  # def runFunction():
+  #   main(Participant_ID, condition, trial)
+
+  # def stopFunction():
+  #   ##need to add some stop function in here!!!
+  #   i=1
       
-  btn_startRecording = tk.Button(
-      text="Click me to start recording!",
-      width=25,
-      height=5,
-      bg="blue",
-      fg="yellow",
-      command = runFunction,
-  )
-  btn_startRecording.pack()
+  # btn_startRecording = tk.Button(
+  #     text="Click me to start recording!",
+  #     width=25,
+  #     height=5,
+  #     bg="blue",
+  #     fg="yellow",
+  #     command = runFunction,
+  # )
+  # btn_startRecording.pack()
 
-  window.mainloop()
+  # btn_stopRecording = tk.Button(
+  #     text="Click me to stop\nrecording and save!",
+  #     width=25,
+  #     height=5,
+  #     bg="blue",
+  #     fg="yellow",
+  #     command = stopFunction,
+  # )
+  # btn_stopRecording.pack()
+
+  # window.mainloop()
     
 
         

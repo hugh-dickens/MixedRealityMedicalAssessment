@@ -7,7 +7,9 @@ from datetime import datetime
 
 import tkinter as tk 
 import tkinter.font as tkFont
-
+import os
+import sys
+import signal
 
 class AngleCollector():
   """
@@ -101,9 +103,9 @@ class plotting(AngleCollector):
 
     return self.line1, self.line2,  ## this line might not be needed
 
-  def plot_final(self,Participant_ID):
+  def save_plot_and_data(self):
       ### On shutting the live plots, it enters here which displays plots for the whole trial
-      # and then saves the data to a .txt file.
+      # and then saves the data to a .csv file.
     date_time, milliseconds, angle, angularVel = self.AngleCollector.get_final_data()
     fig = plt.figure(1)
     ax = fig.add_subplot(1, 2, 1)
@@ -126,33 +128,46 @@ class plotting(AngleCollector):
 
     figure = plt.gcf()  # get current figure
     figure.set_size_inches(9, 6) # set figure's size manually to your full screen (32x18)
-    ID = str(Participant_ID)
-    filename_image = "TrialData_%s.png" % ID
-    plt.savefig(filename_image ,bbox_inches='tight', dpi=200)
-    plt.show()
-
-  def save_and_quit(self, Participant_ID):
+    f = open("ParticipantID.txt", "r")
+    ID = str(f.read())
+    g = open("Condition.txt", "r")
+    condition = str(g.read())
+    h = open("Trial.txt", "r")
+    trial = str(h.read())
     
-    date_time, milliseconds, angle, angularVel = self.AngleCollector.get_final_data()
+    directory = "./Data_ID_%s/" % ID
+    try:
+        os.mkdir(directory)
+    except OSError as e:
+        print("Directory exists")
+
+    filename_image = "%s_%s_%s_HoloAngle.png" % (ID, condition, trial)
+    # Directory
+    directory = "./Data_ID_%s/" % ID
+    plt.savefig(directory + filename_image ,bbox_inches='tight', dpi=200)
 
     # field names 
     fields = ['Timestamp','Milliseconds' , 'Angle', 'Angular Velocity'] 
     rows = zip(date_time, milliseconds ,angle, angularVel)
+    f = open("ParticipantID.txt", "r")
+    ID = str(f.read())
+    g = open("Condition.txt", "r")
+    condition = str(g.read())
+    h = open("Trial.txt", "r")
+    trial = str(h.read())
+    
+    filename_angle = "%s_%s_%s_HoloData.csv" % (ID, condition, trial)
 
-    ID = str(Participant_ID)
-    filename_angle = "AngleData_%s.csv" % ID
+    with open(directory + filename_angle, 'w') as f:
       
-    with open(filename_angle, 'w') as f:
         # using csv.writer method from CSV package
         writer = csv.writer(f,delimiter=',')
         writer.writerow(fields)
-        # for word in yourList:
-        #   wr.writerow([word])
         for row in rows:
           writer.writerow(row)
 
 
-  def main(self,Participant_ID):
+  def main_plot(self):
     ani = animation.FuncAnimation(self.fig,
         self.animate,
         fargs=(),
@@ -163,39 +178,69 @@ class plotting(AngleCollector):
     figure.set_size_inches(9, 6) # set figure's size manually to your full screen (32x18)0
     
     plt.show()
-
-    self.plot_final(Participant_ID)
-    self.save_and_quit(Participant_ID)
-
-
-def main(Participant_ID):
-    # listener = AngleCollector()
-    plotting().main(Participant_ID)
+    self.save_plot_and_data()
+    # self.save_and_quit()
         
 if __name__ == '__main__':
+
   Participant_ID = 0
+  condition, trial = "default", 0 
   window = tk.Tk() 
 
   fontStyle_title = tkFont.Font(family="Lucida Grande", size=20)
   fontStyle_ID = tkFont.Font(family="Lucida Grande", size=10)
 
-  lbl_title = tk.Label(window, text="Welcome to the experiment for angle live plotting!", font=fontStyle_title)
+  lbl_title = tk.Label(window, text="Welcome to the experiment! Please enter the details below:", font=fontStyle_title)
   lbl_title.pack()
 
-
-  def on_change(e):
-    Participant_ID = e.widget.get()
-    print(e.widget.get())
+  def on_change_ID(e1):
+    Participant_ID = e1.widget.get()
+    f = open("ParticipantID.txt", "w")
+    f.write(Participant_ID)
+    f.close()
+    # print(Participant_ID)    
 
   lbl_ID = tk.Label(window, text = "Participant ID:", font = fontStyle_ID )
   lbl_ID.pack()
   entry_ID = tk.Entry(window)
   entry_ID.pack()    
   # Calling on_change when you press the return key
-  entry_ID.bind("<Return>", on_change)  
+  entry_ID.bind("<Return>", on_change_ID)  
+
+  def on_change_condition(e2):
+      condition = e2.widget.get()
+      g = open("Condition.txt", "w")
+      g.write(condition)
+      g.close()
+      # print(Participant_ID)    
+
+  lbl_ID = tk.Label(window, text = "Condition (fast, medium, or slow):", font = fontStyle_ID )
+  lbl_ID.pack()
+  entry_ID = tk.Entry(window)
+  entry_ID.pack()    
+  # Calling on_change when you press the return key
+  entry_ID.bind("<Return>", on_change_condition)  
+
+  def on_change_trial(e3):
+      trial = e3.widget.get()
+      h = open("Trial.txt", "w")
+      h.write(trial)
+      h.close()   
+
+  lbl_ID = tk.Label(window, text = "Trial number:", font = fontStyle_ID )
+  lbl_ID.pack()
+  entry_ID = tk.Entry(window)
+  entry_ID.pack()    
+  # Calling on_change when you press the return key
+  entry_ID.bind("<Return>", on_change_trial)  
 
   def runFunction():
-    main(Participant_ID)
+    p = plotting()
+    p.main_plot()
+      
+  def stopFunction():
+    window.destroy()  # destroying the main window
+    sys.exit()
       
   btn_startRecording = tk.Button(
       text="Click me to start recording!",
@@ -206,6 +251,17 @@ if __name__ == '__main__':
       command = runFunction,
   )
   btn_startRecording.pack()
+
+  btn_stopRecording = tk.Button(
+      text="Click me to stop\nrecording and save!",
+      width=25,
+      height=5,
+      bg="blue",
+      fg="yellow",
+      command = stopFunction,
+  )
+  btn_stopRecording.pack()
+
 
   window.mainloop()
   

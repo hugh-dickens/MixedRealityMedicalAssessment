@@ -1,10 +1,27 @@
 In order to run both the angle_live_plots.py and EMG_live_plots.py files: 
 	- open two powershells
 	- move to the correct directory
-	- in powershell 1 perform command py .\angle_live_plot.py 
-	- in powershell 2 perform command py .\EMG_live_plots.py
+	- in powershell 1 perform command py .\A_angle_live_plots.py
+	- in powershell 2 perform command py .\B_UDP_Myo_broadcaster.py
 To run with the Hololens applications:
 	1) Run .py files
 	2) Then run the app (.sln)
 	3) Close angle_live_plots.py 
 	4) Close EMG_live_plots.py
+
+Steps before starting connection for Polhemus in Python
+1. Open PDIMFC
+2. Click on 'Connect', wait until device found is reported
+3. Click on 'Continuous P&O' wait until continuous recordings are displaying on screen
+4. Click on 'StartSockExport()'.
+5. in powershell 3 perform command py .\C_TCP_Polhemus.py
+
+To close connection go through steps in reversed order.
+
+Overall order:
+1) open 3 powershells
+2) run .\A_angle_live_plots.py which contains the GUI
+3) enter details for participant
+4) run other two scripts when ready to start recording a trial in the seperate powershells
+5) close the GUI window; keyboard interrupt the other two shells with Ctrl+c
+

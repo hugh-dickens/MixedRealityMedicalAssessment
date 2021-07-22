@@ -6,6 +6,8 @@ from datetime import datetime
 import csv
 import tkinter as tk 
 import tkinter.font as tkFont
+import os
+import sys
 
 class PolhemusAngleCollector():
   """
@@ -74,7 +76,7 @@ class PolhemusAngleCollector():
   def get_final_data(self):
     return self.date_time_list, self.milliseconds,  self.angle_list
 
-  def save_and_quit(self, Participant_ID):
+  def save_and_quit(self):
     
     date_time, milliseconds, angle = self.get_final_data()
 
@@ -82,10 +84,26 @@ class PolhemusAngleCollector():
     fields = ['Timestamp','Milliseconds' , 'Angle'] 
     rows = zip(date_time, milliseconds ,angle)
 
-    ID = str(Participant_ID)
-    filename_pol = "PolhemusGroundTruth_%s.csv" % ID
+    f = open("ParticipantID.txt", "r")
+    ID = str(f.read())
+    g = open("Condition.txt", "r")
+    condition = str(g.read())
+    h = open("Trial.txt", "r")
+    trial = str(h.read())
+
+    # Directory
+    directory = "./Data_ID_%s/" % ID
+  
+    try:
+        os.mkdir(directory)
+    except OSError as e:
+        print("Directory exists")
+
+    filename_pol = "%s_%s_%s_POLGroundTruth.csv" % (ID, condition, trial)
+
+    with open(directory + filename_pol, 'w') as f:
     
-    with open(filename_pol, 'w') as f:
+    # with open(filename_pol, 'w') as f:
         # using csv.writer method from CSV package
         writer = csv.writer(f,delimiter=',')
         writer.writerow(fields)
@@ -93,53 +111,92 @@ class PolhemusAngleCollector():
         #   wr.writerow([word])
         for row in rows:
           writer.writerow(row)
+    sys.exit()
 
-def main(Participant_ID):
+
+#'## this is from before !!!
+def main():
     main_polhemus = PolhemusAngleCollector()
     try:
         while True:
             main_polhemus.get_angle()
     except KeyboardInterrupt:
-      main_polhemus.save_and_quit(Participant_ID)  
-    
-        
+      main_polhemus.save_and_quit()  
+
 if __name__ == '__main__':
+    main()
 
-  Participant_ID = 0
-  window = tk.Tk() 
+#   Participant_ID = 0
+#   condition, trial = "default", 0
+#   window = tk.Tk() 
 
-  fontStyle_title = tkFont.Font(family="Lucida Grande", size=20)
-  fontStyle_ID = tkFont.Font(family="Lucida Grande", size=10)
+#   fontStyle_title = tkFont.Font(family="Lucida Grande", size=20)
+#   fontStyle_ID = tkFont.Font(family="Lucida Grande", size=10)
 
-  lbl_title = tk.Label(window, text="Welcome to the experiment for the Polhemus!", font=fontStyle_title)
-  lbl_title.pack()
+#   lbl_title = tk.Label(window, text="Welcome to the experiment for the Polhemus!", font=fontStyle_title)
+#   lbl_title.pack()
 
 
-  def on_change(e):
-    Participant_ID = e.widget.get()
-    print(e.widget.get())
+#   def on_change_ID(e1):
+#     Participant_ID = e1.widget.get()
+#     # print(Participant_ID)    
 
-  lbl_ID = tk.Label(window, text = "Participant ID:", font = fontStyle_ID )
-  lbl_ID.pack()
-  entry_ID = tk.Entry(window)
-  entry_ID.pack()    
-  # Calling on_change when you press the return key
-  entry_ID.bind("<Return>", on_change)  
+#   lbl_ID = tk.Label(window, text = "Participant ID:", font = fontStyle_ID )
+#   lbl_ID.pack()
+#   entry_ID = tk.Entry(window)
+#   entry_ID.pack()    
+#   # Calling on_change when you press the return key
+#   entry_ID.bind("<Return>", on_change_ID)  
 
-  def runFunction():
-    main(Participant_ID)
+#   def on_change_condition(e2):
+#     condition = e2.widget.get()
+#     # print(Participant_ID)    
+
+#   lbl_ID = tk.Label(window, text = "Condition (fast, medium, or slow):", font = fontStyle_ID )
+#   lbl_ID.pack()
+#   entry_ID = tk.Entry(window)
+#   entry_ID.pack()    
+#     # Calling on_change when you press the return key
+#   entry_ID.bind("<Return>", on_change_condition)  
+
+#   def on_change_trial(e3):
+#     trial = e3.widget.get()
+#     # print(Participant_ID)    
+
+#   lbl_ID = tk.Label(window, text = "Trial number:", font = fontStyle_ID )
+#   lbl_ID.pack()
+#   entry_ID = tk.Entry(window)
+#   entry_ID.pack()    
+#     # Calling on_change when you press the return key
+#   entry_ID.bind("<Return>", on_change_trial)   
+
+#   def runFunction():
+#     main()
+
+#   def stopFunction():
+#     i = 1
       
-  btn_startRecording = tk.Button(
-      text="Click me to start recording!",
-      width=25,
-      height=5,
-      bg="blue",
-      fg="yellow",
-      command = runFunction,
-  )
-  btn_startRecording.pack()
+#   btn_startRecording = tk.Button(
+#       text="Click me to start recording!",
+#       width=25,
+#       height=5,
+#       bg="blue",
+#       fg="yellow",
+#       command = runFunction,
+#   )
+#   btn_startRecording.pack()
 
-  window.mainloop()
+#   btn_stopRecording = tk.Button(
+#       text="Click me to stop\nrecording and save!",
+#       width=25,
+#       height=5,
+#       bg="blue",
+#       fg="yellow",
+#       command = stopFunction,
+#   )
+#   btn_stopRecording.pack()
+
+#   window.mainloop()
 
 
 
