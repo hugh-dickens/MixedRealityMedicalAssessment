@@ -128,11 +128,12 @@ class plotting(AngleCollector):
 
     figure = plt.gcf()  # get current figure
     figure.set_size_inches(9, 6) # set figure's size manually to your full screen (32x18)
-    f = open("ParticipantID.txt", "r")
+    prot_directory = "ProtocolData./"
+    f = open(prot_directory + "ParticipantID.txt", "r")
     ID = str(f.read())
-    g = open("Condition.txt", "r")
+    g = open(prot_directory +"Condition.txt", "r")
     condition = str(g.read())
-    h = open("Trial.txt", "r")
+    h = open(prot_directory +"Trial.txt", "r")
     trial = str(h.read())
     
     directory = "./Data_ID_%s/" % ID
@@ -149,11 +150,11 @@ class plotting(AngleCollector):
     # field names 
     fields = ['Timestamp','Milliseconds' , 'Angle', 'Angular Velocity'] 
     rows = zip(date_time, milliseconds ,angle, angularVel)
-    f = open("ParticipantID.txt", "r")
+    f = open(prot_directory +"ParticipantID.txt", "r")
     ID = str(f.read())
-    g = open("Condition.txt", "r")
+    g = open(prot_directory +"Condition.txt", "r")
     condition = str(g.read())
-    h = open("Trial.txt", "r")
+    h = open(prot_directory +"Trial.txt", "r")
     trial = str(h.read())
     
     filename_angle = "%s_%s_%s_HoloData.csv" % (ID, condition, trial)
@@ -165,6 +166,7 @@ class plotting(AngleCollector):
         writer.writerow(fields)
         for row in rows:
           writer.writerow(row)
+    sys.exit()
 
 
   def main_plot(self):
@@ -182,6 +184,10 @@ class plotting(AngleCollector):
     # self.save_and_quit()
         
 if __name__ == '__main__':
+  prot_directory = "ProtocolData./"
+  p = open(prot_directory +"KeyboardInterruptBoolean.txt", "w")
+  p.write(str(0))
+  p.close()
 
   Participant_ID = 0
   condition, trial = "default", 0 
@@ -195,7 +201,7 @@ if __name__ == '__main__':
 
   def on_change_ID(e1):
     Participant_ID = e1.widget.get()
-    f = open("ParticipantID.txt", "w")
+    f = open(prot_directory +"ParticipantID.txt", "w")
     f.write(Participant_ID)
     f.close()
     # print(Participant_ID)    
@@ -209,7 +215,7 @@ if __name__ == '__main__':
 
   def on_change_condition(e2):
       condition = e2.widget.get()
-      g = open("Condition.txt", "w")
+      g = open(prot_directory +"Condition.txt", "w")
       g.write(condition)
       g.close()
       # print(Participant_ID)    
@@ -223,7 +229,7 @@ if __name__ == '__main__':
 
   def on_change_trial(e3):
       trial = e3.widget.get()
-      h = open("Trial.txt", "w")
+      h = open(prot_directory +"Trial.txt", "w")
       h.write(trial)
       h.close()   
 
@@ -239,9 +245,10 @@ if __name__ == '__main__':
     p.main_plot()
       
   def stopFunction():
-    window.destroy()  # destroying the main window
-    sys.exit()
-      
+    p = open(prot_directory +"KeyboardInterruptBoolean.txt", "w")
+    p.write(str(1))
+    p.close()
+  
   btn_startRecording = tk.Button(
       text="Click me to start recording!",
       width=25,

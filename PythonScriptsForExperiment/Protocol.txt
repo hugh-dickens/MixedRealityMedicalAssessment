@@ -23,5 +23,7 @@ Overall order:
 2) run .\A_angle_live_plots.py which contains the GUI
 3) enter details for participant
 4) run other two scripts when ready to start recording a trial in the seperate powershells
-5) close the GUI window; keyboard interrupt the other two shells with Ctrl+c
+5) when finished with the trial shut the live plotting angle data, click save and quit on the GUI,
+	and then shut the GUI window (this last process needs to be fixed! - instead save and quit
+	should return back to step 3)
 

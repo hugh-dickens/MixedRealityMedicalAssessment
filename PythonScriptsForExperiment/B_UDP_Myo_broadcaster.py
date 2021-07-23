@@ -13,8 +13,7 @@ import tkinter.font as tkFont
 import os
 from pynput.keyboard import Key, Controller
 import sys
-
-
+import time
 
 class EmgCollector(myo.DeviceListener):
   """
@@ -70,11 +69,12 @@ class packet(object):
     
     # data rows of csv file 
     rows = self.emg_total
-    f = open("ParticipantID.txt", "r")
+    prot_directory = "ProtocolData./"
+    f = open(prot_directory + "ParticipantID.txt", "r")
     ID = str(f.read())
-    g = open("Condition.txt", "r")
+    g = open(prot_directory + "Condition.txt", "r")
     condition = str(g.read())
-    h = open("Trial.txt", "r")
+    h = open(prot_directory + "Trial.txt", "r")
     trial = str(h.read())
 
     # Directory
@@ -106,18 +106,28 @@ class packet(object):
 
 
   def main(self):
+    prot_directory = "ProtocolData./"
     try:
       sock = socket.socket(socket.AF_INET, # Internet
                                   socket.SOCK_DGRAM) # UDP
       counter = 0
+      
       while True:
+        ### read the keyboard interrupt boolean variable from script A.
         emg_data = self.update_packet()
         counter +=1
         if ((counter % 5000) == 0) & (emg_data is not None):
+          print(emg_data)
+          emg_data = str(emg_data)
+          sock.sendto(emg_data.encode('utf-8'), ("192.168.1.139", 9050))   
+          f = open(prot_directory + "KeyboardInterruptBoolean.txt", "r")
+          keyboardVariable = str(f.read())
+          ## if script A writes a 1 to the .txt file then a keyboard interrupt will be thrown to stop recording emg data
+          if (keyboardVariable == "1"):
+            raise KeyboardInterrupt
           ### Could try just saving the data here
-            print(emg_data)
-            emg_data = str(emg_data)
-            sock.sendto(emg_data.encode('utf-8'), ("192.168.1.139", 9050))   
+          else:
+            pass  
             # print(self.emg_total)       
             # REmember this should be the holo ip
             # Same port as we specified in UDPComm.cs 

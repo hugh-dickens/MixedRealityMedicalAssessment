@@ -28,8 +28,9 @@ class PolhemusAngleCollector():
     self.counter  = 0 
 
   def get_angle(self):
+      
     # need a way of fixing which sensor is which joint, at the moment it is just random
-
+        prot_directory = "ProtocolData./"
         output_sensor1 = []
         output_sensor2 = []
         output_sensor3 = []
@@ -69,6 +70,14 @@ class PolhemusAngleCollector():
             angle = np.arccos(cosine_angle)
 
             self.angle_list.append(np.degrees(angle))
+            ### read the keyboard interrupt boolean variable from script A
+            f = open(prot_directory+"KeyboardInterruptBoolean.txt", "r")
+            keyboardVariable = str(f.read())
+            ## if script A writes a 1 to the .txt file then a keyboard interrupt will be thrown to stop recording polhemus data
+            if (keyboardVariable == "1"):
+                raise KeyboardInterrupt
+            else:
+                pass
 
         else:
             pass
@@ -83,12 +92,12 @@ class PolhemusAngleCollector():
     # field names 
     fields = ['Timestamp','Milliseconds' , 'Angle'] 
     rows = zip(date_time, milliseconds ,angle)
-
-    f = open("ParticipantID.txt", "r")
+    prot_directory = "ProtocolData./"
+    f = open(prot_directory + "ParticipantID.txt", "r")
     ID = str(f.read())
-    g = open("Condition.txt", "r")
+    g = open(prot_directory + "Condition.txt", "r")
     condition = str(g.read())
-    h = open("Trial.txt", "r")
+    h = open(prot_directory + "Trial.txt", "r")
     trial = str(h.read())
 
     # Directory
@@ -114,12 +123,12 @@ class PolhemusAngleCollector():
     sys.exit()
 
 
-#'## this is from before !!!
 def main():
     main_polhemus = PolhemusAngleCollector()
     try:
         while True:
-            main_polhemus.get_angle()
+            ## keyboard interrupt signal is within the get_angle function
+            main_polhemus.get_angle()               
     except KeyboardInterrupt:
       main_polhemus.save_and_quit()  
 
