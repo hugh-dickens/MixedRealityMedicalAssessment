@@ -68,8 +68,9 @@ class PolhemusAngleCollector():
 
             cosine_angle = np.dot(ba, bc) / (np.linalg.norm(ba) * np.linalg.norm(bc))
             angle = np.arccos(cosine_angle)
-
+            
             self.angle_list.append(np.degrees(angle))
+            print(np.degrees(angle))
             ### read the keyboard interrupt boolean variable from script A
             f = open(prot_directory+"KeyboardInterruptBoolean.txt", "r")
             keyboardVariable = str(f.read())
@@ -125,12 +126,13 @@ class PolhemusAngleCollector():
 
 def main():
     main_polhemus = PolhemusAngleCollector()
-    try:
-        while True:
-            ## keyboard interrupt signal is within the get_angle function
-            main_polhemus.get_angle()               
-    except KeyboardInterrupt:
-      main_polhemus.save_and_quit()  
+    # try:
+    while True:
+        ## keyboard interrupt signal is within the get_angle function
+        main_polhemus.get_angle()     
+        ##### UNCOMMENT BELOW!!!          
+    # except KeyboardInterrupt:
+    #   main_polhemus.save_and_quit()  
 
 if __name__ == '__main__':
     main()

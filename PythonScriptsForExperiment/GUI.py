@@ -5,9 +5,6 @@ import numpy as np
 import csv
 import os 
 
-Participant_ID=0
-condition = "Default"
-trial = 0
 window = tk.Tk() 
 
 fontStyle_title = tkFont.Font(family="Lucida Grande", size=20)
@@ -18,8 +15,10 @@ lbl_title.pack()
 
 
 def on_change_ID(e1):
-    global Participant_ID
     Participant_ID = e1.widget.get()
+    f = open("ParticipantID.txt", "w")
+    f.write(Participant_ID)
+    f.close()
     # print(Participant_ID)    
 
 lbl_ID = tk.Label(window, text = "Participant ID:", font = fontStyle_ID )
@@ -30,8 +29,10 @@ entry_ID.pack()
 entry_ID.bind("<Return>", on_change_ID)  
 
 def on_change_condition(e2):
-    global condition
     condition = e2.widget.get()
+    g = open("Condition.txt", "w")
+    g.write(condition)
+    g.close()
     # print(Participant_ID)    
 
 lbl_ID = tk.Label(window, text = "Condition (fast, medium, or slow):", font = fontStyle_ID )
@@ -42,8 +43,10 @@ entry_ID.pack()
 entry_ID.bind("<Return>", on_change_condition)  
 
 def on_change_trial(e3):
-    global trial
     trial = e3.widget.get()
+    h = open("Trial.txt", "w")
+    h.write(trial)
+    h.close()
     # print(Participant_ID)    
 
 lbl_ID = tk.Label(window, text = "Trial number:", font = fontStyle_ID )
@@ -57,22 +60,22 @@ def helloCallBack():
    print("It worked")
 
 def stopFunction():
-    ID = str(Participant_ID)
+    # ID = str(Participant_ID)
 
-    # Directory
-    directory = "./Data_ID_%s/" % ID
+    # # Directory
+    # directory = "./Data_ID_%s/" % ID
   
-    try:
-        os.mkdir(directory)
-    except OSError as e:
-        print("Directory exists")
+    # try:
+    #     os.mkdir(directory)
+    # except OSError as e:
+    #     print("Directory exists")
 
-    filename_GUI = "%s_%s_%s_GUI.csv" % (ID, condition, trial)
+    # filename_GUI = "%s_%s_%s_GUI.csv" % (ID, condition, trial)
 
-    with open(directory + filename_GUI, 'w') as f:
+    # with open(directory + filename_GUI, 'w') as f:
     
-        # using csv.writer method from CSV package
-        writer = csv.writer(f,delimiter=',')
+    #     # using csv.writer method from CSV package
+    #     writer = csv.writer(f,delimiter=',')
         
 
 btn_startRecording = tk.Button(
