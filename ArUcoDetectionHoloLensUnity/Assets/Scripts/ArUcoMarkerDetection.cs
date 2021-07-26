@@ -540,8 +540,9 @@ namespace ArUcoDetectionHoloLensUnity
                 // Begin timing.
                 stopwatch.Start();
 
-                float AngleDiff = Angle - AngleTemp;
-                if (AngleDiff <-3 || AngleDiff>3)
+                float AngleDiff = Mathf.Abs(Angle - AngleTemp);
+
+                if ( AngleDiff>3)
                     // Stop timing and then calculate the angular velocity.
 
                     stopwatch.Stop();

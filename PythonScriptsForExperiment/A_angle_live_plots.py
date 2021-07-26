@@ -188,6 +188,9 @@ if __name__ == '__main__':
   p = open(prot_directory +"KeyboardInterruptBoolean.txt", "w")
   p.write(str(0))
   p.close()
+  p = open(prot_directory +"StartRunning.txt", "w")
+  p.write(str(0))
+  p.close()
 
   Participant_ID = 0
   condition, trial = "default", 0 
@@ -241,6 +244,9 @@ if __name__ == '__main__':
   entry_ID.bind("<Return>", on_change_trial)  
 
   def runFunction():
+    p = open(prot_directory +"StartRunning.txt", "w")
+    p.write(str(1))
+    p.close()
     p = plotting()
     p.main_plot()
       

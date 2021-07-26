@@ -146,7 +146,14 @@ def main():
 
 
 if __name__ == '__main__':
-  main()
+  prot_directory = "ProtocolData./"
+  f = open(prot_directory + "StartRunning.txt", "r")
+  runVariable = str(f.read())
+    ## if script A writes a 1 to the .txt file then a keyboard interrupt will be thrown to stop recording emg data
+  if (runVariable == "1"):
+      main()
+  else:
+      pass
   # Participant_ID = 0
   # condition = "Default"
   # trial = 0
