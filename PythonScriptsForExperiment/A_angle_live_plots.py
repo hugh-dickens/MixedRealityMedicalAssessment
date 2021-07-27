@@ -72,7 +72,7 @@ class plotting(AngleCollector):
     self.AngleCollector = AngleCollector()
     self.x_len = 300
     self.y1_range = [0,180]
-    self.y2_range = [-50,50]
+    self.y2_range = [0,90]
     self.x_len = 300
     self.ys1 = [0]*self.x_len
     self.ys2 = [0]*self.x_len
@@ -118,7 +118,7 @@ class plotting(AngleCollector):
     ax.plot(angle)
     
     ax = fig.add_subplot(1, 2, 2)
-    plt.ylim([-50,50])
+    plt.ylim([0,90])
     plt.xticks(rotation=45, ha='right')
     plt.subplots_adjust(bottom=0.30)
     plt.title('Angular velocity against time')
@@ -253,6 +253,9 @@ if __name__ == '__main__':
   def stopFunction():
     p = open(prot_directory +"KeyboardInterruptBoolean.txt", "w")
     p.write(str(1))
+    p.close()
+    p = open(prot_directory +"StartRunning.txt", "w")
+    p.write(str(0))
     p.close()
   
   btn_startRecording = tk.Button(

@@ -146,90 +146,12 @@ def main():
 
 
 if __name__ == '__main__':
-  prot_directory = "ProtocolData./"
-  f = open(prot_directory + "StartRunning.txt", "r")
-  runVariable = str(f.read())
+  while True:
+    prot_directory = "ProtocolData./"
+    f = open(prot_directory + "StartRunning.txt", "r")
+    runVariable = str(f.read())
     ## if script A writes a 1 to the .txt file then a keyboard interrupt will be thrown to stop recording emg data
-  if (runVariable == "1"):
+    if (runVariable == "1"):
       main()
-  else:
-      pass
-  # Participant_ID = 0
-  # condition = "Default"
-  # trial = 0
-  # window = tk.Tk() 
 
-  # fontStyle_title = tkFont.Font(family="Lucida Grande", size=20)
-  # fontStyle_ID = tkFont.Font(family="Lucida Grande", size=10)
-
-  # lbl_title = tk.Label(window, text="Welcome to the experiment for EMG broadcasting!", font=fontStyle_title)
-  # lbl_title.pack()
-
-
-  # def on_change_ID(e1):
-  #   global Participant_ID
-  #   Participant_ID = e1.widget.get()
-  #   # print(Participant_ID)    
-
-  # lbl_ID = tk.Label(window, text = "Participant ID:", font = fontStyle_ID )
-  # lbl_ID.pack()
-  # entry_ID = tk.Entry(window)
-  # entry_ID.pack()    
-  # # Calling on_change when you press the return key
-  # entry_ID.bind("<Return>", on_change_ID)  
-
-  # def on_change_condition(e2):
-  #     global condition
-  #     condition = e2.widget.get()
-  #     # print(Participant_ID)    
-
-  # lbl_ID = tk.Label(window, text = "Condition (fast, medium, or slow):", font = fontStyle_ID )
-  # lbl_ID.pack()
-  # entry_ID = tk.Entry(window)
-  # entry_ID.pack()    
-  # # Calling on_change when you press the return key
-  # entry_ID.bind("<Return>", on_change_condition)  
-
-  # def on_change_trial(e3):
-  #     global trial
-  #     trial = e3.widget.get()
-  #     # print(Participant_ID)    
-
-  # lbl_ID = tk.Label(window, text = "Trial number:", font = fontStyle_ID )
-  # lbl_ID.pack()
-  # entry_ID = tk.Entry(window)
-  # entry_ID.pack()    
-  # # Calling on_change when you press the return key
-  # entry_ID.bind("<Return>", on_change_trial)  
-
-  # def runFunction():
-  #   main(Participant_ID, condition, trial)
-
-  # def stopFunction():
-  #   ##need to add some stop function in here!!!
-  #   i=1
-      
-  # btn_startRecording = tk.Button(
-  #     text="Click me to start recording!",
-  #     width=25,
-  #     height=5,
-  #     bg="blue",
-  #     fg="yellow",
-  #     command = runFunction,
-  # )
-  # btn_startRecording.pack()
-
-  # btn_stopRecording = tk.Button(
-  #     text="Click me to stop\nrecording and save!",
-  #     width=25,
-  #     height=5,
-  #     bg="blue",
-  #     fg="yellow",
-  #     command = stopFunction,
-  # )
-  # btn_stopRecording.pack()
-
-  # window.mainloop()
-    
-
-        
+  
