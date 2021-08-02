@@ -14,7 +14,6 @@ import os
 from pynput.keyboard import Key, Controller
 import sys
 import time
-import copy
 
 class EmgCollector(myo.DeviceListener):
   """
@@ -25,61 +24,51 @@ class EmgCollector(myo.DeviceListener):
     self.n = n
     self.lock = Lock()
     self.emg_data_queue = deque(maxlen=n)
-    self.emgList = [None]
-    self.counter = 0
-    self.sum_emg_list= deque(maxlen=50) 
 
   def get_emg_data(self):
-    with self.lock: 
-      return self.emgList  
-
-  def get_packet_emg_data(self):
     with self.lock:
-      return self.sum_emg_list 
-      ########### CHECK THIS
-      #return list(self.emgList) this wasnt actually there 
+      return list(self.emg_data_queue)
 
   def on_connected(self, event):
     event.device.stream_emg(True)
 
   def on_emg(self, event):
-    
     with self.lock:
-      dateTimeStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
-      dateTime = dateTimeStr[:19]
-      millis = dateTimeStr[20:]
-      #self.emg_data_queue.append((dateTimeObj, event.emg))
-      if self.emgList[0] == None: # If list is empty
-        self.emgList[0] =  [0, 0, 0,
-                            0,0, 0,
-                            0, 0, 0] 
-        pass
-        # self.emgList[0] =  [['EMG_Pod01'], ['EMG_Pod02'], ['EMG_Pod03'],
-        #                     ['EMG_Pod04'], ['EMG_Pod05'], ['EMG_Pod06'],
-        #                     ['EMG_Pod07'], ['EMG_Pod08'], ['Timestamp']]
-      self.counter+=1   
-      self.emgList.append([event.emg[0], event.emg[1], event.emg[2],
-                           event.emg[3], event.emg[4], event.emg[5],
-                           event.emg[6], event.emg[7], dateTime, millis])
-      temp_list = copy.deepcopy(self.emgList[self.counter])
-      temp_list.pop()
-      temp_list.pop()
-      results = [int(i) for i in temp_list]
-      res =  [abs(ele) for ele in results]
-      temp = (sum(res))
-      self.sum_emg_list.append(temp)
+      self.emg_data_queue.append((event.timestamp, event.emg))
+      
 
-class SaveRoutine(object):
-  def __init__(self, dataA): #, listenerB):
-    self.dataA = dataA
-    #self.listenerB = listenerB    
+class packet(object):
 
-  def save_to_CSV(self):  
+  def __init__(self, listener):
+    self.n = listener.n
+    self.listener = listener
+    self.emg_data_packet = []
+    self.emg_total = []
+
+  def update_packet(self):
+    emg_data = self.listener.get_emg_data()
+    emg_data = np.array([x[1] for x in emg_data]).T
+    emg_data = abs(emg_data) ### change to not abs
+    temp_list = []
+    if len(emg_data) == 8:
+      datetime_object = str(datetime.now())
+      dt_object1 = datetime_object[11:]
+      dt_object_ms = datetime_object[20:]
+      emg_ave = [sum(i) for i in emg_data]
+      temp_list.append(dt_object1)
+      temp_list.append(dt_object_ms)
+      temp_list.extend(emg_ave)
+      self.emg_total.append(temp_list)
+      # print(self.emg_total)
+      return (emg_data.sum(axis=0)).sum(axis=0)
+
+  def save_and_quit_EMG(self):
+
     # field names 
-    fields = ['EMG 1', 'EMG 2', 'EMG 3', 'EMG 4', 'EMG 5', 'EMG 6', 'EMG 7', 'EMG 8', 'Timestamp', 'Milliseconds'] 
+    fields = ['Timestamp', 'Milliseconds','EMG 1', 'EMG 2', 'EMG 3', 'EMG 4', 'EMG 5', 'EMG 6', 'EMG 7', 'EMG 8'] 
     
     # data rows of csv file 
-    rows = self.dataA[1:len(self.dataA)]
+    rows = self.emg_total
     prot_directory = "ProtocolData./"
     f = open(prot_directory + "ParticipantID.txt", "r")
     ID = str(f.read())
@@ -100,20 +89,21 @@ class SaveRoutine(object):
 
     # with open(directory + filename_GUI, 'w') as f:
       
-    with open(directory + filename_EMG, 'w', encoding = 'UTF8', newline = '') as f:
-        writer = csv.writer(f)
-        # write the header
-        writer.writerow(fields)
-        # write multiple rows
-        writer.writerows(rows) 
+    with open(directory + 'temp.csv', 'w') as f:
+        # using csv.writer method from CSV package
+        write = csv.writer(f)
+        write.writerow(fields)
+        write.writerows(rows)
+    ## remove duplicate data:
+    from more_itertools import unique_everseen
+    
+    with open(directory + 'temp.csv','r') as f, open(directory + filename_EMG,'w') as out_file:
+      out_file.writelines(unique_everseen(f))
+    # delete the temp file
+    ## check this for errors
+    os.remove(directory + 'temp.csv')
     sys.exit()
 
-class packet(object):
-
-  def __init__(self, listener):
-    self.n = listener.n
-    self.listener = listener
-    self.emg_data_packet = []
 
   def main(self):
     prot_directory = "ProtocolData./"
@@ -121,13 +111,14 @@ class packet(object):
       sock = socket.socket(socket.AF_INET, # Internet
                                   socket.SOCK_DGRAM) # UDP
       counter = 0
+      
       while True:
-        emg_data = self.listener.get_packet_emg_data()
+        ### read the keyboard interrupt boolean variable from script A.
+        emg_data = self.update_packet()
         counter +=1
-        if ((counter % 100000) == 0) :
-          emg_data = sum(emg_data)/5
-          emg_data = str(int(emg_data))
+        if ((counter % 5000) == 0) & (emg_data is not None):
           print(emg_data)
+          emg_data = str(emg_data)
           sock.sendto(emg_data.encode('utf-8'), ("192.168.1.139", 9050))   
           f = open(prot_directory + "KeyboardInterruptBoolean.txt", "r")
           keyboardVariable = str(f.read())
@@ -141,8 +132,7 @@ class packet(object):
             # REmember this should be the holo ip
             # Same port as we specified in UDPComm.cs 
     except KeyboardInterrupt:
-      emgMatrix = self.listener.get_emg_data()
-      SaveRoutine(emgMatrix).save_to_CSV()
+      self.save_and_quit_EMG()  
 
 def main():
   ### enter the path to your own MyoSDK package and .dll file here. Download 
@@ -150,7 +140,7 @@ def main():
   # /bin folder if required.
   myo.init(sdk_path="C:\\Users\\dicke\\packages\\MyoSDK.2.1.0")
   hub = myo.Hub()
-  listener = EmgCollector(1)   # TRY changing this to different values - see what happens
+  listener = EmgCollector(10)   # TRY changing this to different values - see what happens
   with hub.run_in_background(listener.on_event):
     packet(listener).main()
 
