@@ -191,6 +191,9 @@ if __name__ == '__main__':
   p = open(prot_directory +"StartRunning.txt", "w")
   p.write(str(0))
   p.close()
+  p = open(prot_directory +"StartCalibrating.txt", "w")
+  p.write(str(0))
+  p.close()
 
   Participant_ID = 0
   condition, trial = "default", 0 
@@ -243,6 +246,11 @@ if __name__ == '__main__':
   # Calling on_change when you press the return key
   entry_ID.bind("<Return>", on_change_trial)  
 
+  def calibFunction():
+    p = open(prot_directory +"StartCalibrating.txt", "w")
+    p.write(str(1))
+    p.close()
+
   def runFunction():
     p = open(prot_directory +"StartRunning.txt", "w")
     p.write(str(1))
@@ -257,6 +265,16 @@ if __name__ == '__main__':
     p = open(prot_directory +"StartRunning.txt", "w")
     p.write(str(0))
     p.close()
+
+  btn_Calibrate = tk.Button(
+      text="Click me to calibrate!",
+      width=25,
+      height=5,
+      bg="blue",
+      fg="yellow",
+      command = calibFunction,
+  )
+  btn_Calibrate.pack()
   
   btn_startRecording = tk.Button(
       text="Click me to start recording!",
@@ -277,7 +295,6 @@ if __name__ == '__main__':
       command = stopFunction,
   )
   btn_stopRecording.pack()
-
 
   window.mainloop()
   
