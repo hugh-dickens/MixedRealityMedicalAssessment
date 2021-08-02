@@ -11,11 +11,14 @@ Overall order:
 1) open up Git bash
 2) run 'bash RunSimultExperiment.sh'
 3) enter details for participant
+4) First click the calibration button to run calibration procedure. when finished hit save
+and quit.
+5) To begin a trial start recording.
 5) when finished with the trial shut the live plotting angle data, click save and quit on the GUI,
 	and then shut the GUI window (this last process needs to be fixed! - instead save and quit
 	should return back to step 3)
 
-[ OUT OF DATA:
+[ OUT OF DATE/ old method IGNORE!!:
 In order to run both the angle_live_plots.py and EMG_live_plots.py files: 
 	- open two powershells
 	- move to the correct directory

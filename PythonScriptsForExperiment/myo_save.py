@@ -20,6 +20,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 
+from matplotlib import pyplot as plt
 from collections import deque
 from threading import Lock, Thread
 from datetime import datetime
@@ -72,7 +73,7 @@ class SaveRoutine(object):
 
   def save_to_CSV(self):  
     #print(type(self.dataA))
-    
+    breakpoint()
     header = self.dataA[0]
     data = self.dataA[1:len(self.dataA)]
     

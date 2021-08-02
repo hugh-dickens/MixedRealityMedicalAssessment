@@ -40,6 +40,7 @@ class EmgCollector(myo.DeviceListener):
   def on_connected(self, event):
     event.device.stream_emg(True)
 
+
   def on_emg(self, event):
     with self.lock:
       dateTimeStr = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')
@@ -51,6 +52,7 @@ class EmgCollector(myo.DeviceListener):
       self.emgList.append([event.emg[0], event.emg[1], event.emg[2],
                            event.emg[3], event.emg[4], event.emg[5],
                            event.emg[6], event.emg[7], dateTimeStr])
+      
     
     
   def get_emg_data(self):
@@ -96,7 +98,6 @@ class SaveRoutine(object):
         # write multiple rows
         writer.writerows(rows) 
     sys.exit()
-    
 
 def main():
   myo.init(sdk_path="C:\\Users\\dicke\\packages\\MyoSDK.2.1.0")
@@ -105,14 +106,14 @@ def main():
 
   try:
     with hub.run_in_background(listener.on_event):
-        #emgMatrix = listener.get_emg_data()
-        f = open(prot_directory + "KeyboardInterruptBoolean.txt", "r")
-        keyboardVariable = str(f.read())
-        if (keyboardVariable == "1"):
-            raise KeyboardInterrupt
-                ### Could try just saving the data here
-        else:
-            pass  
+        while True:
+            f = open(prot_directory + "KeyboardInterruptBoolean.txt", "r")
+            keyboardVariable = str(f.read())
+            if (keyboardVariable == "1"):
+                raise KeyboardInterrupt
+                    ### Could try just saving the data here
+            else:
+                pass  
   except KeyboardInterrupt:
     emgMatrix = listener.get_emg_data()
     SaveRoutine(emgMatrix).save_to_CSV()
