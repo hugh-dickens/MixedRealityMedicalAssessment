@@ -124,7 +124,7 @@ class packet(object):
       while True:
         emg_data = self.listener.get_packet_emg_data()
         counter +=1
-        if ((counter % 100000) == 0) :
+        if ((counter % 500000) == 0) :
           emg_data = sum(emg_data)/5
           emg_data = str(int(emg_data))
           print(emg_data)
