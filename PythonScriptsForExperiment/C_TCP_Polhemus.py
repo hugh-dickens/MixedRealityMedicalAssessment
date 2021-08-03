@@ -8,6 +8,7 @@ import tkinter as tk
 import tkinter.font as tkFont
 import os
 import sys
+import copy
 
 class PolhemusAngleCollector():
   """
@@ -22,10 +23,14 @@ class PolhemusAngleCollector():
     self.s.connect((TCP_IP, TCP_PORT))
     # s.close()
     self.angle_list = []
+    self.angular_list_pol = []
     self.date_time_list =[]
     self.milliseconds = []
 
     self.counter  = 0 
+    self.temp_time = 0
+    self.angle_temp = 0
+
 
   def get_angle(self):
       
@@ -57,6 +62,8 @@ class PolhemusAngleCollector():
             dt_object_polhemus3 = datetime_object_polhemus[20:]
             self.date_time_list.append(dt_object_polhemus2)
             self.milliseconds.append(dt_object_polhemus3)
+            time_diff = abs(self.temp_time - int(dt_object_polhemus3)) / 1000000
+            self.temp_time = copy.deepcopy(int(dt_object_polhemus3))
             
             
             a = np.array([output_sensor1[1], output_sensor1[2], output_sensor1[3]])
@@ -68,9 +75,14 @@ class PolhemusAngleCollector():
 
             cosine_angle = np.dot(ba, bc) / (np.linalg.norm(ba) * np.linalg.norm(bc))
             angle = np.arccos(cosine_angle)
+            angle_diff = (self.angle_temp - np.degrees(angle))
             
+            angular_vel_pol = abs(angle_diff/ time_diff)
+
+            self.angle_temp = copy.deepcopy(np.degrees(angle))
             self.angle_list.append(np.degrees(angle))
-            print(np.degrees(angle))
+            self.angular_list_pol.append(angular_vel_pol)
+
             ### read the keyboard interrupt boolean variable from script A
             f = open(prot_directory+"KeyboardInterruptBoolean.txt", "r")
             keyboardVariable = str(f.read())
@@ -84,15 +96,15 @@ class PolhemusAngleCollector():
             pass
         
   def get_final_data(self):
-    return self.date_time_list, self.milliseconds,  self.angle_list
+    return self.date_time_list, self.milliseconds,  self.angle_list, self.angular_list_pol
 
   def save_and_quit(self):
     
-    date_time, milliseconds, angle = self.get_final_data()
+    date_time, milliseconds, angle, angularList = self.get_final_data()
 
     # field names 
-    fields = ['Timestamp','Milliseconds' , 'Angle'] 
-    rows = zip(date_time, milliseconds ,angle)
+    fields = ['Timestamp','Milliseconds' , 'Angle', 'Angular Velocity'] 
+    rows = zip(date_time, milliseconds ,angle, angularList)
     prot_directory = "ProtocolData./"
     f = open(prot_directory + "ParticipantID.txt", "r")
     ID = str(f.read())
@@ -138,9 +150,9 @@ if __name__ == '__main__':
     while True:
         prot_directory = "ProtocolData./"
         f = open(prot_directory + "StartRunning.txt", "r")
-        runVariable = str(f.read())
+        runVariablePol = str(f.read())
         ## if script A writes a 1 to the .txt file then a keyboard interrupt will be thrown to stop recording emg data
-        if (runVariable == "1"):
+        if (runVariablePol == "1"):
             main()
 
 

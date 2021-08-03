@@ -1,25 +1,36 @@
 import tkinter as tk 
 import tkinter.font as tkFont
+import os
+import sys
+import signal
 
-import numpy as np
-import csv
-import os 
+prot_directory = "ProtocolData./"
+p = open(prot_directory +"KeyboardInterruptBoolean.txt", "w")
+p.write(str(0))
+p.close()
+p = open(prot_directory +"StartRunning.txt", "w")
+p.write(str(0))
+p.close()
+p = open(prot_directory +"StartCalibrating.txt", "w")
+p.write(str(0))
+p.close()
 
+Participant_ID = 0
+condition, trial = "default", 0 
 window = tk.Tk() 
 
 fontStyle_title = tkFont.Font(family="Lucida Grande", size=20)
 fontStyle_ID = tkFont.Font(family="Lucida Grande", size=10)
 
-lbl_title = tk.Label(window, text="Welcome to the experiment!", font=fontStyle_title)
+lbl_title = tk.Label(window, text="Welcome to the experiment! Please enter the details below:", font=fontStyle_title)
 lbl_title.pack()
-
 
 def on_change_ID(e1):
     Participant_ID = e1.widget.get()
-    f = open("ParticipantID.txt", "w")
+    f = open(prot_directory +"ParticipantID.txt", "w")
     f.write(Participant_ID)
     f.close()
-    # print(Participant_ID)    
+# print(Participant_ID)    
 
 lbl_ID = tk.Label(window, text = "Participant ID:", font = fontStyle_ID )
 lbl_ID.pack()
@@ -30,7 +41,7 @@ entry_ID.bind("<Return>", on_change_ID)
 
 def on_change_condition(e2):
     condition = e2.widget.get()
-    g = open("Condition.txt", "w")
+    g = open(prot_directory +"Condition.txt", "w")
     g.write(condition)
     g.close()
     # print(Participant_ID)    
@@ -44,10 +55,9 @@ entry_ID.bind("<Return>", on_change_condition)
 
 def on_change_trial(e3):
     trial = e3.widget.get()
-    h = open("Trial.txt", "w")
+    h = open(prot_directory +"Trial.txt", "w")
     h.write(trial)
-    h.close()
-    # print(Participant_ID)    
+    h.close()   
 
 lbl_ID = tk.Label(window, text = "Trial number:", font = fontStyle_ID )
 lbl_ID.pack()
@@ -56,27 +66,46 @@ entry_ID.pack()
 # Calling on_change when you press the return key
 entry_ID.bind("<Return>", on_change_trial)  
 
-def helloCallBack():
-   print("It worked")
+def calibFunction():
+    p = open(prot_directory +"StartCalibrating.txt", "w")
+    p.write(str(1))
+    p.close()
 
-def stopFunction():
-    # ID = str(Participant_ID)
+def runFunction():
+    p = open(prot_directory +"StartRunning.txt", "w")
+    p.write(str(1))
+    p.close()
 
-    # # Directory
-    # directory = "./Data_ID_%s/" % ID
-  
-    # try:
-    #     os.mkdir(directory)
-    # except OSError as e:
-    #     print("Directory exists")
-
-    # filename_GUI = "%s_%s_%s_GUI.csv" % (ID, condition, trial)
-
-    # with open(directory + filename_GUI, 'w') as f:
     
-    #     # using csv.writer method from CSV package
-    #     writer = csv.writer(f,delimiter=',')
-        
+def stopFunction():
+    p = open(prot_directory +"KeyboardInterruptBoolean.txt", "w")
+    p.write(str(1))
+    p.close()
+    p = open(prot_directory +"StartRunning.txt", "w")
+    p.write(str(0))
+    p.close()
+
+def restartGUI():
+    p = open(prot_directory +"KeyboardInterruptBoolean.txt", "w")
+    p.write(str(0))
+    p.close()
+    p = open(prot_directory +"StartRunning.txt", "w")
+    p.write(str(0))
+    p.close()
+    p = open(prot_directory +"StartCalibrating.txt", "w")
+    p.write(str(0))
+    p.close()
+
+
+btn_Calibrate = tk.Button(
+    text="Click me to calibrate!",
+    width=25,
+    height=5,
+    bg="blue",
+    fg="yellow",
+    command = calibFunction,
+)
+btn_Calibrate.pack()
 
 btn_startRecording = tk.Button(
     text="Click me to start recording!",
@@ -84,20 +113,28 @@ btn_startRecording = tk.Button(
     height=5,
     bg="blue",
     fg="yellow",
-    command = helloCallBack,
+    command = runFunction,
 )
 btn_startRecording.pack()
 
 btn_stopRecording = tk.Button(
-      text="Click me to stop\nrecording and save!",
-      width=25,
-      height=5,
-      bg="blue",
-      fg="yellow",
-      command = stopFunction,
-  )
+    text="Click me to stop\nrecording and save!",
+    width=25,
+    height=5,
+    bg="blue",
+    fg="yellow",
+    command = stopFunction,
+)
 btn_stopRecording.pack()
 
+btn_restartGUI = tk.Button(
+    text="Click me to restart \nGUI after calibration!",
+    width=25,
+    height=5,
+    bg="blue",
+    fg="yellow",
+    command = restartGUI,
+)
+btn_restartGUI.pack()
 
 window.mainloop()
-

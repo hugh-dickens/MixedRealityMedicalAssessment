@@ -266,6 +266,18 @@ if __name__ == '__main__':
     p.write(str(0))
     p.close()
 
+  def restartGUI():
+    p = open(prot_directory +"KeyboardInterruptBoolean.txt", "w")
+    p.write(str(0))
+    p.close()
+    p = open(prot_directory +"StartRunning.txt", "w")
+    p.write(str(0))
+    p.close()
+    p = open(prot_directory +"StartCalibrating.txt", "w")
+    p.write(str(0))
+    p.close()
+
+
   btn_Calibrate = tk.Button(
       text="Click me to calibrate!",
       width=25,
@@ -295,6 +307,16 @@ if __name__ == '__main__':
       command = stopFunction,
   )
   btn_stopRecording.pack()
+
+  btn_restartGUI = tk.Button(
+      text="Click me to restart \nGUI after calibration!",
+      width=25,
+      height=5,
+      bg="blue",
+      fg="yellow",
+      command = restartGUI,
+  )
+  btn_restartGUI.pack()
 
   window.mainloop()
   

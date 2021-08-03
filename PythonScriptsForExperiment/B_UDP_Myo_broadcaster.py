@@ -106,7 +106,7 @@ class SaveRoutine(object):
         writer.writerow(fields)
         # write multiple rows
         writer.writerows(rows) 
-    sys.exit()
+    # sys.exit()
 
 class packet(object):
 
@@ -124,7 +124,7 @@ class packet(object):
       while True:
         emg_data = self.listener.get_packet_emg_data()
         counter +=1
-        if ((counter % 500000) == 0) :
+        if ((counter % 800000) == 0) :
           emg_data = sum(emg_data)/5
           emg_data = str(int(emg_data))
           print(emg_data)
@@ -159,9 +159,9 @@ if __name__ == '__main__':
   while True:
     prot_directory = "ProtocolData./"
     f = open(prot_directory + "StartRunning.txt", "r")
-    runVariable = str(f.read())
+    runVariableMyo = str(f.read())
     ## if script A writes a 1 to the .txt file then a keyboard interrupt will be thrown to stop recording emg data
-    if (runVariable == "1"):
+    if (runVariableMyo == "1"):
       main()
 
   

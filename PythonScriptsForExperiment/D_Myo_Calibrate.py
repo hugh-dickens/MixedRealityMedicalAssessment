@@ -122,8 +122,8 @@ if __name__ == '__main__':
     while True:
         prot_directory = "ProtocolData./"
         f = open(prot_directory + "StartCalibrating.txt", "r")
-        runVariable = str(f.read())
+        runVariablecalib = str(f.read())
         ## if script A writes a 1 to the .txt file then a keyboard interrupt will be thrown to stop recording emg data
-        if (runVariable == "1"):
+        if (runVariablecalib == "1"):
             main()
   
