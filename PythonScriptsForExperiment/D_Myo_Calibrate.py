@@ -97,7 +97,7 @@ class SaveRoutine(object):
         writer.writerow(fields)
         # write multiple rows
         writer.writerows(rows) 
-    sys.exit()
+    # sys.exit()
 
 def main():
   myo.init(sdk_path="C:\\Users\\dicke\\packages\\MyoSDK.2.1.0")
