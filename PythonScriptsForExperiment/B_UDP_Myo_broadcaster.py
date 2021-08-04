@@ -27,7 +27,7 @@ class EmgCollector(myo.DeviceListener):
     self.emg_data_queue = deque(maxlen=n)
     self.emgList = [None]
     self.counter = 0
-    self.sum_emg_list= deque(maxlen=50) 
+    self.sum_emg_list= deque(maxlen=75) 
 
   def get_emg_data(self):
     with self.lock: 

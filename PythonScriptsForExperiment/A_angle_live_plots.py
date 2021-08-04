@@ -193,7 +193,7 @@ if __name__ == '__main__':
     ## if script A writes a 1 to the .txt file then a keyboard interrupt will be thrown to stop recording emg data
     if (runVariableHolo == "1" and counter_bool == True):
         counter_bool == False
-        A = AngleCollector()
+        A = plotting()
         A.main_plot()
     elif(runVariableHolo == "1" and counter_bool == False):
         A.main_plot()

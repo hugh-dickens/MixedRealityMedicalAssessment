@@ -628,7 +628,8 @@ namespace ArUcoDetectionHoloLensUnity
             if (sb == null)
                 return null;
 
-            SoftwareBitmap sbCopy = new SoftwareBitmap(sb.BitmapPixelFormat, sb.PixelWidth, sb.PixelHeight);
+            //SoftwareBitmap sbCopy = new SoftwareBitmap(sb.BitmapPixelFormat, sb.PixelWidth, sb.PixelHeight);
+            SoftwareBitmap sbCopy = new SoftwareBitmap(sb.BitmapPixelFormat, 640, 480);
             Interlocked.Exchange(ref sbCopy, sb);
             using (var input = sbCopy.LockBuffer(BitmapBufferAccessMode.Read))
             using (var inputReference = input.CreateReference())
