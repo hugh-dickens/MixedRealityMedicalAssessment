@@ -84,6 +84,9 @@ def stopFunction():
     p = open(prot_directory +"StartRunning.txt", "w")
     p.write(str(0))
     p.close()
+    p = open(prot_directory +"StartCalibrating.txt", "w")
+    p.write(str(0))
+    p.close()
 
 def restartGUI():
     p = open(prot_directory +"KeyboardInterruptBoolean.txt", "w")

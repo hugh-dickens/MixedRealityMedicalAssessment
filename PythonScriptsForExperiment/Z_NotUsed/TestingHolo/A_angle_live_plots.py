@@ -23,6 +23,7 @@ class AngleCollector():
 
     self.sock = socket.socket(socket.AF_INET, # Internet
                          socket.SOCK_DGRAM) # UDP
+    self.sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     self.sock.bind((self.UDP_IP, self.UDP_PORT))
     self.angle = []
     self.angularVel =[]
