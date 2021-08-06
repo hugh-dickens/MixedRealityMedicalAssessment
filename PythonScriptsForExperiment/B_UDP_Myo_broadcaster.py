@@ -106,7 +106,7 @@ class SaveRoutine(object):
         writer.writerow(fields)
         # write multiple rows
         writer.writerows(rows) 
-    # sys.exit()
+    sys.exit()
 
 class packet(object):
 
@@ -163,5 +163,7 @@ if __name__ == '__main__':
     ## if script A writes a 1 to the .txt file then a keyboard interrupt will be thrown to stop recording emg data
     if (runVariableMyo == "1"):
       main()
+    elif (runVariableMyo == "0"):
+      time.sleep(1)
 
   

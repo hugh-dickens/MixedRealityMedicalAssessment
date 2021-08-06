@@ -9,6 +9,7 @@ import tkinter.font as tkFont
 import os
 import sys
 import copy
+import time
 
 class PolhemusAngleCollector():
   """
@@ -154,6 +155,8 @@ if __name__ == '__main__':
         ## if script A writes a 1 to the .txt file then a keyboard interrupt will be thrown to stop recording emg data
         if (runVariablePol == "1"):
             main()
+        elif (runVariablePol == "0"):
+            time.sleep(1)
 
 
 

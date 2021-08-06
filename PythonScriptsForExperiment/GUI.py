@@ -14,6 +14,9 @@ p.close()
 p = open(prot_directory +"StartCalibrating.txt", "w")
 p.write(str(0))
 p.close()
+# p = open(prot_directory +"SystemExit.txt", "w")
+# p.write(str(0))
+# p.close()
 
 Participant_ID = 0
 condition, trial = "default", 0 
@@ -98,6 +101,9 @@ def restartGUI():
     p = open(prot_directory +"StartCalibrating.txt", "w")
     p.write(str(0))
     p.close()
+    # p = open(prot_directory +"SystemExit.txt", "w")
+    # p.write(str(1))
+    # p.close()
 
 
 btn_Calibrate = tk.Button(
