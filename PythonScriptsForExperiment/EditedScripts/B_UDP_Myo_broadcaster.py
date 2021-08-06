@@ -108,7 +108,7 @@ class SaveRoutine(object):
         writer.writerows(rows) 
         
     if int(trial) >=10:
-      print('quitting file--------------------')
+      print('-------------------quitting file--------------------')
       sys.exit()
 
 class packet(object):
@@ -130,7 +130,7 @@ class packet(object):
         if ((counter % 800000) == 0) :
           emg_data = sum(emg_data)/5
           emg_data = str(int(emg_data))
-          print(emg_data)
+          # print(emg_data)
           sock.sendto(emg_data.encode('utf-8'), ("192.168.1.139", 9050))   
           f = open(prot_directory + "KeyboardInterruptBoolean.txt", "r")
           keyboardVariable = str(f.read())

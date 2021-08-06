@@ -80,13 +80,14 @@ def calibFunction():
 def runFunction():
     # Init timer - this will be in the run function for the first script but automatic for the other 
     # scripts
-    global startTime, startAssessment
-    startTime = time.time()
     p = open(prot_directory +"StartRunning.txt", "w")
     p.write(str(1))
     p.close()
     print('Button stop')
+    time.sleep(5)
+    global startTime, startAssessment
     startAssessment = 1
+    startTime = time.time()
 
 
 
@@ -107,12 +108,16 @@ def runFunction():
 
 def restartGUI():
     p = open(prot_directory +"KeyboardInterruptBoolean.txt", "w")
-    p.write(str(0))
+    p.write(str(1))
     p.close()
     p = open(prot_directory +"StartRunning.txt", "w")
     p.write(str(0))
     p.close()
     p = open(prot_directory +"StartCalibrating.txt", "w")
+    p.write(str(0))
+    p.close()
+    time.sleep(1)
+    p = open(prot_directory +"KeyboardInterruptBoolean.txt", "w")
     p.write(str(0))
     p.close()
 
@@ -169,11 +174,11 @@ while True:
         window.update_idletasks()
         window.update()
 
-        if (trial < 10):
+        if (trial < 20):
             window.update_idletasks()
             window.update()
 
-            if (delta <= 1):
+            if (delta <= 7):
                 print('time delta: ', delta)
 
             else:
@@ -192,7 +197,7 @@ while True:
                 h.close()  
 
                 print('======================= Saved to CSV =======================')
-                time.sleep(1)
+                time.sleep(3)
 
                 p = open(prot_directory +"KeyboardInterruptBoolean.txt", "w")
                 p.write(str(0))

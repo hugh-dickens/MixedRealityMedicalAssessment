@@ -89,7 +89,9 @@ class AngleCollector():
         writer.writerow(fields)
         for row in rows:
           writer.writerow(row)
-    sys.exit()
+    if int(trial) >=10:
+      print('-------------------quitting file--------------------')
+      sys.exit()
 
 
   def main_plot(self):

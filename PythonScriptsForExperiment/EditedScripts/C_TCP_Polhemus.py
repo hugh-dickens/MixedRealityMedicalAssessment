@@ -134,8 +134,8 @@ class PolhemusAngleCollector():
         #   wr.writerow([word])
         for row in rows:
           writer.writerow(row)
-    if (trial >=10):
-        print('quitting file--------------------')
+    if (int(trial) >=10):
+        print('-------------------quitting file--------------------')
         sys.exit()
 
 
