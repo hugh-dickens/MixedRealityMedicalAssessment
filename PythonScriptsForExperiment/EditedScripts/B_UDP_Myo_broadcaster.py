@@ -107,7 +107,7 @@ class SaveRoutine(object):
         # write multiple rows
         writer.writerows(rows) 
         
-    if int(trial) >=10:
+    if int(trial) >=20:
       print('-------------------quitting file--------------------')
       sys.exit()
 
