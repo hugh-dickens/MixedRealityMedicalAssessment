@@ -1,9 +1,12 @@
 clc; close;
 
+%%%For some reason the plots have stopped coming up. Need to fix this first
+%%%thing tomorrow morning.
+
 %% Input the ID of data you want to analyse here. The .mat file will then be auto-loaded.
 
 chk = exist('Nodes','var');
- if ~chk
+if ~chk
      
     ID = 2;
     ID = num2str(ID);
@@ -12,156 +15,156 @@ chk = exist('Nodes','var');
     mat_data = ['Data_' ID];
 
     load([ID_folder mat_data])
- end
-
-%% Plot holo and polhemus data for slow trials
-%slow trials
-for i=1:20
-
-    figure(i)
-% %     slow if statements
-    if exist(pol_dynamic)==1
-
-        holo_dynamic = ['ID_2_slow_', num2str(i), '_HoloData'];
-        pol_dynamic = ['ID_2_slow_', num2str(i), '_POLGroundTruth'];
-
-        Holo_data = experiment_data.(holo_dynamic);
-        Pol_data = experiment_data.(pol_dynamic);
-
-        % % plot holo data with points and a spline overlaid
-        x_holo = seconds(Holo_data.Timestamp);
-        y_holo = Holo_data.Angle;
-        more_rowsToDelete =  x_holo > (x_holo(1)+1000);
-        rowsToDelete = y_holo < 0 | y_holo > 180;
-        y_holo(rowsToDelete) = [];
-        x_holo(rowsToDelete) = [];
-        y_holo(more_rowsToDelete) = [];
-        x_holo(more_rowsToDelete) = [];
-        steps_holo = (x_holo(length(x_holo)) - x_holo(1)) / sum(x_holo);
-        xx_holo = x_holo(1):steps_holo:x_holo(length(x_holo));
-        yy_holo = spline(x_holo,y_holo,xx_holo);
-        plot(x_holo,y_holo,'o',xx_holo,yy_holo);
-        hold on
-
-        % % plot holo data with points and a spline overlaid
-        x_pol = seconds(Pol_data.Timestamp);
-        y_pol = Pol_data.Angle;
-        rowsToDelete = y_pol < 0 | y_pol > 180;
-        more_rowsToDelete = x_pol > (x_pol(1)+1000);
-        y_pol(more_rowsToDelete) = [];
-        x_pol(more_rowsToDelete) = [];
-        y_pol(rowsToDelete) = [];
-        x_pol(rowsToDelete) = [];
-        plot(x_pol, y_pol);
-
-        xlabel('Time')
-        ylabel('Angle')
-        legend('Holo Data','Holo Spline', 'Polh Data')
-
-        hold off
-
-    end
-
 end
 
-for i=1:16  
-
-    figure(i+20)
-    
-    % slow TRIAL 2
-    holo_dynamic = ['ID_2_slow_trial2_', num2str(i), '_HoloData'];
-    pol_dynamic = ['ID_2_slow_trial2_', num2str(i), '_POLGroundTruth'];
-
-    if exist(pol_dynamic)==1
-         
-        Holo_data = experiment_data.(holo_dynamic);
-        Pol_data = experiment_data.(pol_dynamic);
-
-        % % plot holo data with points and a spline overlaid
-        x_holo = seconds(Holo_data.Timestamp);
-        y_holo = Holo_data.Angle;
-        more_rowsToDelete =  x_holo > (x_holo(1)+1000);
-        rowsToDelete = y_holo < 0 | y_holo > 180;
-        y_holo(rowsToDelete) = [];
-        x_holo(rowsToDelete) = [];
-        y_holo(more_rowsToDelete) = [];
-        x_holo(more_rowsToDelete) = [];
-        steps_holo = (x_holo(length(x_holo)) - x_holo(1)) / sum(x_holo);
-        xx_holo = x_holo(1):steps_holo:x_holo(length(x_holo));
-        yy_holo = spline(x_holo,y_holo,xx_holo);
-        plot(x_holo,y_holo,'o',xx_holo,yy_holo);
-        hold on
-
-        % % plot holo data with points and a spline overlaid
-        x_pol = seconds(Pol_data.Timestamp);
-        y_pol = Pol_data.Angle;
-        rowsToDelete = y_pol < 0 | y_pol > 180;
-        more_rowsToDelete = x_pol > (x_pol(1)+1000);
-        y_pol(more_rowsToDelete) = [];
-        x_pol(more_rowsToDelete) = [];
-        y_pol(rowsToDelete) = [];
-        x_pol(rowsToDelete) = [];
-        plot(x_pol, y_pol);
-
-        xlabel('Time')
-        ylabel('Angle')
-        legend('Holo Data','Holo Spline', 'Polh Data')
-
-        hold off
-    end
-
-end
-
-for i=1:11 
-
-    figure(i+36)
-    % slow TRIAL 2
-    holo_dynamic = ['ID_2_slow_trial2v2_', num2str(i), '_HoloData'];
-    pol_dynamic = ['ID_2_slow_trial2v2_', num2str(i), '_POLGroundTruth'];
-    
-    if exist(pol_dynamic)==1
-        Holo_data = experiment_data.(holo_dynamic);
-        Pol_data = experiment_data.(pol_dynamic);
-
-        % % plot holo data with points and a spline overlaid
-        x_holo = seconds(Holo_data.Timestamp);
-        y_holo = Holo_data.Angle;
-        more_rowsToDelete =  x_holo > (x_holo(1)+1000);
-        rowsToDelete = y_holo < 0 | y_holo > 180;
-        y_holo(rowsToDelete) = [];
-        x_holo(rowsToDelete) = [];
-        y_holo(more_rowsToDelete) = [];
-        x_holo(more_rowsToDelete) = [];
-        steps_holo = (x_holo(length(x_holo)) - x_holo(1)) / sum(x_holo);
-        xx_holo = x_holo(1):steps_holo:x_holo(length(x_holo));
-        yy_holo = spline(x_holo,y_holo,xx_holo);
-        plot(x_holo,y_holo,'o',xx_holo,yy_holo);
-        hold on
-
-        % % plot holo data with points and a spline overlaid
-        x_pol = seconds(Pol_data.Timestamp);
-        y_pol = Pol_data.Angle;
-        rowsToDelete = y_pol < 0 | y_pol > 180;
-        more_rowsToDelete = x_pol > (x_pol(1)+1000);
-        y_pol(more_rowsToDelete) = [];
-        x_pol(more_rowsToDelete) = [];
-        y_pol(rowsToDelete) = [];
-        x_pol(rowsToDelete) = [];
-        plot(x_pol, y_pol);
-
-        xlabel('Time')
-        ylabel('Angle')
-        legend('Holo Data','Holo Spline', 'Polh Data')
-
-        hold off
-
-    end
-        
-
-end
+% %% Plot holo and polhemus data for slow trials
+% %slow trials
+% for i=1:20
+% 
+%     figure(i)
+% % %     slow if statements
+%     if exist(pol_dynamic)==1
+% 
+%         holo_dynamic = ['ID_2_slow_', num2str(i), '_HoloData'];
+%         pol_dynamic = ['ID_2_slow_', num2str(i), '_POLGroundTruth'];
+% 
+%         Holo_data = experiment_data.(holo_dynamic);
+%         Pol_data = experiment_data.(pol_dynamic);
+% 
+%         % % plot holo data with points and a spline overlaid
+%         x_holo = seconds(Holo_data.Timestamp);
+%         y_holo = Holo_data.Angle;
+%         more_rowsToDelete =  x_holo > (x_holo(1)+1000);
+%         rowsToDelete = y_holo < 0 | y_holo > 180;
+%         y_holo(rowsToDelete) = [];
+%         x_holo(rowsToDelete) = [];
+%         y_holo(more_rowsToDelete) = [];
+%         x_holo(more_rowsToDelete) = [];
+%         steps_holo = (x_holo(length(x_holo)) - x_holo(1)) / sum(x_holo);
+%         xx_holo = x_holo(1):steps_holo:x_holo(length(x_holo));
+%         yy_holo = spline(x_holo,y_holo,xx_holo);
+%         plot(x_holo,y_holo,'o',xx_holo,yy_holo);
+%         hold on
+% 
+%         % % plot holo data with points and a spline overlaid
+%         x_pol = seconds(Pol_data.Timestamp);
+%         y_pol = Pol_data.Angle;
+%         rowsToDelete = y_pol < 0 | y_pol > 180;
+%         more_rowsToDelete = x_pol > (x_pol(1)+1000);
+%         y_pol(more_rowsToDelete) = [];
+%         x_pol(more_rowsToDelete) = [];
+%         y_pol(rowsToDelete) = [];
+%         x_pol(rowsToDelete) = [];
+%         plot(x_pol, y_pol);
+% 
+%         xlabel('Time')
+%         ylabel('Angle')
+%         legend('Holo Data','Holo Spline', 'Polh Data')
+% 
+%         hold off
+% 
+%     end
+% 
+% end
+% 
+% for i=1:16  
+% 
+%     figure(i+20)
+%     
+%     % slow TRIAL 2
+%     holo_dynamic = ['ID_2_slow_trial2_', num2str(i), '_HoloData'];
+%     pol_dynamic = ['ID_2_slow_trial2_', num2str(i), '_POLGroundTruth'];
+% 
+%     if exist(pol_dynamic)==1
+%          
+%         Holo_data = experiment_data.(holo_dynamic);
+%         Pol_data = experiment_data.(pol_dynamic);
+% 
+%         % % plot holo data with points and a spline overlaid
+%         x_holo = seconds(Holo_data.Timestamp);
+%         y_holo = Holo_data.Angle;
+%         more_rowsToDelete =  x_holo > (x_holo(1)+1000);
+%         rowsToDelete = y_holo < 0 | y_holo > 180;
+%         y_holo(rowsToDelete) = [];
+%         x_holo(rowsToDelete) = [];
+%         y_holo(more_rowsToDelete) = [];
+%         x_holo(more_rowsToDelete) = [];
+%         steps_holo = (x_holo(length(x_holo)) - x_holo(1)) / sum(x_holo);
+%         xx_holo = x_holo(1):steps_holo:x_holo(length(x_holo));
+%         yy_holo = spline(x_holo,y_holo,xx_holo);
+%         plot(x_holo,y_holo,'o',xx_holo,yy_holo);
+%         hold on
+% 
+%         % % plot holo data with points and a spline overlaid
+%         x_pol = seconds(Pol_data.Timestamp);
+%         y_pol = Pol_data.Angle;
+%         rowsToDelete = y_pol < 0 | y_pol > 180;
+%         more_rowsToDelete = x_pol > (x_pol(1)+1000);
+%         y_pol(more_rowsToDelete) = [];
+%         x_pol(more_rowsToDelete) = [];
+%         y_pol(rowsToDelete) = [];
+%         x_pol(rowsToDelete) = [];
+%         plot(x_pol, y_pol);
+% 
+%         xlabel('Time')
+%         ylabel('Angle')
+%         legend('Holo Data','Holo Spline', 'Polh Data')
+% 
+%         hold off
+%     end
+% 
+% end
+% 
+% for i=1:11 
+% 
+%     figure(i+36)
+%     % slow TRIAL 2
+%     holo_dynamic = ['ID_2_slow_trial2v2_', num2str(i), '_HoloData'];
+%     pol_dynamic = ['ID_2_slow_trial2v2_', num2str(i), '_POLGroundTruth'];
+%     
+%     if exist(pol_dynamic)==1
+%         Holo_data = experiment_data.(holo_dynamic);
+%         Pol_data = experiment_data.(pol_dynamic);
+% 
+%         % % plot holo data with points and a spline overlaid
+%         x_holo = seconds(Holo_data.Timestamp);
+%         y_holo = Holo_data.Angle;
+%         more_rowsToDelete =  x_holo > (x_holo(1)+1000);
+%         rowsToDelete = y_holo < 0 | y_holo > 180;
+%         y_holo(rowsToDelete) = [];
+%         x_holo(rowsToDelete) = [];
+%         y_holo(more_rowsToDelete) = [];
+%         x_holo(more_rowsToDelete) = [];
+%         steps_holo = (x_holo(length(x_holo)) - x_holo(1)) / sum(x_holo);
+%         xx_holo = x_holo(1):steps_holo:x_holo(length(x_holo));
+%         yy_holo = spline(x_holo,y_holo,xx_holo);
+%         plot(x_holo,y_holo,'o',xx_holo,yy_holo);
+%         hold on
+% 
+%         % % plot holo data with points and a spline overlaid
+%         x_pol = seconds(Pol_data.Timestamp);
+%         y_pol = Pol_data.Angle;
+%         rowsToDelete = y_pol < 0 | y_pol > 180;
+%         more_rowsToDelete = x_pol > (x_pol(1)+1000);
+%         y_pol(more_rowsToDelete) = [];
+%         x_pol(more_rowsToDelete) = [];
+%         y_pol(rowsToDelete) = [];
+%         x_pol(rowsToDelete) = [];
+%         plot(x_pol, y_pol);
+% 
+%         xlabel('Time')
+%         ylabel('Angle')
+%         legend('Holo Data','Holo Spline', 'Polh Data')
+% 
+%         hold off
+% 
+%     end
+%         
+% 
+% end
 
 %% Medium trials
-
+% 
 for i=1:20
     figure(i)
         
@@ -207,6 +210,7 @@ for i=1:20
             legend('Holo Data','Holo Spline', 'Polh Data')
 
             hold off
+            
         end
     end
 
