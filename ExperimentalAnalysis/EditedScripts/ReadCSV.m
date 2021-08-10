@@ -1,18 +1,19 @@
-clear all;
+clear all; clc; close;
 
-function Read_CSV_data(ID)
-% Add in a for loop that searches through fast medium and slow trials.
-ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\PythonScriptsForExperiment\EditedScripts\Data_ID_';
-ID_folder = s
+%% Matlab scipt to read the data from csv files and convert it into a struct .mat file named 'Data_ID'
+% input the ID of interest here:
+ID = 2;
+ID = num2str(ID);
+ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_ID_';
+ID_folder =  [ID_folder ID '\'];
 myfiles = dir(ID_folder);
 filenames={myfiles(:).name}';
+
 for i = 1:numel(filenames)
     folder_in = strcat(ID_folder,filenames(i));
-% folder_in='C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\PythonScriptsForExperiment\EditedScripts\Data_ID_2\fast';                               % directory of interest
-
     d=dir(fullfile(folder_in{1},'*.csv*'));                        % return the .csv files in the given folder
     var_name = [];
-%     filenames{i} = struct();
+
     for i=1:numel(d)
 
       % stores all experiment data in a structure with the name of the table as
@@ -25,4 +26,6 @@ for i = 1:numel(filenames)
       % do whatever w/ the i-th file here before going on to the next...
     end    
 end
-end
+
+save(['Data_' ID])
+
