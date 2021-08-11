@@ -66,7 +66,7 @@ for i=1:20
 
         hold off
 
-         else
+        else
             fprintf('Not enough Hololens data for trial %i; slow trial \n',i)
         end
     else
