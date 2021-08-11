@@ -286,10 +286,10 @@ for i=1:3
         hold off
 
         else
-            fprintf('Not enough Hololens data for trial %i, medium trial 2 \n',i)
+            fprintf('Not enough Hololens data for trial %i, slow trial 2 \n',i)
         end
     else
-        fprintf('No polhemus data for trial %i, medium trial 2 \n',i)
+        fprintf('No polhemus data for trial %i, slow trial 2 \n',i)
     end
 
 end
@@ -340,10 +340,10 @@ for i=1:5
         hold off
 
         else
-            fprintf('Not enough Hololens data for trial %i, medium trial 2 \n',i)
+            fprintf('Not enough Hololens data for trial %i, slow trial 2 \n',i)
         end
     else
-        fprintf('No polhemus data for trial %i, medium trial 2 \n',i)
+        fprintf('No polhemus data for trial %i, slow trial 2 \n',i)
     end
 
 end
@@ -394,10 +394,10 @@ for i=1:15
         hold off
 
         else
-            fprintf('Not enough Hololens data for trial %i, medium trial 2 \n',i)
+            fprintf('Not enough Hololens data for trial %i, slow trial 2 \n',i)
         end
     else
-        fprintf('No polhemus data for trial %i, medium trial 2 \n',i)
+        fprintf('No polhemus data for trial %i, slow trial 2 \n',i)
     end
 
 end
@@ -452,10 +452,10 @@ for i=1:24
 
             hold off
         else
-            fprintf('Not enough Hololens data for trial %i, fast trial \n',i)
+            fprintf('Not enough Hololens data for trial %i, medium trial \n',i)
         end
     else
-        fprintf('No polhemus data for trial %i, fast trial \n',i)
+        fprintf('No polhemus data for trial %i, medium trial \n',i)
     end
 
 end
