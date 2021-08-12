@@ -46,16 +46,17 @@ for i=1:20
     %         fprintf('length of C is %i',(length(C)))
     %         fprintf('length of holo data is %i',(length(holo_data_final)))
     %         fprintf('difference between the two is %i',(length(C) - length(holo_data_final)));
+            comparing_diff = comparing_angles(:,1) - comparing_angles(:,2);        
             if length(comparing_diff)>1
                 
-                comparing_diff = comparing_angles(:,1) - comparing_angles(:,2);
+                
                 rmse = sqrt(mean((comparing_angles(:,1)-comparing_angles(:,2)).^2));
                 figure(i)
                 bar(comparing_diff)
                 title('Total rmse is',rmse)
                 ylabel('Difference in angle data')
             else 
-                fprintf('No comparing diff data')
+                fprintf('No comparing diff data for trial %i; slow trial \n', i)
             end
        
             else
@@ -68,8 +69,7 @@ end
 
 for i=1:16  
 
-    figure(i+20)
-    
+
     % slow TRIAL 2
     holo_dynamic = ['ID_2_slow_trial2_', num2str(i), '_HoloData'];
     pol_dynamic = ['ID_2_slow_trial2_', num2str(i), '_POLGroundTruth'];
@@ -97,12 +97,19 @@ for i=1:16
     %         fprintf('length of C is %i',(length(C)))
     %         fprintf('length of holo data is %i',(length(holo_data_final)))
     %         fprintf('difference between the two is %i',(length(C) - length(holo_data_final)));
-            comparing_diff = comparing_angles(:,1) - comparing_angles(:,2);
-            rmse = sqrt(mean((comparing_angles(:,1)-comparing_angles(:,2)).^2));
-            figure(i)
-            bar(comparing_diff)
-            title('Total rmse is',rmse)
-            ylabel('Difference in angle data')
+    comparing_diff = comparing_angles(:,1) - comparing_angles(:,2);        
+    if length(comparing_diff)>1
+                
+                
+                rmse = sqrt(mean((comparing_angles(:,1)-comparing_angles(:,2)).^2));
+                figure(i+20)
+    
+                bar(comparing_diff)
+                title('Total rmse is',rmse)
+                ylabel('Difference in angle data')
+            else 
+                fprintf('No comparing diff data for trial %i; slow trial 2 \n', i)
+            end
         else
             fprintf('Not enough Hololens data for trial %i, slow trial 2 \n',i)
         end
@@ -113,7 +120,7 @@ end
 
 for i=1:11 
 
-    figure(i+36)
+    
     % slow TRIAL 2
     holo_dynamic = ['ID_2_slow_trial2v2_', num2str(i), '_HoloData'];
     pol_dynamic = ['ID_2_slow_trial2v2_', num2str(i), '_POLGroundTruth'];
@@ -141,12 +148,16 @@ for i=1:11
     %         fprintf('length of C is %i',(length(C)))
     %         fprintf('length of holo data is %i',(length(holo_data_final)))
     %         fprintf('difference between the two is %i',(length(C) - length(holo_data_final)));
-            comparing_diff = comparing_angles(:,1) - comparing_angles(:,2);
-            rmse = sqrt(mean((comparing_angles(:,1)-comparing_angles(:,2)).^2));
-            figure(i)
-            bar(comparing_diff)
-            title('Total rmse is',rmse)
-            ylabel('Difference in angle data')
+            comparing_diff = comparing_angles(:,1) - comparing_angles(:,2);        
+            if length(comparing_diff)>1
+                rmse = sqrt(mean((comparing_angles(:,1)-comparing_angles(:,2)).^2));
+                figure(i+36)
+                bar(comparing_diff)
+                title('Total rmse is',rmse)
+                ylabel('Difference in angle data')
+            else 
+                fprintf('No comparing diff data for trial %i; slow trial 2 \n', i)
+            end
 
         else
             fprintf('Not enough Hololens data for trial %i, slow trial 2 \n',i)
@@ -161,7 +172,7 @@ end
 % 
 for i=1:20
     
-    figure(i+47)
+    
     holo_dynamic = ['ID_2_medium_', num2str(i), '_HoloData'];
     pol_dynamic = ['ID_2_medium_', num2str(i), '_POLGroundTruth'];
 
@@ -190,12 +201,16 @@ for i=1:20
     %         fprintf('length of C is %i',(length(C)))
     %         fprintf('length of holo data is %i',(length(holo_data_final)))
     %         fprintf('difference between the two is %i',(length(C) - length(holo_data_final)));
-            comparing_diff = comparing_angles(:,1) - comparing_angles(:,2);
-            rmse = sqrt(mean((comparing_angles(:,1)-comparing_angles(:,2)).^2));
-            figure(i)
-            bar(comparing_diff)
-            title('Total rmse is',rmse)
-            ylabel('Difference in angle data')
+            comparing_diff = comparing_angles(:,1) - comparing_angles(:,2);        
+            if length(comparing_diff)>1
+                rmse = sqrt(mean((comparing_angles(:,1)-comparing_angles(:,2)).^2));
+                figure(i+47)
+                bar(comparing_diff)
+                title('Total rmse is',rmse)
+                ylabel('Difference in angle data')
+            else 
+                fprintf('No comparing diff data for trial %i; medium trial \n', i)
+            end
         else
             fprintf('Not enough Hololens data for trial %i, medium trial \n',i)
         end
@@ -207,7 +222,7 @@ end
 
 for i=1:3
 
-    figure(i+67)
+    
     % medium TRIAL 2
     holo_dynamic = ['ID_2_medium_trial2v1_', num2str(i), '_HoloData'];
     pol_dynamic = ['ID_2_medium_trial2v1_', num2str(i), '_POLGroundTruth'];
@@ -235,13 +250,16 @@ for i=1:3
     %         fprintf('length of C is %i',(length(C)))
     %         fprintf('length of holo data is %i',(length(holo_data_final)))
     %         fprintf('difference between the two is %i',(length(C) - length(holo_data_final)));
-            comparing_diff = comparing_angles(:,1) - comparing_angles(:,2);
-            rmse = sqrt(mean((comparing_angles(:,1)-comparing_angles(:,2)).^2));
-            figure(i)
-            bar(comparing_diff)
-            title('Total rmse is',rmse)
-            ylabel('Difference in angle data')
-
+                comparing_diff = comparing_angles(:,1) - comparing_angles(:,2);        
+            if length(comparing_diff)>1
+                rmse = sqrt(mean((comparing_angles(:,1)-comparing_angles(:,2)).^2));
+                figure(i+67)
+                bar(comparing_diff)
+                title('Total rmse is',rmse)
+                ylabel('Difference in angle data')
+            else 
+                fprintf('No comparing diff data for trial %i; medium trial 2 \n', i)
+            end
         else
             fprintf('Not enough Hololens data for trial %i, medium trial 2 \n',i)
         end
@@ -253,7 +271,7 @@ end
 
 for i=1:5
 
-    figure(i+70)
+    
     % medium TRIAL 2
     holo_dynamic = ['ID_2_medium_trial2v2_', num2str(i), '_HoloData'];
     pol_dynamic = ['ID_2_medium_trial2v2_', num2str(i), '_POLGroundTruth'];
@@ -281,12 +299,16 @@ for i=1:5
     %         fprintf('length of C is %i',(length(C)))
     %         fprintf('length of holo data is %i',(length(holo_data_final)))
     %         fprintf('difference between the two is %i',(length(C) - length(holo_data_final)));
-            comparing_diff = comparing_angles(:,1) - comparing_angles(:,2);
-            rmse = sqrt(mean((comparing_angles(:,1)-comparing_angles(:,2)).^2));
-            figure(i)
-            bar(comparing_diff)
-            title('Total rmse is',rmse)
-            ylabel('Difference in angle data')
+               comparing_diff = comparing_angles(:,1) - comparing_angles(:,2);        
+            if length(comparing_diff)>1
+                rmse = sqrt(mean((comparing_angles(:,1)-comparing_angles(:,2)).^2));
+                figure(i+70)
+                bar(comparing_diff)
+                title('Total rmse is',rmse)
+                ylabel('Difference in angle data')
+            else 
+                fprintf('No comparing diff data for trial %i; medium trial 2 \n', i)
+            end
 
         else
             fprintf('Not enough Hololens data for trial %i, medium trial 2 \n',i)
@@ -299,7 +321,7 @@ end
 
 for i=1:15
 
-    figure(i+75)
+    
     % slow TRIAL 2
     holo_dynamic = ['ID_2_medium_trial2v3_', num2str(i), '_HoloData'];
     pol_dynamic = ['ID_2_medium_trial2v3_', num2str(i), '_POLGroundTruth'];
@@ -327,13 +349,16 @@ for i=1:15
     %         fprintf('length of C is %i',(length(C)))
     %         fprintf('length of holo data is %i',(length(holo_data_final)))
     %         fprintf('difference between the two is %i',(length(C) - length(holo_data_final)));
-            comparing_diff = comparing_angles(:,1) - comparing_angles(:,2);
-            rmse = sqrt(mean((comparing_angles(:,1)-comparing_angles(:,2)).^2));
-            figure(i)
-            bar(comparing_diff)
-            title('Total rmse is',rmse)
-            ylabel('Difference in angle data')
-
+                comparing_diff = comparing_angles(:,1) - comparing_angles(:,2);        
+            if length(comparing_diff)>1
+                rmse = sqrt(mean((comparing_angles(:,1)-comparing_angles(:,2)).^2));
+                figure(i+75)
+                bar(comparing_diff)
+                title('Total rmse is',rmse)
+                ylabel('Difference in angle data')
+            else 
+                fprintf('No comparing diff data for trial %i; medium trial 2 \n', i)
+            end
         else
             fprintf('Not enough Hololens data for trial %i, medium trial 2 \n',i)
         end
@@ -347,7 +372,7 @@ end
 % 
 for i=1:24
     
-    figure(i+90)
+    
     holo_dynamic = ['ID_2_fast_', num2str(i), '_HoloData'];
     pol_dynamic = ['ID_2_fast_', num2str(i), '_POLGroundTruth'];
 
@@ -376,12 +401,16 @@ for i=1:24
     %         fprintf('length of C is %i',(length(C)))
     %         fprintf('length of holo data is %i',(length(holo_data_final)))
     %         fprintf('difference between the two is %i',(length(C) - length(holo_data_final)));
-            comparing_diff = comparing_angles(:,1) - comparing_angles(:,2);
-            rmse = sqrt(mean((comparing_angles(:,1)-comparing_angles(:,2)).^2));
-            figure(i)
-            bar(comparing_diff)
-            title('Total rmse is',rmse)
-            ylabel('Difference in angle data')
+               comparing_diff = comparing_angles(:,1) - comparing_angles(:,2);        
+            if length(comparing_diff)>1
+                rmse = sqrt(mean((comparing_angles(:,1)-comparing_angles(:,2)).^2));
+                figure(i+90)
+                bar(comparing_diff)
+                title('Total rmse is',rmse)
+                ylabel('Difference in angle data')
+            else 
+                fprintf('No comparing diff data for trial %i; fast trial \n', i)
+            end
         else
             fprintf('Not enough Hololens data for trial %i, fast trial \n',i)
         end
@@ -393,7 +422,6 @@ end
 
 for i=1:14
 
-    figure(i+114)
     % fast TRIAL 2
     holo_dynamic = ['ID_2_fast_trial2v1_', num2str(i), '_HoloData'];
     pol_dynamic = ['ID_2_fast_trial2v1_', num2str(i), '_POLGroundTruth'];
@@ -421,12 +449,16 @@ for i=1:14
     %         fprintf('length of C is %i',(length(C)))
     %         fprintf('length of holo data is %i',(length(holo_data_final)))
     %         fprintf('difference between the two is %i',(length(C) - length(holo_data_final)));
-            comparing_diff = comparing_angles(:,1) - comparing_angles(:,2);
-            rmse = sqrt(mean((comparing_angles(:,1)-comparing_angles(:,2)).^2));
-            figure(i)
-            bar(comparing_diff)
-            title('Total rmse is',rmse)
-            ylabel('Difference in angle data')
+                comparing_diff = comparing_angles(:,1) - comparing_angles(:,2);        
+            if length(comparing_diff)>1
+                rmse = sqrt(mean((comparing_angles(:,1)-comparing_angles(:,2)).^2));
+                figure(i+114)
+                bar(comparing_diff)
+                title('Total rmse is',rmse)
+                ylabel('Difference in angle data')
+            else 
+                fprintf('No comparing diff data for trial %i; fast trial 2 \n', i)
+            end
 
         else
             fprintf('Not enough Hololens data for trial %i, fast trial 2 \n',i)
@@ -437,9 +469,7 @@ for i=1:14
 
 end
 
-for i=1:2
-
-    figure(i+128)
+for i=1:2    
     % fast TRIAL 2
     holo_dynamic = ['ID_2_fast_trial2v2_', num2str(i), '_HoloData'];
     pol_dynamic = ['ID_2_fast_trial2v2_', num2str(i), '_POLGroundTruth'];
@@ -467,13 +497,16 @@ for i=1:2
     %         fprintf('length of C is %i',(length(C)))
     %         fprintf('length of holo data is %i',(length(holo_data_final)))
     %         fprintf('difference between the two is %i',(length(C) - length(holo_data_final)));
-            comparing_diff = comparing_angles(:,1) - comparing_angles(:,2);
-            rmse = sqrt(mean((comparing_angles(:,1)-comparing_angles(:,2)).^2));
-            figure(i)
-            bar(comparing_diff)
-            title('Total rmse is',rmse)
-            ylabel('Difference in angle data')
-
+                comparing_diff = comparing_angles(:,1) - comparing_angles(:,2);        
+            if length(comparing_diff)>1
+                rmse = sqrt(mean((comparing_angles(:,1)-comparing_angles(:,2)).^2));
+                figure(i+128)
+                bar(comparing_diff)
+                title('Total rmse is',rmse)
+                ylabel('Difference in angle data')
+            else 
+                fprintf('No comparing diff data for trial %i; fast trial 2 \n', i)
+            end
         else
             fprintf('Not enough Hololens data for trial %i, fast trial 2 \n',i)
         end
@@ -485,7 +518,6 @@ end
 
 for i=1:10
 
-    figure(i+130)
     % slow TRIAL 2
     holo_dynamic = ['ID_2_fast_trial2v3_', num2str(i), '_HoloData'];
     pol_dynamic = ['ID_2_fast_trial2v3_', num2str(i), '_POLGroundTruth'];
@@ -503,22 +535,38 @@ for i=1:10
 
             holo_data_final = cat(2,x_holo, y_holo);
 
-            x_pol = round(Pol_data.Milliseconds,2,'significant');
-            y_pol = Pol_data.Angle;
+        polh_millisecond = round(Pol_data.Milliseconds,2,'significant');
+        polh_millisecond(polh_millisecond == 1000000) = 990000;
+        y_pol = Pol_data.Angle;
+        
+        a1 = num2str(Polh_second);
+        a2 = num2str(polh_millisecond);
+        % Concatenate the two strings element wise
+        d1 = strcat(a1, a2);
+        % turn spaces into 0s
+        str1 = regexprep(cellstr(d1), ' ', '0');
+        % Convert the result back to a numeric matrix
+        x_pol = str2double(str1);
 
-            pol_data_final = cat(2, x_pol, y_pol);
 
-            [~, rowsA, rowsB] = intersect(holo_data_final(:, 1), pol_data_final(:, 1));
-            comparing_angles = [holo_data_final(rowsA, 2) pol_data_final(rowsB, 2)];
-    %         fprintf('length of C is %i',(length(C)))
-    %         fprintf('length of holo data is %i',(length(holo_data_final)))
-    %         fprintf('difference between the two is %i',(length(C) - length(holo_data_final)));
+        pol_data_final = cat(2, x_pol, y_pol);
+
+        [~, rowsA, rowsB] = intersect(holo_data_final(:, 1), pol_data_final(:, 1));
+        rowsA = sort(rowsA);
+        rowsB = sort(rowsB);
+        comparing_angles = [holo_data_final(rowsA, 2) pol_data_final(rowsB, 2)];
+
             comparing_diff = comparing_angles(:,1) - comparing_angles(:,2);
-            rmse = sqrt(mean((comparing_angles(:,1)-comparing_angles(:,2)).^2));
-            figure(i)
-            bar(comparing_diff)
-            title('Total rmse is',rmse)
-            ylabel('Difference in angle data')
+            if length(comparing_diff)>1
+                
+                rmse = sqrt(mean((comparing_angles(:,1)-comparing_angles(:,2)).^2));
+                figure(i+130)
+                bar(comparing_diff)
+                title('Total rmse is',rmse)
+                ylabel('Difference in angle data')
+            else 
+                fprintf('No comparing diff data for trial %i; fast trial 2 \n', i)
+            end
 
         else
             fprintf('Not enough Hololens data for trial %i, fast trial 2 \n',i)
