@@ -79,9 +79,9 @@ EMG_name = ['ID_2_slow_', num2str(1), '_EMG'];
 EMG_data = experiment_data.(EMG_name);
 fs = 1000;
 
-
+figure(1)
 for i= bands_EMG_extend
-figure(i)
+
 x = table2array(EMG_data(:,i));
 y = fft(x);
 
@@ -94,11 +94,11 @@ plot(f(118:floor(n/2)),power(118:floor(n/2)))
 xlabel('Frequency')
 ylabel('Power')
 
-% hold on
+hold on
 end
 
-% legend('EMG 1', 'EMG 2', 'EMG 3', 'EMG 4', 'EMG 5', 'EMG 6', 'EMG 7', 'EMG 8')
-% hold off
+legend('EMG 1', 'EMG 6', 'EMG 5')
+hold off
 
 
 
