@@ -25,9 +25,6 @@ class PolhemusAngleCollector():
     # s.close()
     self.angle_list = []
     self.angular_list_pol = []
-    self.output_sensor1List = []
-    self.output_sensor2List = []
-    self.output_sensor3List = []
     self.date_time_list =[]
     self.milliseconds = []
 
@@ -73,9 +70,6 @@ class PolhemusAngleCollector():
             a = np.array([output_sensor1[1], output_sensor1[2], output_sensor1[3]])
             b = np.array([output_sensor2[1], output_sensor2[2], output_sensor2[3]])
             c = np.array([output_sensor3[1], output_sensor3[2], output_sensor3[3]])
-            self.output_sensor1List.append(a)
-            self.output_sensor2List.append(b)
-            self.output_sensor3List.append(c)
 
             ba = a - b
             bc = c - b
@@ -90,78 +84,90 @@ class PolhemusAngleCollector():
             self.angle_list.append(np.degrees(angle))
             self.angular_list_pol.append(angular_vel_pol)
 
-            ### read the keyboard interrupt boolean variable from script A
-            f = open(prot_directory+"KeyboardInterruptBoolean.txt", "r")
-            keyboardVariable = str(f.read())
-            ## if script A writes a 1 to the .txt file then a keyboard interrupt will be thrown to stop recording polhemus data
-            if (keyboardVariable == "1"):
-                raise KeyboardInterrupt
-            else:
-                pass
+            print(np.degrees(angle))
+
+            # ### read the keyboard interrupt boolean variable from script A
+            # f = open(prot_directory+"KeyboardInterruptBoolean.txt", "r")
+            # keyboardVariable = str(f.read())
+            # ## if script A writes a 1 to the .txt file then a keyboard interrupt will be thrown to stop recording polhemus data
+            # if (keyboardVariable == "1"):
+            #     raise KeyboardInterrupt
+            # else:
+            #     pass
 
         else:
             pass
-        
-  def get_final_data(self):
-    return self.date_time_list, self.milliseconds,  self.angle_list, self.angular_list_pol, self.output_sensor1List, self.output_sensor2List, self.output_sensor3List
-
-  def save_and_quit(self):
-    
-    date_time, milliseconds, angle, angularList, sensor1List, sensor2List, sensor3List = self.get_final_data()
-
-    # field names 
-    fields = ['Timestamp','Milliseconds' , 'Angle', 'Angular Velocity', 'Sensor 1', 'Sensor 2', 'Sensor 3'] 
-    rows = zip(date_time, milliseconds ,angle, angularList, sensor1List, sensor2List, sensor3List)
-    prot_directory = "ProtocolData./"
-    f = open(prot_directory + "ParticipantID.txt", "r")
-    ID = str(f.read())
-    g = open(prot_directory + "Condition.txt", "r")
-    condition = str(g.read())
-    h = open(prot_directory + "Trial.txt", "r")
-    trial = str(h.read())
-
-    # Directory
-    directory = "./Data_ID_%s/" % ID
-  
-    try:
-        os.mkdir(directory)
-    except OSError as e:
-        print("Directory exists")
-
-    filename_pol = "%s_%s_%s_POLGroundTruth.csv" % (ID, condition, trial)
-
-    with open(directory + filename_pol, 'w') as f:
-    
-    # with open(filename_pol, 'w') as f:
-        # using csv.writer method from CSV package
-        writer = csv.writer(f,delimiter=',')
-        writer.writerow(fields)
-        # for word in yourList:
-        #   wr.writerow([word])
-        for row in rows:
-          writer.writerow(row)
-    if (int(trial) >=20):
-        print('-------------------quitting file--------------------')
-        sys.exit()
-
-
-def main():
-    main_polhemus = PolhemusAngleCollector()
-    try:
-        while True:
-            ## keyboard interrupt signal is within the get_angle function
-            main_polhemus.get_angle()     
-                      
-    except KeyboardInterrupt:
-        main_polhemus.save_and_quit()  
 
 if __name__ == '__main__':
+    main_polhemus = PolhemusAngleCollector()
     while True:
-        prot_directory = "ProtocolData./"
-        f = open(prot_directory + "StartRunning.txt", "r")
-        runVariablePol = str(f.read())
-        ## if script A writes a 1 to the .txt file then a keyboard interrupt will be thrown to stop recording emg data
-        if (runVariablePol == "1"):
-            main()
-        elif (runVariablePol == "0"):
-            time.sleep(1)
+        main_polhemus.get_angle()     
+
+        
+#   def get_final_data(self):
+#     return self.date_time_list, self.milliseconds,  self.angle_list, self.angular_list_pol
+
+#   def save_and_quit(self):
+    
+#     date_time, milliseconds, angle, angularList = self.get_final_data()
+
+#     # field names 
+#     fields = ['Timestamp','Milliseconds' , 'Angle', 'Angular Velocity'] 
+#     rows = zip(date_time, milliseconds ,angle, angularList)
+#     prot_directory = "ProtocolData./"
+#     f = open(prot_directory + "ParticipantID.txt", "r")
+#     ID = str(f.read())
+#     g = open(prot_directory + "Condition.txt", "r")
+#     condition = str(g.read())
+#     h = open(prot_directory + "Trial.txt", "r")
+#     trial = str(h.read())
+
+#     # Directory
+#     directory = "./Data_ID_%s/" % ID
+  
+#     try:
+#         os.mkdir(directory)
+#     except OSError as e:
+#         print("Directory exists")
+
+#     filename_pol = "%s_%s_%s_POLGroundTruth.csv" % (ID, condition, trial)
+
+#     with open(directory + filename_pol, 'w') as f:
+    
+#     # with open(filename_pol, 'w') as f:
+#         # using csv.writer method from CSV package
+#         writer = csv.writer(f,delimiter=',')
+#         writer.writerow(fields)
+#         # for word in yourList:
+#         #   wr.writerow([word])
+#         for row in rows:
+#           writer.writerow(row)
+#     sys.exit()
+
+
+# def main():
+#     main_polhemus = PolhemusAngleCollector()
+#     try:
+#         while True:
+#             ## keyboard interrupt signal is within the get_angle function
+#             main_polhemus.get_angle()     
+#             ##### UNCOMMENT BELOW!!!          
+#     except KeyboardInterrupt:
+#         main_polhemus.save_and_quit()  
+
+# if __name__ == '__main__':
+#     while True:
+#         prot_directory = "ProtocolData./"
+#         f = open(prot_directory + "StartRunning.txt", "r")
+#         runVariablePol = str(f.read())
+#         ## if script A writes a 1 to the .txt file then a keyboard interrupt will be thrown to stop recording emg data
+#         if (runVariablePol == "1"):
+#             main()
+#         elif (runVariablePol == "0"):
+#             time.sleep(1)
+
+
+
+
+
+

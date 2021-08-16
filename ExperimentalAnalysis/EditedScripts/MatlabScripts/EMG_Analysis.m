@@ -14,7 +14,7 @@ if ~chk
     load([ID_folder mat_data])
 end
 
-% Calibration sequence to associate myo electrodes with muscles.
+%% Calibration sequence to associate myo electrodes with muscles.
 if calibration_flag == 0 %% at the moment this isnt set to 1 anywhere on purpose
     names = fieldnames( experiment_data );
     subStr = '_EMGCalibration';
@@ -75,12 +75,12 @@ if calibration_flag == 0 %% at the moment this isnt set to 1 anywhere on purpose
 end
 
 %% Plot spectral analysis of EMG data
-EMG_name = ['ID_2_slow_', num2str(1), '_EMG'];
+EMG_name = ['ID_2_fast_', num2str(4), '_EMG'];
 EMG_data = experiment_data.(EMG_name);
-fs = 1000;
+fs = 1162;
 
 figure(1)
-for i= bands_EMG_extend
+for i= bands_EMG_flex
 
 x = table2array(EMG_data(:,i));
 y = fft(x);
@@ -97,7 +97,7 @@ ylabel('Power')
 hold on
 end
 
-legend('EMG 1', 'EMG 6', 'EMG 5')
+legend('EMG 4', 'EMG 5', 'EMG 6')
 hold off
 
 
