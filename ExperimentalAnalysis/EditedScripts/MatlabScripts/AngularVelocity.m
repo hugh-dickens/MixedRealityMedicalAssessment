@@ -50,39 +50,40 @@ for i=1:20
 % 
  % % plot holo data with points and a spline overlaid
  %%% polh data currently too noisy
-%         x_pol = seconds(Pol_data.Timestamp);
-%         y_pol = Pol_data.Angle;
-%         pol_millis = Pol_data.Milliseconds;
-%         
-%         rowsToDelete = y_pol < 0 | y_pol > 180;
-%         more_rowsToDelete = x_pol > (x_pol(1)+1000);
-%         y_pol(more_rowsToDelete) = [];
-%         x_pol(more_rowsToDelete) = [];
-%         y_pol(rowsToDelete) = [];
-%         x_pol(rowsToDelete) = []; 
-%         pol_millis(more_rowsToDelete) = [];
-%         pol_millis(rowsToDelete) = [];
-%         
-%         order = 3;
-%         framelen = 93;
-% 
-%         sgf = sgolayfilt(y_pol,order,framelen);
-%         
-%         v = zeros(length(pol_millis),1) ;
-%         for i = 1:length(pol_millis)-1
-%             v(i) = (y_pol(i+1)-y_pol(i))/(pol_millis(i+1)-pol_millis(i)) * 100000;
-%         end
-%         
-%         plot(x_pol, v);
+        x_pol = seconds(Pol_data.Timestamp);
+        y_pol = Pol_data.Angle;
+        pol_millis = Pol_data.Milliseconds;
+        
+        rowsToDelete = y_pol < 0 | y_pol > 180;
+        more_rowsToDelete = x_pol > (x_pol(1)+1000);
+        y_pol(more_rowsToDelete) = [];
+        x_pol(more_rowsToDelete) = [];
+        y_pol(rowsToDelete) = [];
+        x_pol(rowsToDelete) = []; 
+        pol_millis(more_rowsToDelete) = [];
+        pol_millis(rowsToDelete) = [];
+        
+        order = 3;
+        framelen = 93;
+
+        sgf = sgolayfilt(y_pol,order,framelen);
+        
+        v = zeros(length(pol_millis),1) ;
+        for i = 1:length(pol_millis)-1
+            v(i) = (sgf(i+1)-sgf(i))/(pol_millis(i+1)-pol_millis(i)) * 100000;
+        end
+        
+        plot(x_pol, v);
 % % 
         
 %%%%%% Need to change this to just around the point of catch !!
         avg_vel = mean(y_holo_angular);
+        
         xlabel('Time')
         ylabel('Angular Velocity')
         title('Slow trial', avg_vel)
-        legend('Holo Data')
-%         legend('Holo Data', 'Polh Data')
+%         legend('Holo Data')
+        legend('Holo Data', 'Polh Data')
         
         hold off
               
@@ -95,7 +96,7 @@ for i=1:20
         
 end
 
-
+%% temporary section
 for i=1:16  
 
     figure(i+20)
@@ -287,30 +288,30 @@ for i=2:20
 % 
  % % plot holo data with points and a spline overlaid
  %%% polh data currently too noisy
-%         x_pol = seconds(Pol_data.Timestamp);
-%         y_pol = Pol_data.Angle;
-%         pol_millis = Pol_data.Milliseconds;
-%         
-%         rowsToDelete = y_pol < 0 | y_pol > 180;
-%         more_rowsToDelete = x_pol > (x_pol(1)+1000);
-%         y_pol(more_rowsToDelete) = [];
-%         x_pol(more_rowsToDelete) = [];
-%         y_pol(rowsToDelete) = [];
-%         x_pol(rowsToDelete) = []; 
-%         pol_millis(more_rowsToDelete) = [];
-%         pol_millis(rowsToDelete) = [];
-%         
-%         order = 3;
-%         framelen = 93;
-% 
-%         sgf = sgolayfilt(y_pol,order,framelen);
-%         
-%         v = zeros(length(pol_millis),1) ;
-%         for i = 1:length(pol_millis)-1
-%             v(i) = (y_pol(i+1)-y_pol(i))/(pol_millis(i+1)-pol_millis(i)) * 100000;
-%         end
-%         
-%         plot(x_pol, v);
+x_pol = seconds(Pol_data.Timestamp);
+        y_pol = Pol_data.Angle;
+        pol_millis = Pol_data.Milliseconds;
+        
+        rowsToDelete = y_pol < 0 | y_pol > 180;
+        more_rowsToDelete = x_pol > (x_pol(1)+1000);
+        y_pol(more_rowsToDelete) = [];
+        x_pol(more_rowsToDelete) = [];
+        y_pol(rowsToDelete) = [];
+        x_pol(rowsToDelete) = []; 
+        pol_millis(more_rowsToDelete) = [];
+        pol_millis(rowsToDelete) = [];
+        
+        order = 3;
+        framelen = 93;
+
+        sgf = sgolayfilt(y_pol,order,framelen);
+        
+        v = zeros(length(pol_millis),1) ;
+        for i = 1:length(pol_millis)-1
+            v(i) = (sgf(i+1)-sgf(i))/(pol_millis(i+1)-pol_millis(i)) * 1000000;
+        end
+        
+        plot(x_pol, v);
 % % 
 %%%%%% Need to change this to just around the point of catch !!
         avg_vel = mean(y_holo_angular);

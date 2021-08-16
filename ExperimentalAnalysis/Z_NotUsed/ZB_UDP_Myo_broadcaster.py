@@ -105,11 +105,14 @@ class SaveRoutine(object):
         # write the header
         writer.writerow(fields)
         # write multiple rows
-        writer.writerows(rows) 
+        writer.writerows(rows)
+
         
     if int(trial) >=20:
       print('-------------------quitting file--------------------')
-      sys.exit()
+      return True  #sys.exit()
+    else:
+      return False
 
 class packet(object):
 
@@ -145,7 +148,8 @@ class packet(object):
             # Same port as we specified in UDPComm.cs 
     except KeyboardInterrupt:
       emgMatrix = self.listener.get_emg_data()
-      SaveRoutine(emgMatrix).save_to_CSV()
+      if(SaveRoutine(emgMatrix).save_to_CSV()):
+        return False
 
 def main():
   ### enter the path to your own MyoSDK package and .dll file here. Download 
@@ -155,8 +159,9 @@ def main():
   hub = myo.Hub()
   listener = EmgCollector(1)   # TRY changing this to different values - see what happens
   with hub.run_in_background(listener.on_event):
-    packet(listener).main()
-
+    if(packet(listener).main() == False):
+      hub.stop()
+      sys.exit()
 
 if __name__ == '__main__':
   while True:

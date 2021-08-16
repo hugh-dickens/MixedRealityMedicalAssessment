@@ -106,6 +106,7 @@ class PolhemusAngleCollector():
     return self.date_time_list, self.milliseconds,  self.angle_list, self.angular_list_pol, self.output_sensor1List, self.output_sensor2List, self.output_sensor3List
 
   def save_and_quit(self):
+    print('Trial over')
     
     date_time, milliseconds, angle, angularList, sensor1List, sensor2List, sensor3List = self.get_final_data()
 
@@ -126,7 +127,8 @@ class PolhemusAngleCollector():
     try:
         os.mkdir(directory)
     except OSError as e:
-        print("Directory exists")
+        pass
+        # print("Directory exists")
 
     filename_pol = "%s_%s_%s_POLGroundTruth.csv" % (ID, condition, trial)
 

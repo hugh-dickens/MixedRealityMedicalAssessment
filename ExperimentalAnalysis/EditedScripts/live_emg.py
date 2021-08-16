@@ -76,8 +76,15 @@ class Plot(object):
 
   def main(self):
     while True:
-      self.update_plot()
-      plt.pause(1.0 / 30)
+      try:
+        self.update_plot()
+        plt.pause(1.0 / 30)
+      except Exception as e:
+        #print(e)
+        #self.listener.stop()
+        return 0
+        #break
+
 
 
 def main():
@@ -86,10 +93,14 @@ def main():
   # /bin folder if required.
   myo.init(sdk_path="C:\\Users\\dicke\\packages\\MyoSDK.2.1.0")
   hub = myo.Hub()
+  
   listener = EmgCollector(512)
   with hub.run_in_background(listener.on_event):
     Plot(listener).main()
+  
+  hub.stop()
 
 
 if __name__ == '__main__':
+  
   main()

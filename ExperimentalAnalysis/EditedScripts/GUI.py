@@ -12,7 +12,10 @@ p.close()
 p = open(prot_directory +"StartRunning.txt", "w")
 p.write(str(0))
 p.close()
-p = open(prot_directory +"StartCalibrating.txt", "w")
+# p = open(prot_directory +"StartCalibrating.txt", "w")
+# p.write(str(0))
+# p.close()
+p = open(prot_directory +"MyoExit.txt", "w")
 p.write(str(0))
 p.close()
 
@@ -83,7 +86,7 @@ def runFunction():
     p = open(prot_directory +"StartRunning.txt", "w")
     p.write(str(1))
     p.close()
-    print('Button stop')
+    # print('Button stop')
     time.sleep(5)
     global startTime, startAssessment
     startAssessment = 1
@@ -113,24 +116,24 @@ def restartGUI():
     p = open(prot_directory +"StartRunning.txt", "w")
     p.write(str(0))
     p.close()
-    p = open(prot_directory +"StartCalibrating.txt", "w")
-    p.write(str(0))
-    p.close()
+    # p = open(prot_directory +"StartCalibrating.txt", "w")
+    # p.write(str(0))
+    # p.close()
     time.sleep(1)
     p = open(prot_directory +"KeyboardInterruptBoolean.txt", "w")
     p.write(str(0))
     p.close()
 
 
-btn_Calibrate = tk.Button(
-    text="Click me to calibrate!",
-    width=25,
-    height=5,
-    bg="blue",
-    fg="yellow",
-    command = calibFunction,
-)
-btn_Calibrate.pack()
+# btn_Calibrate = tk.Button(
+#     text="Click me to calibrate! NOW DOESNT DO ANYTHING",
+#     width=25,
+#     height=5,
+#     bg="blue",
+#     fg="yellow",
+#     command = calibFunction,
+# )
+# btn_Calibrate.pack()
 
 btn_startRecording = tk.Button(
     text="Click me to start recording!",
@@ -152,16 +155,16 @@ btn_startRecording.pack()
 # )
 # btn_stopRecording.pack()
 
-btn_restartGUI = tk.Button(
-    text="Click me to restart \nGUI after calibration!",
-    width=25,
-    height=5,
-    bg="blue",
-    fg="yellow",
-    command = restartGUI,
-)
+# btn_restartGUI = tk.Button(
+#     text="Click me to restart \nGUI after calibration! NOW DOESNT DO ANYTHING",
+#     width=25,
+#     height=5,
+#     bg="blue",
+#     fg="yellow",
+#     command = restartGUI,
+# )
 
-btn_restartGUI.pack()
+# btn_restartGUI.pack()
 step = 0
 
 while True:
@@ -175,13 +178,16 @@ while True:
         window.update()
 
         if (trial < 20):
+            # print('hello')
             window.update_idletasks()
             window.update()
 
-            if (delta <= 7):
+            if ( delta <= 7):
+                # pass
                 print('time delta: ', delta)
 
             else:
+                print('new trial')
                 p = open(prot_directory +"KeyboardInterruptBoolean.txt", "w")
                 p.write(str(1))
                 p.close()
@@ -198,6 +204,7 @@ while True:
 
                 print('======================= Saved to CSV =======================')
                 time.sleep(3)
+                # print(time.time())
 
                 p = open(prot_directory +"KeyboardInterruptBoolean.txt", "w")
                 p.write(str(0))
@@ -211,4 +218,7 @@ while True:
                 startTime = time.time()
 
         else:
+            p = open(prot_directory +"MyoExit.txt", "w")
+            p.write(str(1))
+            p.close()
             sys.exit()

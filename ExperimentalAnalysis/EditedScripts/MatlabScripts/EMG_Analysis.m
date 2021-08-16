@@ -77,7 +77,7 @@ end
 %% Plot spectral analysis of EMG data
 EMG_name = ['ID_2_fast_', num2str(4), '_EMG'];
 EMG_data = experiment_data.(EMG_name);
-fs = 1162;
+fs = 150;
 
 figure(1)
 for i= bands_EMG_flex
@@ -100,5 +100,63 @@ end
 legend('EMG 4', 'EMG 5', 'EMG 6')
 hold off
 
+%% Find time of 'catch' and then plot spectral analysis for EMG of stretch reflex
 
+for i = 1:20
+holo_dynamic = ['ID_2_slow_', num2str(i), '_HoloData'];
+emg_dynamic = ['ID_2_slow_', num2str(i), '_EMG'];
+        
+if isfield(experiment_data,pol_dynamic) == 1
+    Holo_data = experiment_data.(holo_dynamic);
+    EMG_data = experiment_data.(emg_dynamic);
+    % % plot holo data with points and a spline overlaid
+    x_holo = (Holo_data.Timestamp);
+    y_holo = Holo_data.Angle;
+    if length(y_holo) > 1
+    more_rowsToDelete =  x_holo > (x_holo(1)+1000);
+    rowsToDelete = y_holo < 0 | y_holo > 180;
+    y_holo(rowsToDelete) = [];
+    x_holo(rowsToDelete) = [];
+    y_holo(more_rowsToDelete) = [];
+    x_holo(more_rowsToDelete) = [];
+        
+    angle_index = find(y_holo > 120);
+%     timestamp_catch = x_holo(angle_index(2));
+    
+    holo_millisecond = round(Holo_data.Milliseconds(angle_index(2)),2,'significant');
+    holo_millisecond(holo_millisecond == 1000000) = 990000;
+    EMG_millisecond = round(EMG_data.Milliseconds,2,'significant');
+    EMG_millisecond(EMG_millisecond == 1000000) = 990000;
+    
+    holo_second = seconds(round(Holo_data.Timestamp, 'seconds'));
+    EMG_second = seconds(round(EMG_data.Timestamp, 'seconds'));
 
+    b1 = num2str(holo_second);
+    b2 = num2str(holo_millisecond);
+    % Concatenate the two strings element wise
+    c1 = strcat(b1, b2);
+    % turn spaces into 0s
+    str = regexprep(cellstr(c1), ' ', '0');
+    % Convert the result back to a numeric matrix
+    x_holo = str2double(str);
+    
+    b1EMG = num2str(EMG_second);
+    b2EMG = num2str(EMG_millisecond);
+    % Concatenate the two strings element wise
+    c1EMG = strcat(b1EMG, b2EMG);
+    % turn spaces into 0s
+    strEMG = regexprep(cellstr(c1EMG), ' ', '0');
+    % Convert the result back to a numeric matrix
+    x_EMG = str2double(strEMG);
+    
+    EMG_data_final = cat(2,x_EMG, y_holo);
+    
+    else
+        fprintf('No Holo data for trial %i\n; slow trial \n',i)
+    end
+    
+    else
+        fprintf('No polhemus data for trial %i\n; slow trial \n',i)
+    end
+
+end
