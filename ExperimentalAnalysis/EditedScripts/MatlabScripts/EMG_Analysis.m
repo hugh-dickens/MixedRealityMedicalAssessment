@@ -1,12 +1,13 @@
 clc; close all;
+clear all;
 
 %% Input the ID of data you want to analyse here. The .mat file will then be auto-loaded.
 
 chk = exist('Nodes','var');
 if ~chk
     calibration_flag = 0;
-    ID = 'test';
-%     ID = num2str(ID);
+    ID = 5;
+    ID = num2str(ID);
     ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_ID_';
     ID_folder =  [ID_folder ID '\'];
     mat_data = ['Data_' ID];
@@ -17,9 +18,9 @@ end
 %% Calibration sequence to associate myo electrodes with muscles.
 if calibration_flag == 0 %% at the moment this isnt set to 1 anywhere on purpose
     names = fieldnames( experiment_data );
-    subStr = '_EMGCalibration';
+    subStr = 'ID_5_test_EMG_data';
     Calibration_filteredStruct = rmfield( experiment_data, names( find( cellfun( @isempty, strfind( names , subStr ) ) ) ) );
-    EMG_calibration_name = ['ID_2_medium_4_EMGCalibration']; 
+    EMG_calibration_name = ['ID_5_test_EMG_data_medium']; 
     EMG_calibration_data = experiment_data.(EMG_calibration_name);
     
     EMG_calibration_data_split = datevec(EMG_calibration_data.Timestamp);
@@ -75,13 +76,12 @@ if calibration_flag == 0 %% at the moment this isnt set to 1 anywhere on purpose
 end
 
 %% Plot spectral analysis of EMG data
-EMG_name = ['ID_test_EMG_data'];
-EMG_data = experiment_data.(EMG_name);
+EMG_data = experiment_data.(EMG_calibration_name);
 fs = 150;
 
 figure(1)
-% for i= bands_EMG_flex
-for i=1:8
+for i= bands_EMG_flex
+% for i=1:8
 x = table2array(EMG_data(:,i));
 y = fft(x);
 
@@ -103,13 +103,14 @@ hold off
 
 %% Find time of 'catch' and then plot spectral analysis for EMG of stretch reflex
 
-for trial = 1:10
-holo_dynamic = ['ID_test_slow_', num2str(trial), '_HoloData'];
-emg_dynamic = ['ID_test_EMG_data'];
-        
-
+for trial = 1:20
+ holo_dynamic = ['ID_',num2str(ID),'_slow_', num2str(trial), '_HoloData'];
+ EMG_calibration_name = ['ID_5_test_EMG_data_slow']; 
+ figure(trial)
+ 
+if isfield(experiment_data,holo_dynamic) == 1
     Holo_data = experiment_data.(holo_dynamic);
-    EMG_data = experiment_data.(emg_dynamic);
+    EMG_data = experiment_data.(EMG_calibration_name);
     % % plot holo data with points and a spline overlaid
     x_holo = (Holo_data.Timestamp);
     y_holo = Holo_data.Angle;
@@ -126,21 +127,21 @@ emg_dynamic = ['ID_test_EMG_data'];
     end_trial = x_holo(end);
     EMG_date_timestamp = EMG_data.Timestamp;
     
-%     EMG_date_timestamp.Format = 'hh:mm:ss';
-    dt_catch = datetime('2021-08-16')+timestamp_catch; 
-%     dt_catch.Format = 'hh:mm:ss';
-    dt_end_trial = datetime('2021-08-16')+end_trial; 
-%     dt_end_trial.Format = 'hh:mm:ss';
+    EMG_date_timestamp.Format = 'hh:mm:ss';
+    dt_catch = datetime('2021-08-17')+timestamp_catch; 
+    dt_catch.Format = 'hh:mm:ss';
+    dt_end_trial = datetime('2021-08-17')+end_trial; 
+    dt_end_trial.Format = 'hh:mm:ss';
     
-    % it doesnt recognise them as being the same????
-    EMG_indexes = (EMG_date_timestamp > dt_catch ) & (EMG_date_timestamp < dt_end_trial) ;
+    
+    EMG_indexes = (EMG_date_timestamp >= dt_catch - seconds(1) ) & (EMG_date_timestamp <= dt_end_trial) ;
     EMG_catch = EMG_data(EMG_indexes,:);
     
     fs = 150;
 
-    figure(trial)
-% for i= bands_EMG_flex
-    for i=1:8
+
+for i= bands_EMG_flex
+%     for i=1:8
     x = table2array(EMG_catch(:,i));
     y = fft(x);
 
@@ -154,10 +155,15 @@ emg_dynamic = ['ID_test_EMG_data'];
     ylabel('Power')
 
     hold on
-    end
+end
     
+%     legend(strcat('EMG band', num2str(bands_EMG_flex(1))),strcat('EMG band', num2str(bands_EMG_flex(2))),strcat('EMG band', num2str(bands_EMG_flex(3))));
+%     hold off
     else
-        fprintf('No Holo data for trial %i\n; slow trial \n',i)
+        fprintf('No Holo data for trial %i\n; slow trial \n',trial)
+    end
+    else
+        fprintf('No Holo data for trial %i\n; slow trial \n',trial)
     end
     
 end

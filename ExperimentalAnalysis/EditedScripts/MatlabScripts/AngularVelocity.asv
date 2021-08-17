@@ -1,5 +1,5 @@
 clc; close all;
-clear all;
+
 %% Input the ID of data you want to analyse here. The .mat file will then be auto-loaded.
 
 chk = exist('Nodes','var');
@@ -101,8 +101,8 @@ for i=1:20
         figure(i+20)
 % %     slow if statements
    
-        holo_dynamic = ['ID_',num2str(ID),'_medium_', num2str(i), '_HoloData'];
-        pol_dynamic = ['ID_',num2str(ID),'_medium_', num2str(i), '_POLGroundTruth'];
+        holo_dynamic = ['ID_2_slow_', num2str(i), '_HoloData'];
+        pol_dynamic = ['ID_2_slow_', num2str(i), '_POLGroundTruth'];
         
         if isfield(experiment_data,pol_dynamic) == 1
         Holo_data = experiment_data.(holo_dynamic);
@@ -168,90 +168,10 @@ for i=1:20
         hold off
               
         else
-            fprintf('Not enough Hololens data for trial %i; medium trial \n',i)
+            fprintf('Not enough Hololens data for trial %i; slow trial \n',i)
         end
     else
-        fprintf('No polhemus data for trial %i\n; medium trial \n',i)
-    end
-        
-end
-
-for i=1:20
-
-        figure(i+40)
-% %     slow if statements
-   
-        holo_dynamic = ['ID_',num2str(ID),'_fast_', num2str(i), '_HoloData'];
-        pol_dynamic = ['ID_',num2str(ID),'_fast_', num2str(i), '_POLGroundTruth'];
-        
-        if isfield(experiment_data,pol_dynamic) == 1
-        Holo_data = experiment_data.(holo_dynamic);
-        Pol_data = experiment_data.(pol_dynamic);
-
-
-        % % plot holo data with points and a spline overlaid
-        x_holo = seconds(Holo_data.Timestamp);
-        y_holo_angular = Holo_data.AngularVelocity;
-        if length(y_holo_angular) > 1
-            
-        more_rowsToDelete =  x_holo > (x_holo(1)+1000);
-        rowsToDelete = y_holo_angular < 0 | y_holo_angular > 300;
-        y_holo_angular(rowsToDelete) = [];
-        x_holo(rowsToDelete) = [];
-        y_holo_angular(more_rowsToDelete) = [];
-        x_holo(more_rowsToDelete) = [];
-        steps_holo = (x_holo(length(x_holo)) - x_holo(1)) / sum(x_holo);
-        xx_holo = x_holo(1):steps_holo:x_holo(length(x_holo));
-        yy_holo_angular = spline(x_holo,y_holo_angular,xx_holo);
-%         subplot(2,1,1);
-        plot(x_holo,y_holo_angular,'o',xx_holo,yy_holo_angular);
-%         
-        hold on
-% 
- % % plot holo data with points and a spline overlaid
- %%% polh data currently too noisy
-        x_pol = seconds(Pol_data.Timestamp);
-        y_pol = Pol_data.Angle;
-        pol_millis = Pol_data.Milliseconds;
-        
-        rowsToDelete = y_pol < 0 | y_pol > 180;
-        more_rowsToDelete = x_pol > (x_pol(1)+1000);
-        y_pol(more_rowsToDelete) = [];
-        x_pol(more_rowsToDelete) = [];
-        y_pol(rowsToDelete) = [];
-        x_pol(rowsToDelete) = []; 
-        pol_millis(more_rowsToDelete) = [];
-        pol_millis(rowsToDelete) = [];
-        
-        order = 3;
-        framelen = 93;
-
-        sgf = sgolayfilt(y_pol,order,framelen);
-        
-        v = zeros(length(pol_millis),1) ;
-        for i = 1:length(pol_millis)-1
-            v(i) = (sgf(i+1)-sgf(i))/(pol_millis(i+1)-pol_millis(i)) * 100000;
-        end
-        
-        plot(x_pol, v);
-% % 
-        
-%%%%%% Need to change this to just around the point of catch !!
-        avg_vel = mean(y_holo_angular);
-        
-        xlabel('Time')
-        ylabel('Angular Velocity')
-        title('Slow trial', avg_vel)
-%         legend('Holo Data')
-        legend('Holo Data', 'Polh Data')
-        
-        hold off
-              
-        else
-            fprintf('Not enough Hololens data for trial %i; fast trial \n',i)
-        end
-    else
-        fprintf('No polhemus data for trial %i\n; fast trial \n',i)
+        fprintf('No polhemus data for trial %i\n; slow trial \n',i)
     end
         
 end
