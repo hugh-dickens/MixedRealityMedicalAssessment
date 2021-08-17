@@ -124,10 +124,10 @@ class PolhemusAngleCollector():
     # Directory
     directory = "./Data_ID_%s/" % ID
   
-    try:
-        os.mkdir(directory)
-    except OSError as e:
-        pass
+    # try:
+    #     os.mkdir(directory)
+    # except OSError as e:
+    #     pass
         # print("Directory exists")
 
     filename_pol = "%s_%s_%s_POLGroundTruth.csv" % (ID, condition, trial)
@@ -142,7 +142,7 @@ class PolhemusAngleCollector():
         #   wr.writerow([word])
         for row in rows:
           writer.writerow(row)
-    if (int(trial) >=20):
+    if (int(trial) >=30):
         print('-------------------quitting file--------------------')
         sys.exit()
 

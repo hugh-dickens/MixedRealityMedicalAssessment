@@ -178,7 +178,7 @@ while True:
         window.update_idletasks()
         window.update()
 
-        if (trial < 20):
+        if (trial < 30):
             # print('hello')
             window.update_idletasks()
             window.update()
@@ -204,7 +204,7 @@ while True:
                 h.close()  
 
                 print('======================= Saved to CSV =======================')
-                time.sleep(3)
+                time.sleep(4)
                 # print(time.time())
 
                 p = open(prot_directory +"KeyboardInterruptBoolean.txt", "w")

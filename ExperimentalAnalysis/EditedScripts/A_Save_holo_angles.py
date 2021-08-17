@@ -62,11 +62,11 @@ class AngleCollector():
     h = open(prot_directory +"Trial.txt", "r")
     trial = str(h.read())
     
-    directory = "./Data_ID_%s/" % ID
-    try:
-        os.mkdir(directory)
-    except OSError as e:
-        print("Directory exists")
+    # directory = "./Data_ID_%s/" % ID
+    # try:
+    #     os.mkdir(directory)
+    # except OSError as e:
+    #     print("Directory exists")
 
     # Directory
     directory = "./Data_ID_%s/" % ID
@@ -89,7 +89,7 @@ class AngleCollector():
         writer.writerow(fields)
         for row in rows:
           writer.writerow(row)
-    if int(trial) >=20:
+    if int(trial) >=30:
       print('-------------------quitting file--------------------')
       sys.exit()
 
