@@ -5,8 +5,8 @@ clc; close all;
 chk = exist('Nodes','var');
 if ~chk
     calibration_flag = 0;
-    ID = 2;
-    ID = num2str(ID);
+    ID = 'test';
+%     ID = num2str(ID);
     ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_ID_';
     ID_folder =  [ID_folder ID '\'];
     mat_data = ['Data_' ID];
@@ -75,13 +75,13 @@ if calibration_flag == 0 %% at the moment this isnt set to 1 anywhere on purpose
 end
 
 %% Plot spectral analysis of EMG data
-EMG_name = ['ID_2_fast_', num2str(4), '_EMG'];
+EMG_name = ['ID_test_EMG_data'];
 EMG_data = experiment_data.(EMG_name);
 fs = 150;
 
 figure(1)
-for i= bands_EMG_flex
-
+% for i= bands_EMG_flex
+for i=1:8
 x = table2array(EMG_data(:,i));
 y = fft(x);
 
@@ -97,16 +97,17 @@ ylabel('Power')
 hold on
 end
 
-legend('EMG 4', 'EMG 5', 'EMG 6')
+% legend('EMG 4', 'EMG 5', 'EMG 6')
+legend(strcat('EMG band', num2str(bands_EMG_flex(1))),strcat('EMG band', num2str(bands_EMG_flex(2))),strcat('EMG band', num2str(bands_EMG_flex(3))));
 hold off
 
 %% Find time of 'catch' and then plot spectral analysis for EMG of stretch reflex
 
-for i = 1:20
-holo_dynamic = ['ID_2_slow_', num2str(i), '_HoloData'];
-emg_dynamic = ['ID_2_slow_', num2str(i), '_EMG'];
+for trial = 1:10
+holo_dynamic = ['ID_test_slow_', num2str(trial), '_HoloData'];
+emg_dynamic = ['ID_test_EMG_data'];
         
-if isfield(experiment_data,pol_dynamic) == 1
+
     Holo_data = experiment_data.(holo_dynamic);
     EMG_data = experiment_data.(emg_dynamic);
     % % plot holo data with points and a spline overlaid
@@ -121,42 +122,42 @@ if isfield(experiment_data,pol_dynamic) == 1
     x_holo(more_rowsToDelete) = [];
         
     angle_index = find(y_holo > 120);
-%     timestamp_catch = x_holo(angle_index(2));
+    timestamp_catch = x_holo(angle_index(2));
+    end_trial = x_holo(end);
+    EMG_date_timestamp = EMG_data.Timestamp;
     
-    holo_millisecond = round(Holo_data.Milliseconds(angle_index(2)),2,'significant');
-    holo_millisecond(holo_millisecond == 1000000) = 990000;
-    EMG_millisecond = round(EMG_data.Milliseconds,2,'significant');
-    EMG_millisecond(EMG_millisecond == 1000000) = 990000;
+%     EMG_date_timestamp.Format = 'hh:mm:ss';
+    dt_catch = datetime('2021-08-16')+timestamp_catch; 
+%     dt_catch.Format = 'hh:mm:ss';
+    dt_end_trial = datetime('2021-08-16')+end_trial; 
+%     dt_end_trial.Format = 'hh:mm:ss';
     
-    holo_second = seconds(round(Holo_data.Timestamp, 'seconds'));
-    EMG_second = seconds(round(EMG_data.Timestamp, 'seconds'));
+    % it doesnt recognise them as being the same????
+    EMG_indexes = (EMG_date_timestamp > dt_catch ) & (EMG_date_timestamp < dt_end_trial) ;
+    EMG_catch = EMG_data(EMG_indexes,:);
+    
+    fs = 150;
 
-    b1 = num2str(holo_second);
-    b2 = num2str(holo_millisecond);
-    % Concatenate the two strings element wise
-    c1 = strcat(b1, b2);
-    % turn spaces into 0s
-    str = regexprep(cellstr(c1), ' ', '0');
-    % Convert the result back to a numeric matrix
-    x_holo = str2double(str);
-    
-    b1EMG = num2str(EMG_second);
-    b2EMG = num2str(EMG_millisecond);
-    % Concatenate the two strings element wise
-    c1EMG = strcat(b1EMG, b2EMG);
-    % turn spaces into 0s
-    strEMG = regexprep(cellstr(c1EMG), ' ', '0');
-    % Convert the result back to a numeric matrix
-    x_EMG = str2double(strEMG);
-    
-    EMG_data_final = cat(2,x_EMG, y_holo);
+    figure(trial)
+% for i= bands_EMG_flex
+    for i=1:8
+    x = table2array(EMG_catch(:,i));
+    y = fft(x);
+
+    n = length(x);          % number of samples
+    f = (0:n-1)*(fs/n);     % frequency range
+    power = abs(y).^2/n;    % power of the DFT
+
+
+    plot(f(118:floor(n/2)),power(118:floor(n/2)))
+    xlabel('Frequency')
+    ylabel('Power')
+
+    hold on
+    end
     
     else
         fprintf('No Holo data for trial %i\n; slow trial \n',i)
     end
     
-    else
-        fprintf('No polhemus data for trial %i\n; slow trial \n',i)
-    end
-
 end

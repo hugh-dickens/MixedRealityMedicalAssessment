@@ -54,6 +54,11 @@ f.close()
 # Directory
 directory = "./Data_ID_%s/" % ID
 
+try:
+  os.mkdir(directory)
+except OSError as e:
+  pass
+
 # pathSuffix = r'\Recorded-Data\Raw_EMG_'
 #pathSuffix = r'\thalmicMyo\examples\Recorded-Data\Raw_EMG_'
 

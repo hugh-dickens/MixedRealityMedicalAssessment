@@ -19,6 +19,7 @@ p = open(prot_directory +"MyoExit.txt", "w")
 p.write(str(0))
 p.close()
 
+
 ####start time
 global startTime, startAssessment
 startTime = time.time()
@@ -136,7 +137,7 @@ def restartGUI():
 # btn_Calibrate.pack()
 
 btn_startRecording = tk.Button(
-    text="Click me to start recording!",
+    text="Click me to start recording angles!",
     width=25,
     height=5,
     bg="blue",

@@ -6,7 +6,7 @@ clear;
 chk = exist('Nodes','var');
 if ~chk
      
-    ID = 3;
+    ID = 4;
     ID = num2str(ID);
     ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_ID_';
     ID_folder =  [ID_folder ID '\'];
@@ -17,13 +17,13 @@ end
 
 %% Plot holo and polhemus data for slow trials section
 %slow trials
-% for i=1:20
-i=1;
+for i=1:20
+% i=1;
        figure(i)
 % %     slow if statements
    
-        holo_dynamic = ['ID_3_medium_', num2str(i), '_HoloData'];
-        pol_dynamic = ['ID_3_medium_', num2str(i), '_POLGroundTruth'];
+        holo_dynamic = ['ID_4_medium_', num2str(i), '_HoloData'];
+        pol_dynamic = ['ID_4_medium_', num2str(i), '_POLGroundTruth'];
         
         if isfield(experiment_data,pol_dynamic) == 1
         Holo_data = experiment_data.(holo_dynamic);
@@ -134,7 +134,7 @@ i=1;
         fprintf('No polhemus data for trial %i\n; slow trial \n',i)
     end
         
-% end
+end
 %%
 for i=1:16  
 
