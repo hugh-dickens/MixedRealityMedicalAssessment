@@ -9,6 +9,9 @@ import sys
 import signal
 import time
 
+global trial_numb
+trial_numb = 0
+
 class AngleCollector():
   """
   Collects angle data in a queue with *n* maximum number of elements.
@@ -59,27 +62,30 @@ class AngleCollector():
     ID = str(f.read())
     g = open(prot_directory +"Condition.txt", "r")
     condition = str(g.read())
-    h = open(prot_directory +"Trial.txt", "r")
-    trial = str(h.read())
+    # h = open(prot_directory +"Trial.txt", "r")
+    # trial = str(h.read())
+    global trial_numb
+    trial_numb += 1
+    trial = str(trial_numb)
     
     directory = "./Data_ID_%s/" % ID
-    try:
-        os.mkdir(directory)
-    except OSError as e:
-        print("Directory exists")
+    # try:
+    #     os.mkdir(directory)
+    # except OSError as e:
+    #     print("Directory exists")
 
     # Directory
-    directory = "./Data_ID_%s/" % ID
+    # directory = "./Data_ID_%s/" % ID
 
     fields = ['Timestamp','Milliseconds' , 'Angle', 'Angular Velocity'] 
     rows = zip(date_time, milliseconds ,angle, angularVel)
 
-    f = open(prot_directory +"ParticipantID.txt", "r")
-    ID = str(f.read())
-    g = open(prot_directory +"Condition.txt", "r")
-    condition = str(g.read())
-    h = open(prot_directory +"Trial.txt", "r")
-    trial = str(h.read())
+    # f = open(prot_directory +"ParticipantID.txt", "r")
+    # ID = str(f.read())
+    # g = open(prot_directory +"Condition.txt", "r")
+    # condition = str(g.read())
+    # h = open(prot_directory +"Trial.txt", "r")
+    # trial = str(h.read())
     
     filename_angle = "%s_%s_%s_HoloData.csv" % (ID, condition, trial)
 

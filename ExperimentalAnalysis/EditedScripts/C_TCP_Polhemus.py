@@ -11,8 +11,8 @@ import sys
 import copy
 import time
 
-global trial_empty
-trial_empty = 100
+global trial_num
+trial_num = 0
 
 class PolhemusAngleCollector():
   """
@@ -121,20 +121,22 @@ class PolhemusAngleCollector():
     ID = str(f.read())
     g = open(prot_directory + "Condition.txt", "r")
     condition = str(g.read())
-    h = open(prot_directory + "Trial.txt", "r")
-    trial = str(h.read())
-
+    # h = open(prot_directory + "Trial.txt", "r")
+    # trial = str(h.read())
+    global trial_num
+    trial_num += 1
+    trial = str(trial_num)
     # Directory
     directory = "./Data_ID_%s/" % ID
 
-    # print(trial)
-    if (not str(trial)):
-        global trial_empty
-        trial_empty +=1
-        print(trial_empty)
-        trial = str(trial_empty)
-    else:
-        pass
+    # # print(trial)
+    # if (not str(trial)):
+    #     global trial_empty
+    #     trial_empty +=1
+    #     print(trial_empty)
+    #     trial = str(trial_empty)
+    # else:
+    #     pass
     
   
     # try:

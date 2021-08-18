@@ -2,7 +2,7 @@ clear all; clc; close;
 
 %% Matlab scipt to read the data from csv files and convert it into a struct .mat file named 'Data_ID'
 % input the ID of interest here:
-ID = '6';
+ID = '9';
 % ID = num2str(ID);
 ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_ID_';
 ID_folder =  [ID_folder ID '\'];

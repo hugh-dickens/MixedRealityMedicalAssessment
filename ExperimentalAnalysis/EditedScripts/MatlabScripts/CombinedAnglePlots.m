@@ -6,7 +6,7 @@ clear all;
 chk = exist('Nodes','var');
 if ~chk
      
-    ID = 7;
+    ID = 9;
     ID = num2str(ID);
     ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_ID_';
     ID_folder =  [ID_folder ID '\'];
@@ -15,6 +15,7 @@ if ~chk
     load([ID_folder mat_data])
 end
 
+pol_missing_data = [];
 %% Plot holo and polhemus data for slow trials section
 %slow trials
 for i=1:30
@@ -153,6 +154,8 @@ for i=1:30
         
         else
             fprintf('Not enough Hololens data for trial %i; slow trial \n',i)
+            pol_missing_data = [pol_missing_data i];
+            
         end
     else
         fprintf('No polhemus data for trial %i\n; slow trial \n',i)
@@ -216,77 +219,82 @@ for i=1:30
 
         sgf = sgolayfilt(y_pol,order,framelen);
         
-        subplot(2,1,1);
-        plot(x_holo_spline,y_holo_spline,'o',xx_holo_spline,yy_holo_spline);
+        lag = 0.2;
+        
+        
+%         subplot(2,1,1);
+        plot(x_holo_spline - lag,y_holo_spline,'o',xx_holo_spline -lag,yy_holo_spline);
         hold on
         
         plot(x_pol, sgf);
 % 
         xlabel('Time')
         ylabel('Angle')
-        title('Medium trial')
+        title('Slow trial')
         legend('Holo Data','Holo Spline','Polh Data')
         
         hold off
-        % error bar part:
         
-        Holo_data = experiment_data.(holo_dynamic);
-        Pol_data = experiment_data.(pol_dynamic);
-
-        holo_millisecond = round(Holo_data.Milliseconds,2,'significant');
-        y_holo = Holo_data.Angle;
-        
-        holo_second = seconds(round(Holo_data.Timestamp, 'seconds'));
-        Polh_second = seconds(round(Pol_data.Timestamp, 'seconds'));
-        
-        b1 = num2str(holo_second);
-        b2 = num2str(holo_millisecond);
-        % Concatenate the two strings element wise
-        c1 = strcat(b1, b2);
-        % turn spaces into 0s
-        str = regexprep(cellstr(c1), ' ', '0');
-        % Convert the result back to a numeric matrix
-        x_holo = str2double(str);
-        
-
-        holo_data_final = cat(2,x_holo, y_holo);
-
-        polh_millisecond = round(Pol_data.Milliseconds,2,'significant');
-        polh_millisecond(polh_millisecond == 1000000) = 990000;
-        
-        
-        a1 = num2str(Polh_second);
-        a2 = num2str(polh_millisecond);
-        % Concatenate the two strings element wise
-        d1 = strcat(a1, a2);
-        % turn spaces into 0s
-        str1 = regexprep(cellstr(d1), ' ', '0');
-        % Convert the result back to a numeric matrix
-        x_pol = str2double(str1);
-
-        % ADD THIS LINE FOR ALL TRIALS.
-        x_pol = x_pol(1:length(sgf));
-
-        pol_data_final = cat(2, x_pol, sgf);
-
-        [~, rowsA, rowsB] = intersect(holo_data_final(:, 1), pol_data_final(:, 1));
-        rowsA = sort(rowsA);
-        rowsB = sort(rowsB);
-        comparing_angles = [holo_data_final(rowsA, 2) pol_data_final(rowsB, 2)];
-
-        comparing_diff = comparing_angles(:,1) - comparing_angles(:,2);        
-        if length(comparing_diff)>1
-            rmse = sqrt(mean((comparing_angles(:,1)-comparing_angles(:,2)).^2));
-            subplot(2,1,2)
-            bar(comparing_diff)
-            title('Total rmse is',rmse)
-            ylabel('Difference in angle data (holo - polh)')
-        else 
-            fprintf('No comparing diff data for trial %i; medium trial \n', i)
-        end
+%         % error bar part:
+%         
+%         Holo_data = experiment_data.(holo_dynamic);
+%         Pol_data = experiment_data.(pol_dynamic);
+% 
+%         holo_millisecond = round(Holo_data.Milliseconds,2,'significant');
+%         y_holo = Holo_data.Angle;
+%         
+%         holo_second = seconds(round(Holo_data.Timestamp, 'seconds'));
+%         Polh_second = seconds(round(Pol_data.Timestamp, 'seconds'));
+%         
+%         b1 = num2str(holo_second);
+%         b2 = num2str(holo_millisecond);
+%         % Concatenate the two strings element wise
+%         c1 = strcat(b1, b2);
+%         % turn spaces into 0s
+%         str = regexprep(cellstr(c1), ' ', '0');
+%         % Convert the result back to a numeric matrix
+%         x_holo = str2double(str);
+%         
+% 
+%         holo_data_final = cat(2,x_holo, y_holo);
+% 
+%         polh_millisecond = round(Pol_data.Milliseconds,2,'significant');
+%         polh_millisecond(polh_millisecond == 1000000) = 990000;
+%         
+%         
+%         a1 = num2str(Polh_second);
+%         a2 = num2str(polh_millisecond);
+%         % Concatenate the two strings element wise
+%         d1 = strcat(a1, a2);
+%         % turn spaces into 0s
+%         str1 = regexprep(cellstr(d1), ' ', '0');
+%         % Convert the result back to a numeric matrix
+%         x_pol = str2double(str1);
+% 
+%         % ADD THIS LINE FOR ALL TRIALS.
+%         x_pol = x_pol(1:length(sgf));
+% 
+%         pol_data_final = cat(2, x_pol, sgf);
+% 
+%         [~, rowsA, rowsB] = intersect(holo_data_final(:, 1), pol_data_final(:, 1));
+%         rowsA = sort(rowsA);
+%         rowsB = sort(rowsB);
+%         comparing_angles = [holo_data_final(rowsA, 2) pol_data_final(rowsB, 2)];
+% 
+%         comparing_diff = comparing_angles(:,1) - comparing_angles(:,2);        
+%         if length(comparing_diff)>1
+%             rmse = sqrt(mean((comparing_angles(:,1)-comparing_angles(:,2)).^2));
+%             subplot(2,1,2)
+%             bar(comparing_diff)
+%             title('Total rmse is',rmse)
+%             ylabel('Difference in angle data (holo - polh)')
+%         else 
+%             fprintf('No comparing diff data for trial %i; medium trial \n', i)
+%         end
         
         else
             fprintf('Not enough Hololens data for trial %i; medium trial \n',i)
+            pol_missing_data = [pol_missing_data i];
         end
     else
         fprintf('No polhemus data for trial %i\n; medium trial \n',i)
@@ -300,8 +308,8 @@ for i=1:30
        figure(i+60)
 % %     slow if statements
    
-        holo_dynamic = ['ID_',num2str(ID),'_fastv2_', num2str(i), '_HoloData'];
-        pol_dynamic = ['ID_',num2str(ID),'_fastv2_', num2str(i), '_POLGroundTruth'];
+        holo_dynamic = ['ID_',num2str(ID),'_fast_', num2str(i), '_HoloData'];
+        pol_dynamic = ['ID_',num2str(ID),'_fast_', num2str(i), '_POLGroundTruth'];
         
         if isfield(experiment_data,pol_dynamic) == 1
         Holo_data = experiment_data.(holo_dynamic);
@@ -351,77 +359,82 @@ for i=1:30
 
         sgf = sgolayfilt(y_pol,order,framelen);
         
-        subplot(2,1,1);
-        plot(x_holo_spline,y_holo_spline,'o',xx_holo_spline,yy_holo_spline);
+        lag = 0.2;
+        
+        
+%         subplot(2,1,1);
+        plot(x_holo_spline - lag,y_holo_spline,'o',xx_holo_spline -lag,yy_holo_spline);
         hold on
-            
+        
         plot(x_pol, sgf);
 % 
         xlabel('Time')
         ylabel('Angle')
-        title('Fast trial')
+        title('Slow trial')
         legend('Holo Data','Holo Spline','Polh Data')
         
         hold off
-        % error bar part:
         
-        Holo_data = experiment_data.(holo_dynamic);
-        Pol_data = experiment_data.(pol_dynamic);
-
-        holo_millisecond = round(Holo_data.Milliseconds,2,'significant');
-        y_holo = Holo_data.Angle;
-        
-        holo_second = seconds(round(Holo_data.Timestamp, 'seconds'));
-        Polh_second = seconds(round(Pol_data.Timestamp, 'seconds'));
-        
-        b1 = num2str(holo_second);
-        b2 = num2str(holo_millisecond);
-        % Concatenate the two strings element wise
-        c1 = strcat(b1, b2);
-        % turn spaces into 0s
-        str = regexprep(cellstr(c1), ' ', '0');
-        % Convert the result back to a numeric matrix
-        x_holo = str2double(str);
-        
-
-        holo_data_final = cat(2,x_holo, y_holo);
-
-        polh_millisecond = round(Pol_data.Milliseconds,2,'significant');
-        polh_millisecond(polh_millisecond == 1000000) = 990000;
-        
-        
-        a1 = num2str(Polh_second);
-        a2 = num2str(polh_millisecond);
-        % Concatenate the two strings element wise
-        d1 = strcat(a1, a2);
-        % turn spaces into 0s
-        str1 = regexprep(cellstr(d1), ' ', '0');
-        % Convert the result back to a numeric matrix
-        x_pol = str2double(str1);
-
-        % ADD THIS LINE FOR ALL TRIALS.
-        x_pol = x_pol(1:length(sgf));
-
-        pol_data_final = cat(2, x_pol, sgf);
-
-        [~, rowsA, rowsB] = intersect(holo_data_final(:, 1), pol_data_final(:, 1));
-        rowsA = sort(rowsA);
-        rowsB = sort(rowsB);
-        comparing_angles = [holo_data_final(rowsA, 2) pol_data_final(rowsB, 2)];
-
-        comparing_diff = comparing_angles(:,1) - comparing_angles(:,2);        
-        if length(comparing_diff)>1
-            rmse = sqrt(mean((comparing_angles(:,1)-comparing_angles(:,2)).^2));
-            subplot(2,1,2)
-            bar(comparing_diff)
-            title('Total rmse is',rmse)
-            ylabel('Difference in angle data (holo - polh)')
-        else 
-            fprintf('No comparing diff data for trial %i; fast trial \n', i)
-        end
+%         % error bar part:
+%         
+%         Holo_data = experiment_data.(holo_dynamic);
+%         Pol_data = experiment_data.(pol_dynamic);
+% 
+%         holo_millisecond = round(Holo_data.Milliseconds,2,'significant');
+%         y_holo = Holo_data.Angle;
+%         
+%         holo_second = seconds(round(Holo_data.Timestamp, 'seconds'));
+%         Polh_second = seconds(round(Pol_data.Timestamp, 'seconds'));
+%         
+%         b1 = num2str(holo_second);
+%         b2 = num2str(holo_millisecond);
+%         % Concatenate the two strings element wise
+%         c1 = strcat(b1, b2);
+%         % turn spaces into 0s
+%         str = regexprep(cellstr(c1), ' ', '0');
+%         % Convert the result back to a numeric matrix
+%         x_holo = str2double(str);
+%         
+% 
+%         holo_data_final = cat(2,x_holo, y_holo);
+% 
+%         polh_millisecond = round(Pol_data.Milliseconds,2,'significant');
+%         polh_millisecond(polh_millisecond == 1000000) = 990000;
+%         
+%         
+%         a1 = num2str(Polh_second);
+%         a2 = num2str(polh_millisecond);
+%         % Concatenate the two strings element wise
+%         d1 = strcat(a1, a2);
+%         % turn spaces into 0s
+%         str1 = regexprep(cellstr(d1), ' ', '0');
+%         % Convert the result back to a numeric matrix
+%         x_pol = str2double(str1);
+% 
+%         % ADD THIS LINE FOR ALL TRIALS.
+%         x_pol = x_pol(1:length(sgf));
+% 
+%         pol_data_final = cat(2, x_pol, sgf);
+% 
+%         [~, rowsA, rowsB] = intersect(holo_data_final(:, 1), pol_data_final(:, 1));
+%         rowsA = sort(rowsA);
+%         rowsB = sort(rowsB);
+%         comparing_angles = [holo_data_final(rowsA, 2) pol_data_final(rowsB, 2)];
+% 
+%         comparing_diff = comparing_angles(:,1) - comparing_angles(:,2);        
+%         if length(comparing_diff)>1
+%             rmse = sqrt(mean((comparing_angles(:,1)-comparing_angles(:,2)).^2));
+%             subplot(2,1,2)
+%             bar(comparing_diff)
+%             title('Total rmse is',rmse)
+%             ylabel('Difference in angle data (holo - polh)')
+%         else 
+%             fprintf('No comparing diff data for trial %i; fast trial \n', i)
+%         end
         
         else
             fprintf('Not enough Hololens data for trial %i; fast trial \n',i)
+            pol_missing_data = [pol_missing_data i];
         end
     else
         fprintf('No polhemus data for trial %i\n; fast trial \n',i)
