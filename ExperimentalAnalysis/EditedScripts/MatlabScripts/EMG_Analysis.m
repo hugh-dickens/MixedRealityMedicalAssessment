@@ -6,10 +6,10 @@ clear all;
 chk = exist('Nodes','var');
 if ~chk
     calibration_flag = 0;
-    ID = 7;
+    ID = 10;
     ID = num2str(ID);
-    ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_ID_';
-    ID_folder =  [ID_folder ID '\'];
+    ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_MATLAB';
+    ID_folder =  [ID_folder '\'];
     mat_data = ['Data_' ID];
 
     load([ID_folder mat_data])
@@ -18,9 +18,9 @@ end
 %% Calibration sequence to associate myo electrodes with muscles.
 if calibration_flag == 0 %% at the moment this isnt set to 1 anywhere on purpose
     names = fieldnames( experiment_data );
-    subStr = 'ID_7_test_EMG_data';
+    subStr = 'ID_10_test_EMG_data';
     Calibration_filteredStruct = rmfield( experiment_data, names( find( cellfun( @isempty, strfind( names , subStr ) ) ) ) );
-    EMG_data = ['ID_7_test_EMG_data_calib']; 
+    EMG_data = ['ID_10_test_EMG_data_calib']; 
     EMG_calibration_data = experiment_data.(EMG_data);
     
     EMG_calibration_data_split = datevec(EMG_calibration_data.Timestamp);
@@ -129,9 +129,9 @@ if isfield(experiment_data,holo_dynamic) == 1
     EMG_date_timestamp = EMG_data.Timestamp;
     
     EMG_date_timestamp.Format = 'hh:mm:ss';
-    dt_catch = datetime('2021-08-17')+timestamp_catch; 
+    dt_catch = datetime('2021-08-18')+timestamp_catch; 
     dt_catch.Format = 'hh:mm:ss';
-    dt_end_trial = datetime('2021-08-17')+end_trial; 
+    dt_end_trial = datetime('2021-08-18')+end_trial; 
     dt_end_trial.Format = 'hh:mm:ss';
     
     
@@ -201,9 +201,9 @@ if isfield(experiment_data,holo_dynamic) == 1
     EMG_date_timestamp = EMG_data.Timestamp;
     
     EMG_date_timestamp.Format = 'hh:mm:ss';
-    dt_catch = datetime('2021-08-17')+timestamp_catch; 
+    dt_catch = datetime('2021-08-18')+timestamp_catch; 
     dt_catch.Format = 'hh:mm:ss';
-    dt_end_trial = datetime('2021-08-17')+end_trial; 
+    dt_end_trial = datetime('2021-08-18')+end_trial; 
     dt_end_trial.Format = 'hh:mm:ss';
     
     
@@ -247,8 +247,8 @@ end
 
 for trial = 1:30
     %%replace this with polhemus
- holo_dynamic = ['ID_',num2str(ID),'_fastv2_', num2str(trial), '_HoloData'];
- EMG_data_used = ['ID_',num2str(ID),'_test_EMG_data_fastv2'];  
+ holo_dynamic = ['ID_',num2str(ID),'_fast_', num2str(trial), '_HoloData'];
+ EMG_data_used = ['ID_',num2str(ID),'_test_EMG_data_calib'];  
  figure(trial)
  
 if isfield(experiment_data,holo_dynamic) == 1
@@ -272,9 +272,9 @@ if isfield(experiment_data,holo_dynamic) == 1
     EMG_date_timestamp = EMG_data.Timestamp;
     
     EMG_date_timestamp.Format = 'hh:mm:ss';
-    dt_catch = datetime('2021-08-17')+timestamp_catch; 
+    dt_catch = datetime('2021-08-18')+timestamp_catch; 
     dt_catch.Format = 'hh:mm:ss';
-    dt_end_trial = datetime('2021-08-17')+end_trial; 
+    dt_end_trial = datetime('2021-08-18')+end_trial; 
     dt_end_trial.Format = 'hh:mm:ss';
     
     

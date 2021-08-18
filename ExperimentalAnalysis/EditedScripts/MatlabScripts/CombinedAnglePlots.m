@@ -8,24 +8,44 @@ if ~chk
      
     ID = 9;
     ID = num2str(ID);
-    ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_ID_';
-    ID_folder =  [ID_folder ID '\'];
+    ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_MATLAB';
+    ID_folder =  [ID_folder '\'];
     mat_data = ['Data_' ID];
 
     load([ID_folder mat_data])
 end
 
 pol_missing_data = [];
+names = fieldnames( experiment_data );
+subStrSlow = '_slow';
+slow_filteredStruct = rmfield( experiment_data, names( find( cellfun( @isempty, strfind( names , subStrSlow ) ) ) ) );
+subStrMedium = '_medium';
+medium_filteredStruct = rmfield( experiment_data, names( find( cellfun( @isempty, strfind( names , subStrMedium ) ) ) ) );
+subStrFast = '_fast';
+fast_filteredStruct = rmfield( experiment_data, names( find( cellfun( @isempty, strfind( names , subStrFast ) ) ) ) );
+
 %% Plot holo and polhemus data for slow trials section
 %slow trials
-for i=1:30
+namesSlow = fieldnames( slow_filteredStruct );
+subStrHolo = '_HoloData';
+Holo_filteredStruct = rmfield( slow_filteredStruct, namesSlow(find(cellfun(@isempty, strfind( namesSlow, subStrHolo)))));
+Holo_Fields = fieldnames(Holo_filteredStruct);
+subStrPol = '_POLGroundTruth';
+Pol_filteredStruct = rmfield( slow_filteredStruct, namesSlow(find(cellfun(@isempty, strfind( namesSlow, subStrPol)))));
+Polh_Fields = fieldnames(Pol_filteredStruct);
+for trialnum = 1:length(Holo_Fields)
+    
+    holo_dynamic = [string(Holo_Fields(trialnum))];
+    try
+    pol_dynamic = [string(Polh_Fields(trialnum))] ;
+% for i=1:30
 % i=1;
-       figure(i)
+       figure(trialnum)
 % %     slow if statements
-   
-        holo_dynamic = ['ID_',num2str(ID),'_slow_', num2str(i), '_HoloData'];
-        pol_dynamic = ['ID_',num2str(ID),'_slow_', num2str(i), '_POLGroundTruth'];
-        
+%    
+%         holo_dynamic = ['ID_',num2str(ID),'_slow_', num2str(i), '_HoloData'];
+%         pol_dynamic = ['ID_',num2str(ID),'_slow_', num2str(i), '_POLGroundTruth'];
+%         
         if isfield(experiment_data,pol_dynamic) == 1
         Holo_data = experiment_data.(holo_dynamic);
         Pol_data = experiment_data.(pol_dynamic);
@@ -57,7 +77,8 @@ for i=1:30
             x_holo_spline = x_holo(A);
             steps_holo_spline = (x_holo_spline(length(x_holo_spline)) - x_holo_spline(1)) / sum(x_holo_spline);
             xx_holo_spline = x_holo_spline(1):steps_holo_spline:x_holo_spline(length(x_holo_spline));
-            yy_holo_spline = spline(x_holo_spline,y_holo_spline,xx_holo_spline);
+            if length(y_holo_spline) > 1
+                yy_holo_spline = spline(x_holo_spline,y_holo_spline,xx_holo_spline);
 
 %         end
 
@@ -152,26 +173,42 @@ for i=1:30
 %             fprintf('No comparing diff data for trial %i; slow trial \n', i)
 %         end
         
+            else
+                fprintf('Repeat data from holo %i; slow trial', trialnum)
+            end
         else
-            fprintf('Not enough Hololens data for trial %i; slow trial \n',i)
+            fprintf('Not enough Hololens data for trial %i; slow trial \n',trialnum)
             pol_missing_data = [pol_missing_data i];
             
         end
     else
-        fprintf('No polhemus data for trial %i\n; slow trial \n',i)
-    end
+        fprintf('No polhemus data for trial %i\n; slow trial \n',trialnum)
+        end
+    catch me
         
+        fprintf('no polh data for trial %i\n; slow \n', trialnum)
+    end
 end
 
 %% medium
-for i=1:30
+namesMedium = fieldnames( medium_filteredStruct );
+subStrHolo = '_HoloData';
+Holo_filteredStruct = rmfield( medium_filteredStruct, namesMedium(find(cellfun(@isempty, strfind( namesMedium, subStrHolo)))));
+Holo_Fields = fieldnames(Holo_filteredStruct);
+subStrPol = '_POLGroundTruth';
+Pol_filteredStruct = rmfield( medium_filteredStruct, namesMedium(find(cellfun(@isempty, strfind( namesMedium, subStrPol)))));
+Polh_Fields = fieldnames(Pol_filteredStruct);
+
+for trialnum = 1:length(Holo_Fields)
+    
+    holo_dynamic = [string(Holo_Fields(trialnum ))];
+    try
+    pol_dynamic = [string(Polh_Fields(trialnum))] ;
+% for i=1:30
 % i=1;
-       figure(i+30)
+       figure(trialnum + 40)
 % %     slow if statements
    
-        holo_dynamic = ['ID_',num2str(ID),'_medium_', num2str(i), '_HoloData'];
-        pol_dynamic = ['ID_',num2str(ID),'_medium_', num2str(i), '_POLGroundTruth'];
-        
         if isfield(experiment_data,pol_dynamic) == 1 & isfield(experiment_data,holo_dynamic) == 1
         Holo_data = experiment_data.(holo_dynamic);
         Pol_data = experiment_data.(pol_dynamic);
@@ -200,6 +237,7 @@ for i=1:30
             x_holo_spline = x_holo(A);
             steps_holo_spline = (x_holo_spline(length(x_holo_spline)) - x_holo_spline(1)) / sum(x_holo_spline);
             xx_holo_spline = x_holo_spline(1):steps_holo_spline:x_holo_spline(length(x_holo_spline));
+            if length(y_holo_spline) > 1
             yy_holo_spline = spline(x_holo_spline,y_holo_spline,xx_holo_spline);
             
 %         end
@@ -223,14 +261,14 @@ for i=1:30
         
         
 %         subplot(2,1,1);
-        plot(x_holo_spline - lag,y_holo_spline,'o',xx_holo_spline -lag,yy_holo_spline);
+        plot(x_holo_spline - lag,y_holo_spline,'o',xx_holo_spline - lag,yy_holo_spline);
         hold on
         
         plot(x_pol, sgf);
 % 
         xlabel('Time')
         ylabel('Angle')
-        title('Slow trial')
+        title('Medium trial')
         legend('Holo Data','Holo Spline','Polh Data')
         
         hold off
@@ -291,25 +329,40 @@ for i=1:30
 %         else 
 %             fprintf('No comparing diff data for trial %i; medium trial \n', i)
 %         end
+
+            else
+                fprintf('Repeat data from holo %i; slow trial', trialnum)
+            end
         
         else
-            fprintf('Not enough Hololens data for trial %i; medium trial \n',i)
-            pol_missing_data = [pol_missing_data i];
+            fprintf('Not enough Hololens data for trial %i; medium trial \n',trialnum)
+            pol_missing_data = [pol_missing_data trialnum];
         end
     else
-        fprintf('No polhemus data for trial %i\n; medium trial \n',i)
+        fprintf('No polhemus data for trial %i\n; medium trial \n',trialnum)
     end
-        
+    catch me
+        fprintf('no polh data for trial %i\n; medium \n', trialnum)
+    end
 end
 
 %% fast
-for i=1:30
+namesFast = fieldnames( fast_filteredStruct );
+subStrHolo = '_HoloData';
+Holo_filteredStruct = rmfield( fast_filteredStruct, namesFast(find(cellfun(@isempty, strfind( namesFast, subStrHolo)))));
+Holo_Fields = fieldnames(Holo_filteredStruct);
+subStrPol = '_POLGroundTruth';
+Pol_filteredStruct = rmfield( fast_filteredStruct, namesFast(find(cellfun(@isempty, strfind( namesFast, subStrPol)))));
+Polh_Fields = fieldnames(Pol_filteredStruct);
+
+for trialnum = 1:length(Holo_Fields)
+    
+    holo_dynamic = [string(Holo_Fields(trialnum ))];
+    try
+    pol_dynamic = [string(Polh_Fields(trialnum))] ;
+% for i=1:30
 % i=1;
-       figure(i+60)
-% %     slow if statements
-   
-        holo_dynamic = ['ID_',num2str(ID),'_fast_', num2str(i), '_HoloData'];
-        pol_dynamic = ['ID_',num2str(ID),'_fast_', num2str(i), '_POLGroundTruth'];
+       figure(trialnum+80)
         
         if isfield(experiment_data,pol_dynamic) == 1
         Holo_data = experiment_data.(holo_dynamic);
@@ -370,7 +423,7 @@ for i=1:30
 % 
         xlabel('Time')
         ylabel('Angle')
-        title('Slow trial')
+        title('Fast trial')
         legend('Holo Data','Holo Spline','Polh Data')
         
         hold off
@@ -438,8 +491,11 @@ for i=1:30
         end
     else
         fprintf('No polhemus data for trial %i\n; fast trial \n',i)
-    end
+        end
         
+    catch me
+        fprintf('no polh data for trial %i\n; fast \n', trialnum)
+    end
 end
 % %%
 % for i=1:16  
