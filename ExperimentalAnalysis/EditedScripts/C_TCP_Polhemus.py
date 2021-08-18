@@ -11,6 +11,9 @@ import sys
 import copy
 import time
 
+global trial_empty
+trial_empty = 100
+
 class PolhemusAngleCollector():
   """
   Collects angle data in a queue with *n* maximum number of elements.
@@ -123,6 +126,16 @@ class PolhemusAngleCollector():
 
     # Directory
     directory = "./Data_ID_%s/" % ID
+
+    # print(trial)
+    if (not str(trial)):
+        global trial_empty
+        trial_empty +=1
+        print(trial_empty)
+        trial = str(trial_empty)
+    else:
+        pass
+    
   
     # try:
     #     os.mkdir(directory)
@@ -142,7 +155,7 @@ class PolhemusAngleCollector():
         #   wr.writerow([word])
         for row in rows:
           writer.writerow(row)
-    if (int(trial) >=30):
+    if (int(trial) == 30):
         print('-------------------quitting file--------------------')
         sys.exit()
 
@@ -166,4 +179,4 @@ if __name__ == '__main__':
         if (runVariablePol == "1"):
             main()
         elif (runVariablePol == "0"):
-            time.sleep(1)
+            time.sleep(0.5)

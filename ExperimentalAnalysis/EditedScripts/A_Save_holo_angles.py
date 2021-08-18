@@ -62,17 +62,18 @@ class AngleCollector():
     h = open(prot_directory +"Trial.txt", "r")
     trial = str(h.read())
     
-    # directory = "./Data_ID_%s/" % ID
-    # try:
-    #     os.mkdir(directory)
-    # except OSError as e:
-    #     print("Directory exists")
+    directory = "./Data_ID_%s/" % ID
+    try:
+        os.mkdir(directory)
+    except OSError as e:
+        print("Directory exists")
 
     # Directory
     directory = "./Data_ID_%s/" % ID
 
     fields = ['Timestamp','Milliseconds' , 'Angle', 'Angular Velocity'] 
     rows = zip(date_time, milliseconds ,angle, angularVel)
+
     f = open(prot_directory +"ParticipantID.txt", "r")
     ID = str(f.read())
     g = open(prot_directory +"Condition.txt", "r")
@@ -89,7 +90,7 @@ class AngleCollector():
         writer.writerow(fields)
         for row in rows:
           writer.writerow(row)
-    if int(trial) >=30:
+    if int(trial) == 30:
       print('-------------------quitting file--------------------')
       sys.exit()
 

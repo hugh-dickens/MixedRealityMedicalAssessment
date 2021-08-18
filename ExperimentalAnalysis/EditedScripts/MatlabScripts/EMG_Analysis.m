@@ -6,7 +6,7 @@ clear all;
 chk = exist('Nodes','var');
 if ~chk
     calibration_flag = 0;
-    ID = 5;
+    ID = 7;
     ID = num2str(ID);
     ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_ID_';
     ID_folder =  [ID_folder ID '\'];
@@ -18,10 +18,10 @@ end
 %% Calibration sequence to associate myo electrodes with muscles.
 if calibration_flag == 0 %% at the moment this isnt set to 1 anywhere on purpose
     names = fieldnames( experiment_data );
-    subStr = 'ID_5_test_EMG_data';
+    subStr = 'ID_7_test_EMG_data';
     Calibration_filteredStruct = rmfield( experiment_data, names( find( cellfun( @isempty, strfind( names , subStr ) ) ) ) );
-    EMG_calibration_name = ['ID_5_test_EMG_data_medium']; 
-    EMG_calibration_data = experiment_data.(EMG_calibration_name);
+    EMG_data = ['ID_7_test_EMG_data_calib']; 
+    EMG_calibration_data = experiment_data.(EMG_data);
     
     EMG_calibration_data_split = datevec(EMG_calibration_data.Timestamp);
     EMG_calibration_data_seconds = EMG_calibration_data_split(:,6);
@@ -76,7 +76,7 @@ if calibration_flag == 0 %% at the moment this isnt set to 1 anywhere on purpose
 end
 
 %% Plot spectral analysis of EMG data
-EMG_data = experiment_data.(EMG_calibration_name);
+EMG_data = experiment_data.(EMG_data);
 fs = 150;
 
 figure(1)
@@ -102,15 +102,15 @@ legend(strcat('EMG band', num2str(bands_EMG_flex(1))),strcat('EMG band', num2str
 hold off
 
 %% Find time of 'catch' and then plot spectral analysis for EMG of stretch reflex
-
-for trial = 1:20
+% slow
+for trial = 1:30
  holo_dynamic = ['ID_',num2str(ID),'_slow_', num2str(trial), '_HoloData'];
- EMG_calibration_name = ['ID_5_test_EMG_data_slow']; 
+ EMG_data_used = ['ID_',num2str(ID),'_test_EMG_data_slow']; 
  figure(trial)
  
 if isfield(experiment_data,holo_dynamic) == 1
     Holo_data = experiment_data.(holo_dynamic);
-    EMG_data = experiment_data.(EMG_calibration_name);
+    EMG_data = experiment_data.(EMG_data_used);
     % % plot holo data with points and a spline overlaid
     x_holo = (Holo_data.Timestamp);
     y_holo = Holo_data.Angle;
@@ -123,6 +123,79 @@ if isfield(experiment_data,holo_dynamic) == 1
     x_holo(more_rowsToDelete) = [];
         
     angle_index = find(y_holo > 120);
+    if length(angle_index)> 2
+    timestamp_catch = x_holo(angle_index(2));
+    end_trial = x_holo(end);
+    EMG_date_timestamp = EMG_data.Timestamp;
+    
+    EMG_date_timestamp.Format = 'hh:mm:ss';
+    dt_catch = datetime('2021-08-17')+timestamp_catch; 
+    dt_catch.Format = 'hh:mm:ss';
+    dt_end_trial = datetime('2021-08-17')+end_trial; 
+    dt_end_trial.Format = 'hh:mm:ss';
+    
+    
+    EMG_indexes = (EMG_date_timestamp >= dt_catch - seconds(1) ) & (EMG_date_timestamp <= dt_end_trial) ;
+    EMG_catch = EMG_data(EMG_indexes,:);
+    
+    fs = 150;
+
+
+for i= bands_EMG_flex
+%     for i=1:8
+    x = table2array(EMG_catch(:,i));
+    y = fft(x);
+
+    n = length(x);          % number of samples
+    f = (0:n-1)*(fs/n);     % frequency range
+    power = abs(y).^2/n;    % power of the DFT
+
+    % just get rid of low frequencies instead of getting rid of the first
+    % 118 datapoints
+    plot(f(118:floor(n/2)),power(118:floor(n/2)))
+    xlabel('Frequency')
+    ylabel('Power')
+
+    hold on
+end
+    else
+        fprintf('No angle index for trial %i\n; slow trial \n', trial)
+    end
+%     legend(strcat('EMG band', num2str(bands_EMG_flex(1))),strcat('EMG band', num2str(bands_EMG_flex(2))),strcat('EMG band', num2str(bands_EMG_flex(3))));
+%     hold off
+    else
+        fprintf('No Holo data for trial %i\n; slow trial \n',trial)
+    end
+    else
+        fprintf('No Holo data for trial %i\n; slow trial \n',trial)
+    end
+    
+end
+
+%% medium 
+
+for trial = 1:30
+    %%replace this with polhemus
+ holo_dynamic = ['ID_',num2str(ID),'_medium_', num2str(trial), '_HoloData'];
+ EMG_data_used = ['ID_',num2str(ID),'_test_EMG_data_medium'];  
+ figure(trial)
+ 
+if isfield(experiment_data,holo_dynamic) == 1
+    Holo_data = experiment_data.(holo_dynamic);
+    EMG_data = experiment_data.(EMG_data_used);
+    % % plot holo data with points and a spline overlaid
+    x_holo = (Holo_data.Timestamp);
+    y_holo = Holo_data.Angle;
+    if length(y_holo) > 1
+    more_rowsToDelete =  x_holo > (x_holo(1)+1000);
+    rowsToDelete = y_holo < 0 | y_holo > 180;
+    y_holo(rowsToDelete) = [];
+    x_holo(rowsToDelete) = [];
+    y_holo(more_rowsToDelete) = [];
+    x_holo(more_rowsToDelete) = [];
+        
+    angle_index = find(y_holo > 120);
+    if length(angle_index)> 2
     timestamp_catch = x_holo(angle_index(2));
     end_trial = x_holo(end);
     EMG_date_timestamp = EMG_data.Timestamp;
@@ -156,7 +229,9 @@ for i= bands_EMG_flex
 
     hold on
 end
-    
+    else
+        fprintf('No angle index for trial %i\n; slow trial \n', trial)
+    end
 %     legend(strcat('EMG band', num2str(bands_EMG_flex(1))),strcat('EMG band', num2str(bands_EMG_flex(2))),strcat('EMG band', num2str(bands_EMG_flex(3))));
 %     hold off
     else
@@ -167,3 +242,75 @@ end
     end
     
 end
+
+%% fast 
+
+for trial = 1:30
+    %%replace this with polhemus
+ holo_dynamic = ['ID_',num2str(ID),'_fastv2_', num2str(trial), '_HoloData'];
+ EMG_data_used = ['ID_',num2str(ID),'_test_EMG_data_fastv2'];  
+ figure(trial)
+ 
+if isfield(experiment_data,holo_dynamic) == 1
+    Holo_data = experiment_data.(holo_dynamic);
+    EMG_data = experiment_data.(EMG_data_used);
+    % % plot holo data with points and a spline overlaid
+    x_holo = (Holo_data.Timestamp);
+    y_holo = Holo_data.Angle;
+    if length(y_holo) > 1
+    more_rowsToDelete =  x_holo > (x_holo(1)+1000);
+    rowsToDelete = y_holo < 0 | y_holo > 180;
+    y_holo(rowsToDelete) = [];
+    x_holo(rowsToDelete) = [];
+    y_holo(more_rowsToDelete) = [];
+    x_holo(more_rowsToDelete) = [];
+        
+    angle_index = find(y_holo > 120);
+    if length(angle_index)> 2
+    timestamp_catch = x_holo(angle_index(2));
+    end_trial = x_holo(end);
+    EMG_date_timestamp = EMG_data.Timestamp;
+    
+    EMG_date_timestamp.Format = 'hh:mm:ss';
+    dt_catch = datetime('2021-08-17')+timestamp_catch; 
+    dt_catch.Format = 'hh:mm:ss';
+    dt_end_trial = datetime('2021-08-17')+end_trial; 
+    dt_end_trial.Format = 'hh:mm:ss';
+    
+    
+    EMG_indexes = (EMG_date_timestamp >= dt_catch - seconds(1) ) & (EMG_date_timestamp <= dt_end_trial) ;
+    EMG_catch = EMG_data(EMG_indexes,:);
+    
+    fs = 150;
+
+
+for i= bands_EMG_flex
+%     for i=1:8
+    x = table2array(EMG_catch(:,i));
+    y = fft(x);
+
+    n = length(x);          % number of samples
+    f = (0:n-1)*(fs/n);     % frequency range
+    power = abs(y).^2/n;    % power of the DFT
+
+
+    plot(f(118:floor(n/2)),power(118:floor(n/2)))
+    xlabel('Frequency')
+    ylabel('Power')
+
+    hold on
+end
+    else
+        fprintf('No angle index for trial %i\n; fast trial \n', trial)
+    end
+%     legend(strcat('EMG band', num2str(bands_EMG_flex(1))),strcat('EMG band', num2str(bands_EMG_flex(2))),strcat('EMG band', num2str(bands_EMG_flex(3))));
+%     hold off
+    else
+        fprintf('No Holo data for trial %i\n; fast trial \n',trial)
+    end
+    else
+        fprintf('No Holo data for trial %i\n; fast trial \n',trial)
+    end
+    
+end
+

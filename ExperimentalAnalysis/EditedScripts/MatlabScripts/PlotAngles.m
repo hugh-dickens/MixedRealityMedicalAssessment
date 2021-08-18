@@ -1,14 +1,13 @@
 clc; close;
+clear all;
 
-%%%For some reason the plots have stopped coming up. Need to fix this first
-%%%thing tomorrow morning.
 
 %% Input the ID of data you want to analyse here. The .mat file will then be auto-loaded.
 
 chk = exist('Nodes','var');
 if ~chk
      
-    ID = 2;
+    ID = 7;
     ID = num2str(ID);
     ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_ID_';
     ID_folder =  [ID_folder ID '\'];
@@ -25,8 +24,8 @@ for i=1:20
 % %     slow if statements
     
 
-        holo_dynamic = ['ID_2_slow_', num2str(i), '_HoloData'];
-        pol_dynamic = ['ID_2_slow_', num2str(i), '_POLGroundTruth'];
+        holo_dynamic = ['ID_',num2str(ID),'_slow_', num2str(i), '_HoloData'];
+        pol_dynamic = ['ID_',num2str(ID),'_slow_', num2str(i), '_POLGroundTruth'];
         
         if isfield(experiment_data,pol_dynamic) == 1
         Holo_data = experiment_data.(holo_dynamic);
