@@ -5,7 +5,7 @@ clear all;
 chk = exist('Nodes','var');
 if ~chk
      
-    ID = 9;
+    ID = 11;
     ID = num2str(ID);
     ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_MATLAB';
     ID_folder =  [ID_folder '\'];
@@ -145,7 +145,7 @@ for trialnum = 1:length(Polh_Fields)
 
         comparing_diff = abs(pol_binned_data(:) - holo_data_comp(index_holo,2));
         if length(comparing_diff)>0
-            rmse = sqrt(mean(comparing_diff).^2);
+            rmse = sqrt((mean(comparing_diff).^2)/0.47);
         else
             rmse = 0;
         end
@@ -264,7 +264,7 @@ for trialnum = 1:length(Polh_Fields)
 
         comparing_diff = abs(pol_binned_data(:) - holo_data_comp(index_holo,2));
         if length(comparing_diff)>0
-            rmse = sqrt(mean(comparing_diff).^2);
+            rmse = sqrt((mean(comparing_diff).^2)/0.22);
         else
             rmse = 0;
         end
@@ -385,7 +385,7 @@ for trialnum = 1:length(Polh_Fields)
 
         comparing_diff = abs(pol_binned_data(:) - holo_data_comp(index_holo,2));
         if length(comparing_diff)>0
-            rmse = sqrt(mean(comparing_diff).^2);
+            rmse = sqrt((mean(comparing_diff).^2)/0.14);
         else
             rmse = 0;
         end
