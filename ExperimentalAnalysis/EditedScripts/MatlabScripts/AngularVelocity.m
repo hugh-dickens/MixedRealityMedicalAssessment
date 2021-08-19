@@ -5,11 +5,12 @@ clear all;
 chk = exist('Nodes','var');
 if ~chk
      
-    ID = 1;
+    ID = 10;
     ID = num2str(ID);
-    ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_ID_';
-    ID_folder =  [ID_folder ID '\'];
+    ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_MATLAB';
+    ID_folder =  [ID_folder '\'];
     mat_data = ['Data_' ID];
+
 
     load([ID_folder mat_data])
 end
@@ -77,7 +78,7 @@ for i=1:20
 % % 
         
 %%%%%% Need to change this to just around the point of catch !!
-        avg_vel = mean(y_holo_angular);
+        avg_vel = mean(v);
         
         xlabel('Time')
         ylabel('Angular Velocity')
