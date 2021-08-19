@@ -6,7 +6,7 @@ clear all;
 chk = exist('Nodes','var');
 if ~chk
      
-    ID = 9;
+    ID = 11;
     ID = num2str(ID);
     ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_MATLAB';
     ID_folder =  [ID_folder '\'];
@@ -46,7 +46,7 @@ for trialnum = 1:length(Holo_Fields)
 %         holo_dynamic = ['ID_',num2str(ID),'_slow_', num2str(i), '_HoloData'];
 %         pol_dynamic = ['ID_',num2str(ID),'_slow_', num2str(i), '_POLGroundTruth'];
 %         
-        if isfield(experiment_data,pol_dynamic) == 1
+        if isfield(experiment_data,pol_dynamic) == 1 
         Holo_data = experiment_data.(holo_dynamic);
         Pol_data = experiment_data.(pol_dynamic);
 
@@ -129,11 +129,11 @@ for trialnum = 1:length(Holo_Fields)
 %         
 %         b1 = num2str(holo_second);
 %         b2 = num2str(holo_millisecond);
-%         % Concatenate the two strings element wise
+%         Concatenate the two strings element wise
 %         c1 = strcat(b1, b2);
-%         % turn spaces into 0s
+%         turn spaces into 0s
 %         str = regexprep(cellstr(c1), ' ', '0');
-%         % Convert the result back to a numeric matrix
+%         Convert the result back to a numeric matrix
 %         x_holo = str2double(str);
 %         
 % 
@@ -145,14 +145,14 @@ for trialnum = 1:length(Holo_Fields)
 %         
 %         a1 = num2str(Polh_second);
 %         a2 = num2str(polh_millisecond);
-%         % Concatenate the two strings element wise
+%         Concatenate the two strings element wise
 %         d1 = strcat(a1, a2);
-%         % turn spaces into 0s
+%         turn spaces into 0s
 %         str1 = regexprep(cellstr(d1), ' ', '0');
-%         % Convert the result back to a numeric matrix
+%         Convert the result back to a numeric matrix
 %         x_pol = str2double(str1);
 % 
-%         % ADD THIS LINE FOR ALL TRIALS.
+%         ADD THIS LINE FOR ALL TRIALS.
 %         x_pol = x_pol(1:length(sgf));
 % 
 %         pol_data_final = cat(2, x_pol, sgf);
