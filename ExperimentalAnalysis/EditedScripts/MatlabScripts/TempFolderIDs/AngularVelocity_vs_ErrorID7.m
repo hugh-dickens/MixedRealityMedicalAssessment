@@ -136,6 +136,10 @@ for trialnum = 1:length(Polh_Fields)
             fprintf('No avg vel data trial %i\n', trialnum)
         end
         
+        if avg_vel == inf
+            fprintf(trialnum)
+        end
+        
         index_holo = holo_data_comp(:,1)>pol_comp(1,1);
         holo_filtered_temp = holo_data_comp(index_holo,1:2);
         index_temp_holo = holo_filtered_temp(:,1)<pol_comp(end,1);
@@ -160,7 +164,7 @@ for trialnum = 1:length(Polh_Fields)
         comparing_diff = abs(pol_binned_data(:) - holo_filtered(:,2));
         if length(comparing_diff)>0
             rmse = sqrt((sum(comparing_diff).^2)/(length(comparing_diff)));
-            if rmse > 70
+            if rmse > 90
                 pol_dynamic = 0;
                 avg_vel = 0;
                 rmse = 0;
@@ -174,7 +178,7 @@ for trialnum = 1:length(Polh_Fields)
         vels_cell_slow_ID_7{trialnum, 1}  = pol_dynamic;
         vels_cell_slow_ID_7{trialnum,2} = avg_vel;
         vels_cell_slow_ID_7{trialnum,3} = rmse;
-        cathch me
+        catch me
         fprintf('no data')
         end
 %         figure(trialnum)
@@ -316,7 +320,7 @@ for trialnum = 1:length(Polh_Fields)
         comparing_diff = abs(pol_binned_data(:) - holo_filtered(:,2));
         if length(comparing_diff)>0
             rmse = sqrt((sum(comparing_diff).^2)/length(comparing_diff));
-             if rmse > 70
+             if rmse > 100
                 pol_dynamic = 0;
                 avg_vel = 0;
                 rmse = 0;
@@ -379,7 +383,7 @@ Holo_Fields = fieldnames(Holo_filteredStruct_fast);
 vels_cell_fast_ID_7 = cell(length(Polh_Fields), 3);
 integer = 0;
 for trialnum = 1:length(Polh_Fields)
-%     for trialnum = 10:15
+%     for trialnum = 8
     pol_dynamic = [string(Polh_Fields(trialnum +integer ))] ;
     
     if trialnum < length(Holo_Fields)
@@ -476,7 +480,7 @@ for trialnum = 1:length(Polh_Fields)
         comparing_diff = abs(pol_binned_data(:) - holo_filtered(:,2));
         if length(comparing_diff)>0
             rmse = sqrt((sum(comparing_diff).^2)/length(comparing_diff));
-             if rmse > 100
+             if rmse > 120
                 pol_dynamic = 0;
                 avg_vel = 0;
                 rmse = 0;
