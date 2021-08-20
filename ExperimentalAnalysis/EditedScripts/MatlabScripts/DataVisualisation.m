@@ -4,97 +4,59 @@ clear all;
 
 chk = exist('Nodes','var');
 if ~chk
-    for i = 11:12
-    ID = num2str(i);
+    for ID = 10:12
+%     ID = 11;
+    ID = num2str(ID);
     ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_MATLAB\VelocityErrorData\';
     mat_data = ['VelErrorData' ID];
     load([ID_folder mat_data])
     end
 end
 
-%%
-
-for i = 1:3
-names = fieldnames(VelErrorData11);
-plotting = VelErrorData11.(names{i});
-if i == 1
-    avg_vel_tot_slow = plotting(:,2);
-    rmse_tot_slow = plotting(:,3);
-elseif i == 2
-    avg_vel_tot_medium = plotting(:,2);
-    rmse_tot_medium = plotting(:,3);
-elseif i == 3
-    avg_vel_tot_fast = plotting(:,2);
-    rmse_tot_fast = plotting(:,3);
-
-x = [[avg_vel_tot_slow] [avg_vel_tot_medium] [avg_vel_tot_fast]];
-y = [[rmse_tot_slow] [rmse_tot_medium] [rmse_tot_fast]];
-end
-end
-
-mdl = fitlm(x,y)
-
-plot([avg_vel_tot_slow{:}], [rmse_tot_slow{:}], 'o')
-xlabel('Velocity (rad/s)')
-ylabel('RMSE error')
-
-hold on
-
-plot([avg_vel_tot_medium{:}], [rmse_tot_medium{:}], 'o')
-
-hold on
-
-plot([avg_vel_tot_fast{:}], [rmse_tot_fast{:}], 'o')
-
-hold on
-
-plot(mdl)
-
-legend('Slow', 'Medium', 'Fast')
-
-title('Velocity against error between hololens and polhemus recordings for participant', ID)
-xlabel('Velocity')
-ylabel('RMSE error')
-
-hold off
-%% plot
+mergeVelErrors = cell2struct([struct2cell(VelErrorData11);struct2cell(VelErrorData12)],[fieldnames(VelErrorData11);fieldnames(VelErrorData12)]);
 figure(1)
-for ID = 11:12
-    
-    avg_vel_tot_fast = vels_cell_fast_ID_12(:,2);
-    rmse_tot_fast = vels_cell_fast_ID_12(:,3);
-    avg_vel_tot_fast = avg_vel_tot_fast(all(cell2mat(avg_vel_tot_fast) ~= 0,2),:);
-    rmse_tot_fast = rmse_tot_fast(all(cell2mat(rmse_tot_fast) ~= 0,2),:);
+x = [];
+y = [];
+fields = fieldnames(mergeVelErrors);
+for i = 1:numel(fields)
+temp = table2cell(mergeVelErrors.(fields{i}));
 
-x = [[avg_vel_tot_slow{:}] [avg_vel_tot_medium{:}] [avg_vel_tot_fast{:}]]';
-y = [[rmse_tot_slow{:}] [rmse_tot_medium{:}] [rmse_tot_fast{:}]]';
+vel = temp(:,2);
+rmse = temp(:,3);
+vel = vel(all(cell2mat(vel) ~= 0,2),:);
+rmse = rmse(all(cell2mat(rmse) ~= 0,2),:);
+x = [x; vel];
+y = [y; rmse];
 
-mdl = fitlm(x,y)
-
-plot([avg_vel_tot_slow{:}], [rmse_tot_slow{:}], 'o')
+plot([vel{:}], [rmse{:}], 'o')
 xlabel('Velocity (rad/s)')
 ylabel('RMSE error')
 
 hold on
 
-plot([avg_vel_tot_medium{:}], [rmse_tot_medium{:}], 'o')
+% 
 
-hold on
+title('Velocity against error between hololens and polhemus recordings for all participants')
+xlabel('Velocity')
+ylabel('RMSE error')
 
-plot([avg_vel_tot_fast{:}], [rmse_tot_fast{:}], 'o')
 
-hold on
+end
+
+x = cell2mat(x);
+y = cell2mat(y);
+mdl = fitlm(x,y)
 
 plot(mdl)
 
-legend('Slow', 'Medium', 'Fast')
+legend('Slow 10', 'Medium 10', 'Fast 10', 'Slow 11', 'Medium 11', 'Fast 11','Slow 12', 'Medium 12', 'Fast 12')
 
 title('Velocity against error between hololens and polhemus recordings for participant', ID)
 xlabel('Velocity')
 ylabel('RMSE error')
 
-end
-
 hold off
+
+
 
 
