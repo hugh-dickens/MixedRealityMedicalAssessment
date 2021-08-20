@@ -8,7 +8,7 @@ if ~chk
      
     ID = 11;
     ID = num2str(ID);
-    ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_MATLAB';
+    ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_MATLAB\UnprocessedData';
     ID_folder =  [ID_folder '\'];
     mat_data = ['Data_' ID];
 

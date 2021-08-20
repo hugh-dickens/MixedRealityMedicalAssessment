@@ -1,0 +1,100 @@
+clc; close all;
+clear all;
+%% Input the ID of data you want to analyse here. The .mat file will then be auto-loaded.
+
+chk = exist('Nodes','var');
+if ~chk
+    for i = 11:12
+    ID = num2str(i);
+    ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_MATLAB\VelocityErrorData\';
+    mat_data = ['VelErrorData' ID];
+    load([ID_folder mat_data])
+    end
+end
+
+%%
+
+for i = 1:3
+names = fieldnames(VelErrorData11);
+plotting = VelErrorData11.(names{i});
+if i == 1
+    avg_vel_tot_slow = plotting(:,2);
+    rmse_tot_slow = plotting(:,3);
+elseif i == 2
+    avg_vel_tot_medium = plotting(:,2);
+    rmse_tot_medium = plotting(:,3);
+elseif i == 3
+    avg_vel_tot_fast = plotting(:,2);
+    rmse_tot_fast = plotting(:,3);
+
+x = [[avg_vel_tot_slow] [avg_vel_tot_medium] [avg_vel_tot_fast]];
+y = [[rmse_tot_slow] [rmse_tot_medium] [rmse_tot_fast]];
+end
+end
+
+mdl = fitlm(x,y)
+
+plot([avg_vel_tot_slow{:}], [rmse_tot_slow{:}], 'o')
+xlabel('Velocity (rad/s)')
+ylabel('RMSE error')
+
+hold on
+
+plot([avg_vel_tot_medium{:}], [rmse_tot_medium{:}], 'o')
+
+hold on
+
+plot([avg_vel_tot_fast{:}], [rmse_tot_fast{:}], 'o')
+
+hold on
+
+plot(mdl)
+
+legend('Slow', 'Medium', 'Fast')
+
+title('Velocity against error between hololens and polhemus recordings for participant', ID)
+xlabel('Velocity')
+ylabel('RMSE error')
+
+hold off
+%% plot
+figure(1)
+for ID = 11:12
+    
+    avg_vel_tot_fast = vels_cell_fast_ID_12(:,2);
+    rmse_tot_fast = vels_cell_fast_ID_12(:,3);
+    avg_vel_tot_fast = avg_vel_tot_fast(all(cell2mat(avg_vel_tot_fast) ~= 0,2),:);
+    rmse_tot_fast = rmse_tot_fast(all(cell2mat(rmse_tot_fast) ~= 0,2),:);
+
+x = [[avg_vel_tot_slow{:}] [avg_vel_tot_medium{:}] [avg_vel_tot_fast{:}]]';
+y = [[rmse_tot_slow{:}] [rmse_tot_medium{:}] [rmse_tot_fast{:}]]';
+
+mdl = fitlm(x,y)
+
+plot([avg_vel_tot_slow{:}], [rmse_tot_slow{:}], 'o')
+xlabel('Velocity (rad/s)')
+ylabel('RMSE error')
+
+hold on
+
+plot([avg_vel_tot_medium{:}], [rmse_tot_medium{:}], 'o')
+
+hold on
+
+plot([avg_vel_tot_fast{:}], [rmse_tot_fast{:}], 'o')
+
+hold on
+
+plot(mdl)
+
+legend('Slow', 'Medium', 'Fast')
+
+title('Velocity against error between hololens and polhemus recordings for participant', ID)
+xlabel('Velocity')
+ylabel('RMSE error')
+
+end
+
+hold off
+
+

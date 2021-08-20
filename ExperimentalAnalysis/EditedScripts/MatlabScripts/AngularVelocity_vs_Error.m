@@ -7,7 +7,7 @@ if ~chk
      
     ID = 11;
     ID = num2str(ID);
-    ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_MATLAB';
+    ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_MATLAB\UnprocessedData';
     ID_folder =  [ID_folder '\'];
     mat_data = ['Data_' ID];
 
@@ -27,16 +27,16 @@ subStrFast = '_fast';
 fast_filteredStruct = rmfield( experiment_data, names( find( cellfun( @isempty, strfind( names , subStrFast ) ) ) ) );
 
 % %% second recordings
-% 
-% pol_missing_data_v2 = [];
-% % names = fieldnames( experiment_data );
-% subStrSlow_v2 = '_slowv2';
-% slow_filteredStruct_v2 = rmfield( experiment_data, names( find( cellfun( @isempty, strfind( names , subStrSlow_v2 ) ) ) ) );
-% subStrMedium_v2 = '_mediumv2';
-% medium_filteredStruct_v2 = rmfield( experiment_data, names( find( cellfun( @isempty, strfind( names , subStrMedium_v2 ) ) ) ) );
-% subStrFast_v2 = '_fastv2';
-% fast_filteredStruct_v2 = rmfield( experiment_data, names( find( cellfun( @isempty, strfind( names , subStrFast_v2 ) ) ) ) );
-% 
+
+pol_missing_data_v2 = [];
+% names = fieldnames( experiment_data );
+subStrSlow_v2 = '_slowv2';
+slow_filteredStruct_v2 = rmfield( experiment_data, names( find( cellfun( @isempty, strfind( names , subStrSlow_v2 ) ) ) ) );
+subStrMedium_v2 = '_mediumv2';
+medium_filteredStruct_v2 = rmfield( experiment_data, names( find( cellfun( @isempty, strfind( names , subStrMedium_v2 ) ) ) ) );
+subStrFast_v2 = '_fastv2';
+fast_filteredStruct_v2 = rmfield( experiment_data, names( find( cellfun( @isempty, strfind( names , subStrFast_v2 ) ) ) ) );
+
 % 
 % %% third recordings
 % 
@@ -55,13 +55,15 @@ fast_filteredStruct = rmfield( experiment_data, names( find( cellfun( @isempty, 
 namesSlow = fieldnames( slow_filteredStruct );
 subStrPol = '_POLGroundTruth';
 Pol_filteredStruct = rmfield( slow_filteredStruct, namesSlow(find(cellfun(@isempty, strfind( namesSlow, subStrPol)))));
+
 Polh_Fields = fieldnames(Pol_filteredStruct);
 subStrHolo = '_HoloData';
 Holo_filteredStruct = rmfield( slow_filteredStruct, namesSlow(find(cellfun(@isempty, strfind( namesSlow, subStrHolo)))));
 Holo_Fields = fieldnames(Holo_filteredStruct);
 
+%% edit ID number here !!!!
 
-vels_cell_slow = cell(length(Polh_Fields), 3);
+vels_cell_slow_ID_11 = cell(length(Polh_Fields), 3);
 for trialnum = 1:length(Polh_Fields)
 % for trialnum = 2
     pol_dynamic = [string(Polh_Fields(trialnum))] ;
@@ -106,8 +108,8 @@ for trialnum = 1:length(Polh_Fields)
         length_v_half = round(length(v)/2);
         
         max_inst_vel = find(v==max(v(length_v_half:end)));
-        start_ind = max_inst_vel - 70;
-        end_ind = max_inst_vel + 400;
+        start_ind = max_inst_vel - 100;
+        end_ind = max_inst_vel + 370;
         pol_dataframe = [x_pol sgf];
         holo_data_comp = [x_holo_no_lag y_holo];
         
@@ -126,7 +128,10 @@ for trialnum = 1:length(Polh_Fields)
         end
         
         index_holo = holo_data_comp(:,1)>pol_comp(1,1);
-        holo_filtered = holo_data_comp(index_holo,1:2);
+        holo_filtered_temp = holo_data_comp(index_holo,1:2);
+        index_temp_holo = holo_filtered_temp(:,1)<pol_comp(end,1);
+        holo_filtered = holo_filtered_temp(index_temp_holo ,1:2);
+        
         holo_comp_length = length(holo_filtered);
         pol_comp_length = length(pol_comp(:,1));
         bins = floor(pol_comp_length/holo_comp_length);
@@ -138,32 +143,49 @@ for trialnum = 1:length(Polh_Fields)
             if i == 1
                 pol_binned_data(i) = mean(pol_comp(1:(n)*bins,2));
             else
-                pol_binned_data(i) = mean(pol_comp(bins:(n)*bins,2));
+                pol_binned_data(i) = mean(pol_comp(bins*(n-1):(n)*bins,2));
             end
         end
         
 
-        comparing_diff = abs(pol_binned_data(:) - holo_data_comp(index_holo,2));
+        comparing_diff = abs(pol_binned_data(:) - holo_filtered(:,2));
         if length(comparing_diff)>0
-            rmse = sqrt((mean(comparing_diff).^2)/0.47);
-        else
-            rmse = 0;
+            rmse = sqrt((sum(comparing_diff).^2)/(3*length(comparing_diff)));
+            if rmse > 100
+                pol_dynamic = 0;
+                avg_vel = 0;
+                rmse = 0;
+            end
+        else 
+                pol_dynamic = 0;
+                avg_vel = 0;
+                rmse = 0;
         end
         
-        vels_cell_slow{trialnum, 1}  = pol_dynamic;
-        vels_cell_slow{trialnum,2} = avg_vel;
-        vels_cell_slow{trialnum,3} = rmse;
+        vels_cell_slow_ID_11{trialnum, 1}  = pol_dynamic;
+        vels_cell_slow_ID_11{trialnum,2} = avg_vel;
+        vels_cell_slow_ID_11{trialnum,3} = rmse;
+        
+%         figure(trialnum)
+%         plot(holo_filtered(:,1), holo_filtered(:,2) )
+%         hold on
+%         plot(pol_comp(:,1), pol_comp(:,2))
+%         hold off 
         
        
     else
-        fprintf('No polhemus data for trial %i\n; slow trial \n',i)
+        fprintf('No polhemus data for trial %i\n; slow trial \n',trialnum)
         end
         
 end
 %% just plot
 figure(1)
-avg_vel_tot_slow = vels_cell_slow(:,2);
-rmse_tot_slow = vels_cell_slow(:,3);
+avg_vel_tot_slow = vels_cell_slow_ID_11(:,2);
+rmse_tot_slow = vels_cell_slow_ID_11(:,3);
+avg_vel_tot_slow = avg_vel_tot_slow(all(cell2mat(avg_vel_tot_slow) ~= 0,2),:);
+rmse_tot_slow = rmse_tot_slow(all(cell2mat(rmse_tot_slow) ~= 0,2),:);
+
+
 plot([avg_vel_tot_slow{:}], [rmse_tot_slow{:}], 'o')
 xlabel('Velocity (rad/s)')
 ylabel('RMSE error')
@@ -177,8 +199,8 @@ subStrHolo = '_HoloData';
 Holo_filteredStruct_medium = rmfield( medium_filteredStruct, namesMedium(find(cellfun(@isempty, strfind( namesMedium, subStrHolo)))));
 Holo_Fields = fieldnames(Holo_filteredStruct_medium);
 
-%%
-vels_cell_medium = cell(length(Polh_Fields), 3);
+%% edit ID number here !!
+vels_cell_medium_ID_11 = cell(length(Polh_Fields), 3);
 for trialnum = 1:length(Polh_Fields)
 % for trialnum = 2
     pol_dynamic = [string(Polh_Fields(trialnum))] ;
@@ -244,8 +266,11 @@ for trialnum = 1:length(Polh_Fields)
         end
             
         
-        index_holo = holo_data_comp(:,1)>pol_comp(1,1);
-        holo_filtered = holo_data_comp(index_holo,1:2);
+        index_holo = holo_data_comp(:,1)> (pol_comp(1,1) - 0.05);
+        holo_filtered_temp = holo_data_comp(index_holo,1:2);
+        index_temp_holo = holo_filtered_temp(:,1)< (pol_comp(end,1) + 0.05);
+        holo_filtered = holo_filtered_temp(index_temp_holo,1:2);
+        
         holo_comp_length = length(holo_filtered);
         pol_comp_length = length(pol_comp(:,1));
         bins = floor(pol_comp_length/holo_comp_length);
@@ -257,22 +282,36 @@ for trialnum = 1:length(Polh_Fields)
             if i == 1
                 pol_binned_data(i) = mean(pol_comp(1:(n)*bins,2));
             else
-                pol_binned_data(i) = mean(pol_comp(bins:(n)*bins,2));
+                pol_binned_data(i) = mean(pol_comp(bins*(n-1):(n)*bins,2));
             end
         end
         
 
-        comparing_diff = abs(pol_binned_data(:) - holo_data_comp(index_holo,2));
+        comparing_diff = abs(pol_binned_data(:) - holo_filtered(:,2));
         if length(comparing_diff)>0
-            rmse = sqrt((mean(comparing_diff).^2)/0.22);
+            rmse = sqrt((sum(comparing_diff).^2)/length(comparing_diff));
+             if rmse > 100
+                pol_dynamic = 0;
+                avg_vel = 0;
+                rmse = 0;
+            end
         else
-            rmse = 0;
+            
+                pol_dynamic = 0;
+                avg_vel = 0;
+                rmse = 0;
         end
+       
         
-        vels_cell_medium{trialnum, 1}  = pol_dynamic;
-        vels_cell_medium{trialnum,2} = avg_vel;
-        vels_cell_medium{trialnum,3} = rmse;
+        vels_cell_medium_ID_11{trialnum, 1}  = pol_dynamic;
+        vels_cell_medium_ID_11{trialnum,2} = avg_vel;
+        vels_cell_medium_ID_11{trialnum,3} = rmse;
         
+%         figure(trialnum)
+%         plot(holo_filtered(:,1), holo_filtered(:,2) )
+%         hold on
+%         plot(pol_comp(:,1), pol_comp(:,2))
+%         hold off 
        
     else
         fprintf('No polhemus data for trial %i\n; slow trial \n',i)
@@ -284,8 +323,11 @@ end
 
 %% just plot
 figure(1)
-avg_vel_tot_medium = vels_cell_medium(:,2);
-rmse_tot_medium = vels_cell_medium(:,3);
+avg_vel_tot_medium = vels_cell_medium_ID_11(:,2);
+rmse_tot_medium = vels_cell_medium_ID_11(:,3);
+avg_vel_tot_medium = avg_vel_tot_medium(all(cell2mat(avg_vel_tot_medium) ~= 0,2),:);
+rmse_tot_medium = rmse_tot_medium(all(cell2mat(rmse_tot_medium) ~= 0,2),:);
+
 plot([avg_vel_tot_medium{:}], [rmse_tot_medium{:}], 'o')
 xlabel('Velocity (rad/s)')
 ylabel('RMSE error')
@@ -299,7 +341,8 @@ subStrHolo = '_HoloData';
 Holo_filteredStruct_fast = rmfield( fast_filteredStruct, namesFast(find(cellfun(@isempty, strfind( namesFast, subStrHolo)))));
 Holo_Fields = fieldnames(Holo_filteredStruct_fast);
 
-vels_cell_fast = cell(length(Polh_Fields), 3);
+%% edit ID number here !! and everywhere
+vels_cell_fast_ID_11 = cell(length(Polh_Fields), 3);
 for trialnum = 1:length(Polh_Fields)
     
     pol_dynamic = [string(Polh_Fields(trialnum))] ;
@@ -357,7 +400,7 @@ for trialnum = 1:length(Polh_Fields)
             
         elseif end_ind > length(v)
             avg_vel = mean(v(start_ind:end));
-            pol_comp = pol_dataframe(end-140:end, :);
+            pol_comp = pol_dataframe(end-220:end, :);
         else
             avg_vel = 0;
             pol_comp = [0 0];
@@ -365,8 +408,11 @@ for trialnum = 1:length(Polh_Fields)
         end
            
         
-        index_holo = holo_data_comp(:,1)>pol_comp(1,1);
-        holo_filtered = holo_data_comp(index_holo,1:2);
+        index_holo = holo_data_comp(:,1)>( pol_comp(1,1) -0.05);
+        holo_filtered_temp = holo_data_comp(index_holo,1:2);
+        index_temp_holo = holo_filtered_temp(:,1)< (pol_comp(end,1)+0.05);
+        holo_filtered = holo_filtered_temp(index_temp_holo,1:2);
+        
         holo_comp_length = length(holo_filtered);
         pol_comp_length = length(pol_comp(:,1));
         bins = floor(pol_comp_length/holo_comp_length);
@@ -378,22 +424,34 @@ for trialnum = 1:length(Polh_Fields)
             if i == 1
                 pol_binned_data(i) = mean(pol_comp(1:(n)*bins,2));
             else
-                pol_binned_data(i) = mean(pol_comp(bins:(n)*bins,2));
+                pol_binned_data(i) = mean(pol_comp(bins*(n-1):(n)*bins,2));
             end
         end
         
 
-        comparing_diff = abs(pol_binned_data(:) - holo_data_comp(index_holo,2));
+        comparing_diff = abs(pol_binned_data(:) - holo_filtered(:,2));
         if length(comparing_diff)>0
-            rmse = sqrt((mean(comparing_diff).^2)/0.14);
+            rmse = sqrt((sum(comparing_diff).^2)/length(comparing_diff));
+             if rmse > 100
+                pol_dynamic = 0;
+                avg_vel = 0;
+                rmse = 0;
+            end
         else
+            pol_dynamic = 0;
+            avg_vel = 0;
             rmse = 0;
         end
         
-        vels_cell_fast{trialnum, 1}  = pol_dynamic;
-        vels_cell_fast{trialnum,2} = avg_vel;
-        vels_cell_fast{trialnum,3} = rmse;
+        vels_cell_fast_ID_11{trialnum, 1}  = pol_dynamic;
+        vels_cell_fast_ID_11{trialnum,2} = avg_vel;
+        vels_cell_fast_ID_11{trialnum,3} = rmse;
         
+%         figure(trialnum)
+%         plot(holo_filtered(:,1), holo_filtered(:,2) )
+%         hold on
+%         plot(pol_comp(:,1), pol_comp(:,2))
+%         hold off 
        
     else
         fprintf('No polhemus data for trial %i\n; fast trial \n',i)
@@ -403,8 +461,11 @@ end
 
 %% just plot
 figure(1)
-avg_vel_tot_fast = vels_cell_fast(:,2);
-rmse_tot_fast = vels_cell_fast(:,3);
+avg_vel_tot_fast = vels_cell_fast_ID_11(:,2);
+rmse_tot_fast = vels_cell_fast_ID_11(:,3);
+avg_vel_tot_fast = avg_vel_tot_fast(all(cell2mat(avg_vel_tot_fast) ~= 0,2),:);
+rmse_tot_fast = rmse_tot_fast(all(cell2mat(rmse_tot_fast) ~= 0,2),:);
+
 plot([avg_vel_tot_fast{:}], [rmse_tot_fast{:}], 'o')
 xlabel('Velocity (rad/s)')
 ylabel('RMSE error')
@@ -440,6 +501,14 @@ ylabel('RMSE error')
 
 hold off
 
+%% 
+slow_ID_11 = 'VelSlow_ID_11';
+medium_ID_11 = 'VelMedium_ID_11';
+fast_ID_11 = 'VelFast_ID_11';
+VelErrorData11.(slow_ID_11) = cell2table(vels_cell_slow_ID_11);
+VelErrorData11.(medium_ID_11) = cell2table(vels_cell_medium_ID_11) ;
+VelErrorData11.(fast_ID_11) = cell2table(vels_cell_fast_ID_11);
+save('VelErrorData11', 'VelErrorData11')
 %% Code only used to troubleshoot/ plot the data=> put above 'index_holo' if required
 
 %         %%%% CODE ONLY USED FOR PLOTTING HOLO SPLINE 
@@ -479,3 +548,10 @@ hold off
 %         legend('Holo Data','Holo Spline','Polh Data')
 %         
 %         hold off
+
+% %%
+% figure(1)
+% plot(holo_filtered(:,1), holo_filtered(:,2) )
+% hold on
+% plot(pol_comp(:,1), pol_comp(:,2))
+% hold off 
