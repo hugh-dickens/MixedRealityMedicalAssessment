@@ -93,21 +93,8 @@ ylabel('RMSE error')
 
 hold off
 
-Slow_tot= cell2mat([mergeSlow_vel mergeSlow_RMSE]);
-Med_tot= cell2mat([mergeMed_vel mergeMed_RMSE]);
-Fast_tot= cell2mat([mergeFast_vel mergeFast_RMSE]);
-% A = Slow_tot(mergeSlow_RsMSE~=0);
+Slow_tot= [mergeSlow_vel mergeSlow_RMSE];
+Med_tot= [mergeMed_vel mergeMed_RMSE];
+Fast_tot= [mergeFast_vel mergeFas_RMSE];
 
-%%
-figure(2)
-subplot(1,3,1)
-boxplot(Slow_tot(:,2))
-ylabel('RMSE')
-xlabel('slow')
-subplot(1,3,2)
-boxplot(Med_tot(:,2))
-xlabel('medium')
-subplot(1,3,3)
-boxplot(Fast_tot(:,2))
-xlabel('fast')
 
