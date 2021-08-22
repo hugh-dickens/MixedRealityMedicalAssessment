@@ -379,7 +379,7 @@ Holo_Fields = fieldnames(Holo_filteredStruct_fast);
 
 %% edit ID number here !! and everywhere
 vels_cell_fast_ID_6 = cell(length(Polh_Fields), 3);
-for trialnum = 1:length(Polh_Fields)-5
+for trialnum = 1:length(Polh_Fields)
     
     pol_dynamic = [string(Polh_Fields(trialnum))] ;
     
