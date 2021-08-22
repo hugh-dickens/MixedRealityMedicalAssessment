@@ -49,7 +49,7 @@ medium_filteredStruct_v3 = rmfield( experiment_data, names( find( cellfun( @isem
 subStrFast_v3 = '_fastv3';
 fast_filteredStruct_v3 = rmfield( experiment_data, names( find( cellfun( @isempty, strfind( names , subStrFast_v3 ) ) ) ) );
 
-calibration_term_slow = 4;
+calibration_term_slow = 6;
 calibration_term_medium = 6;
 calibration_term_fast = 6;
 %% slow
@@ -64,7 +64,8 @@ Holo_filteredStruct = rmfield( slow_filteredStruct, namesSlow(find(cellfun(@isem
 Holo_Fields = fieldnames(Holo_filteredStruct);
 
 
-vels_cell_slow_ID_1 = cell(length(Polh_Fields), 3);
+vels_cell_slow_ID_1 = cell(0, 3);
+
 
 for trialnum = 1:length(Polh_Fields)
 % for trialnum = 2
@@ -108,14 +109,18 @@ try
         
         v = zeros(length(pol_millis),1) ;
         for i = 1:length(pol_millis)-1
-            v(i) = abs((sgf(i+1)-sgf(i))/(pol_millis(i+1)-pol_millis(i)) * 100000);
+            v(i) = abs((sgf(i+1)-sgf(i))/(pol_millis(i+1)-pol_millis(i)) * 1000000);
         end
         
         length_v_half = round(length(v)/2);
         
-        max_inst_vel = find(v==max(v(length_v_half:end)));
-        start_ind = max_inst_vel - 250;
-        end_ind = max_inst_vel + 120;
+        max_angle = find(sgf==max(sgf(length_v_half:end)));
+        min_angle = find(sgf==min(sgf(length_v_half:end)));
+%         start_ind = max_inst_vel - 100;
+%         end_ind = max_inst_vel + 200;
+        start_ind = min_angle;
+        end_ind = max_angle;
+        
         pol_dataframe = [x_pol sgf];
         holo_data_comp = [x_holo_no_lag y_holo];
         
@@ -157,7 +162,29 @@ try
         comparing_diff = abs(pol_binned_data(:) - holo_filtered(:,2));
         if length(comparing_diff)>0
             rmse = sqrt((sum(comparing_diff).^2)/(length(comparing_diff)));
-            if rmse > 100
+            
+            if rmse < 30
+                
+            vels_cell_slow_ID_1{end+1, 1}  = pol_dynamic;
+            vels_cell_slow_ID_1{end, 2} = avg_vel;
+            vels_cell_slow_ID_1{end, 3} = rmse;
+            
+            figure(trialnum)
+            subplot(2,1,1)
+            plot(holo_filtered(:,1), holo_filtered(:,2) )
+            hold on
+            plot(pol_comp(:,1), pol_comp(:,2))
+            title(rmse, avg_vel)
+            hold off 
+
+            subplot(2,1,2)
+            plot(holo_data_comp(:,1), holo_data_comp(:,2) )
+            hold on
+            plot(pol_dataframe(:,1), pol_dataframe(:,2))
+            title(rmse, avg_vel)
+            hold off 
+            
+            elseif rmse > 100
                 pol_dynamic = 0;
                 avg_vel = 0;
                 rmse = 0;
@@ -168,15 +195,15 @@ try
                 rmse = 0;
         end
         
-        vels_cell_slow_ID_1{trialnum, 1}  = pol_dynamic;
-        vels_cell_slow_ID_1{trialnum,2} = avg_vel;
-        vels_cell_slow_ID_1{trialnum,3} = rmse;
+%         vels_cell_slow_ID_1{trialnum, 1}  = pol_dynamic;
+%         vels_cell_slow_ID_1{trialnum,2} = avg_vel;
+%         vels_cell_slow_ID_1{trialnum,3} = rmse;
         
-%         figure(trialnum)
-%         plot(holo_filtered(:,1), holo_filtered(:,2) )
-%         hold on
-%         plot(pol_comp(:,1), pol_comp(:,2))
-%         hold off 
+% %         figure(trialnum)
+% %         plot(holo_filtered(:,1), holo_filtered(:,2) )
+% %         hold on
+% %         plot(pol_comp(:,1), pol_comp(:,2))
+% %         hold off 
         
 %         figure(trialnum)
 %         plot(holo_data_comp(:,1), holo_data_comp(:,2) )
@@ -195,16 +222,18 @@ end
 figure(1)
 avg_vel_tot_slow = vels_cell_slow_ID_1(:,2);
 rmse_tot_slow = vels_cell_slow_ID_1(:,3);
-avg_vel_tot_slow = avg_vel_tot_slow(all(cell2mat(avg_vel_tot_slow) ~= 0,2),:);
-rmse_tot_slow = rmse_tot_slow(all(cell2mat(rmse_tot_slow) ~= 0,2),:);
+% avg_vel_tot_slow = avg_vel_tot_slow(all(cell2mat(avg_vel_tot_slow) ~= 0,2),:);
+% rmse_tot_slow = rmse_tot_slow(all(cell2mat(rmse_tot_slow) ~= 0,2),:);
 
-avg_vel_tot_slow = avg_vel_tot_slow(all(cell2mat(avg_vel_tot_slow) ~= 0,2),:);
-rmse_tot_slow = rmse_tot_slow(all(cell2mat(rmse_tot_slow) ~= 0,2),:);
-
+% avg_vel_tot_slow = avg_vel_tot_slow(all(cell2mat(avg_vel_tot_slow) ~= 0,2),:);
+% rmse_tot_slow = rmse_tot_slow(all(cell2mat(rmse_tot_slow) ~= 0,2),:);
+% 
 
 
 
 plot([avg_vel_tot_slow{:}], [rmse_tot_slow{:}], 'o')
+
+
 xlabel('Velocity (rad/s)')
 ylabel('RMSE error')
 % 
@@ -218,7 +247,7 @@ Holo_filteredStruct_medium = rmfield( medium_filteredStruct, namesMedium(find(ce
 Holo_Fields = fieldnames(Holo_filteredStruct_medium);
 
 %% edit ID number here !!
-vels_cell_medium_ID_1 = cell(length(Polh_Fields), 3);
+vels_cell_medium_ID_1 = cell(0, 3);
 
 for trialnum = 1:length(Polh_Fields)
     
@@ -263,14 +292,18 @@ try
         
         v = zeros(length(pol_millis),1) ;
         for i = 1:length(pol_millis)-1
-            v(i) = abs((sgf(i+1)-sgf(i))/(pol_millis(i+1)-pol_millis(i)) * 100000);
+            v(i) = abs((sgf(i+1)-sgf(i))/(pol_millis(i+1)-pol_millis(i)) * 1000000);
         end
         
         length_v_half = round(length(v)/2);
         
-        max_inst_vel = find(v==max(v(length_v_half:end)));
-        start_ind = max_inst_vel - 70;
-        end_ind = max_inst_vel + 200;
+        max_angle = find(sgf==max(sgf(length_v_half:end)));
+        min_angle = find(sgf==min(sgf(length_v_half:end)));
+%         start_ind = max_inst_vel - 100;
+%         end_ind = max_inst_vel + 200;
+        start_ind = min_angle;
+        end_ind = max_angle;
+        
         pol_dataframe = [x_pol sgf];
         holo_data_comp = [x_holo_no_lag y_holo];
         
@@ -313,7 +346,27 @@ try
         comparing_diff = abs(pol_binned_data(:) - holo_filtered(:,2));
         if length(comparing_diff)>0
             rmse = sqrt((sum(comparing_diff).^2)/length(comparing_diff));
-             if rmse > 120
+            if rmse < 50
+                
+            vels_cell_medium_ID_1{end+1, 1}  = pol_dynamic;
+            vels_cell_medium_ID_1{end, 2} = avg_vel;
+            vels_cell_medium_ID_1{end, 3} = rmse;
+        figure(trialnum)
+        subplot(2,1,1)
+        plot(holo_filtered(:,1), holo_filtered(:,2) )
+        hold on
+        plot(pol_comp(:,1), pol_comp(:,2))
+        title(rmse, avg_vel)
+        hold off 
+
+        subplot(2,1,2)
+        plot(holo_data_comp(:,1), holo_data_comp(:,2) )
+        hold on
+        plot(pol_dataframe(:,1), pol_dataframe(:,2))
+        title(rmse, avg_vel)
+        hold off 
+        
+            elseif rmse > 120
                 pol_dynamic = 0;
                 avg_vel = 0;
                 rmse = 0;
@@ -325,10 +378,10 @@ try
                 rmse = 0;
         end
        
-        
-        vels_cell_medium_ID_1{trialnum, 1}  = pol_dynamic;
-        vels_cell_medium_ID_1{trialnum,2} = avg_vel;
-        vels_cell_medium_ID_1{trialnum,3} = rmse;
+%         
+%         vels_cell_medium_ID_1{trialnum, 1}  = pol_dynamic;
+%         vels_cell_medium_ID_1{trialnum,2} = avg_vel;
+%         vels_cell_medium_ID_1{trialnum,3} = rmse;
         
 %         figure(trialnum)
 %         plot(holo_filtered(:,1), holo_filtered(:,2) )
@@ -353,14 +406,15 @@ end
 end
 
 %% just plot
+close all;
 figure(1)
 avg_vel_tot_medium = vels_cell_medium_ID_1(:,2);
 rmse_tot_medium = vels_cell_medium_ID_1(:,3);
-avg_vel_tot_medium = avg_vel_tot_medium(all(cell2mat(avg_vel_tot_medium) ~= 0,2),:);
-rmse_tot_medium = rmse_tot_medium(all(cell2mat(rmse_tot_medium) ~= 0,2),:);
-
-avg_vel_tot_medium = avg_vel_tot_medium(all(cell2mat(avg_vel_tot_medium) ~= 0,2),:);
-rmse_tot_medium = rmse_tot_medium(all(cell2mat(rmse_tot_medium) ~= 0,2),:);
+% avg_vel_tot_medium = avg_vel_tot_medium(all(cell2mat(avg_vel_tot_medium) ~= 0,2),:);
+% rmse_tot_medium = rmse_tot_medium(all(cell2mat(rmse_tot_medium) ~= 0,2),:);
+% 
+% avg_vel_tot_medium = avg_vel_tot_medium(all(cell2mat(avg_vel_tot_medium) ~= 0,2),:);
+% rmse_tot_medium = rmse_tot_medium(all(cell2mat(rmse_tot_medium) ~= 0,2),:);
 
 plot([avg_vel_tot_medium{:}], [rmse_tot_medium{:}], 'o')
 xlabel('Velocity (rad/s)')
@@ -376,7 +430,7 @@ Holo_filteredStruct_fast = rmfield( fast_filteredStruct, namesFast(find(cellfun(
 Holo_Fields = fieldnames(Holo_filteredStruct_fast);
 
 %% edit ID number here !! and everywhere
-vels_cell_fast_ID_1 = cell(length(Polh_Fields), 3);
+vels_cell_fast_ID_1 = cell(0, 3);
 for trialnum = 1:length(Polh_Fields)
     
     pol_dynamic = [string(Polh_Fields(trialnum))] ;
@@ -420,15 +474,23 @@ for trialnum = 1:length(Polh_Fields)
         
         v = zeros(length(pol_millis),1) ;
         for i = 1:length(pol_millis)-1
-            v(i) = abs((sgf(i+1)-sgf(i))/(pol_millis(i+1)-pol_millis(i)) * 100000);
+            v(i) = abs((sgf(i+1)-sgf(i))/(pol_millis(i+1)-pol_millis(i)) * 1000000);
         end
         
         length_v_half = round(length(v)/3);
         length_v_end_part = round(length(v) * 0.9);
         
-        max_inst_vel = find(v==max(v(length_v_half:length_v_end_part)));
-        start_ind = max_inst_vel - 70;
-        end_ind = max_inst_vel +120;
+        max_angle = find(sgf==max(sgf(length_v_half:end)));
+        min_angle = find(sgf==min(sgf(length_v_half:end)));
+%         start_ind = max_inst_vel - 100;
+%         end_ind = max_inst_vel + 200;
+        start_ind = min_angle;
+        end_ind = max_angle;
+        
+        if start_ind + 300 < end_ind
+            end_ind = start_ind + 300;
+        end
+        
         pol_dataframe = [x_pol sgf];
         holo_data_comp = [x_holo_no_lag y_holo];
         
@@ -471,7 +533,27 @@ for trialnum = 1:length(Polh_Fields)
         comparing_diff = abs(pol_binned_data(:) - holo_filtered(:,2));
         if length(comparing_diff)>0
             rmse = sqrt((sum(comparing_diff).^2)/length(comparing_diff));
-             if rmse > 110
+            if rmse < 70
+            vels_cell_fast_ID_1{end+1, 1}  = pol_dynamic;
+            vels_cell_fast_ID_1{end, 2} = avg_vel;
+            vels_cell_fast_ID_1{end, 3} = rmse;
+        
+        figure(trialnum)
+        subplot(2,1,1)
+        plot(holo_filtered(:,1), holo_filtered(:,2) )
+        hold on
+        plot(pol_comp(:,1), pol_comp(:,2))
+        title(rmse, avg_vel)
+        hold off 
+
+        subplot(2,1,2)
+        plot(holo_data_comp(:,1), holo_data_comp(:,2) )
+        hold on
+        plot(pol_dataframe(:,1), pol_dataframe(:,2))
+        title(rmse, avg_vel)
+        hold off 
+            
+            elseif rmse > 110
                 pol_dynamic = 0;
                 avg_vel = 0;
                 rmse = 0;
@@ -482,9 +564,9 @@ for trialnum = 1:length(Polh_Fields)
             rmse = 0;
         end
         
-        vels_cell_fast_ID_1{trialnum, 1}  = pol_dynamic;
-        vels_cell_fast_ID_1{trialnum,2} = avg_vel;
-        vels_cell_fast_ID_1{trialnum,3} = rmse;
+%         vels_cell_fast_ID_1{trialnum, 1}  = pol_dynamic;
+%         vels_cell_fast_ID_1{trialnum,2} = avg_vel;
+%         vels_cell_fast_ID_1{trialnum,3} = rmse;
 %         
 %         figure(trialnum)
 %         plot(holo_filtered(:,1), holo_filtered(:,2) )
@@ -509,20 +591,22 @@ else
 end
 
 %% just plot
+close all;
 figure(1)
 avg_vel_tot_fast = vels_cell_fast_ID_1(:,2);
 rmse_tot_fast = vels_cell_fast_ID_1(:,3);
-avg_vel_tot_fast = avg_vel_tot_fast(all(cell2mat(avg_vel_tot_fast) ~= 0,2),:);
-rmse_tot_fast = rmse_tot_fast(all(cell2mat(rmse_tot_fast) ~= 0,2),:);
-
-avg_vel_tot_fast = avg_vel_tot_fast(all(cell2mat(avg_vel_tot_fast) ~= 0,2),:);
-rmse_tot_fast = rmse_tot_fast(all(cell2mat(rmse_tot_fast) ~= 0,2),:);
+% avg_vel_tot_fast = avg_vel_tot_fast(all(cell2mat(avg_vel_tot_fast) ~= 0,2),:);
+% rmse_tot_fast = rmse_tot_fast(all(cell2mat(rmse_tot_fast) ~= 0,2),:);
+% 
+% avg_vel_tot_fast = avg_vel_tot_fast(all(cell2mat(avg_vel_tot_fast) ~= 0,2),:);
+% rmse_tot_fast = rmse_tot_fast(all(cell2mat(rmse_tot_fast) ~= 0,2),:);
 
 plot([avg_vel_tot_fast{:}], [rmse_tot_fast{:}], 'o')
 xlabel('Velocity (rad/s)')
 ylabel('RMSE error')
 
 %% plot all
+close all;
 figure(1)
 x = [[avg_vel_tot_slow{:}] [avg_vel_tot_medium{:}] [avg_vel_tot_fast{:}]]';
 y = [[rmse_tot_slow{:}] [rmse_tot_medium{:}] [rmse_tot_fast{:}]]';
@@ -602,9 +686,4 @@ save('VelErrorData1', 'VelErrorData1')
 %         
 %         hold off
 
-% %%
-% figure(1)
-% plot(holo_filtered(:,1), holo_filtered(:,2) )
-% hold on
-% plot(pol_comp(:,1), pol_comp(:,2))
-% hold off 
+

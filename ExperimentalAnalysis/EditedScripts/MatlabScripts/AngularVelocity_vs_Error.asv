@@ -53,8 +53,8 @@ calibration_term_slow = 0;
 calibration_term_medium = 2;
 calibration_term_fast = 2;
 lag_term_slow = 0.2;
-
-
+lag_term_medium = 0.4;
+lag_term_fast = 0.2;
 %% slow
 close all;
 namesSlow = fieldnames( slow_filteredStruct );
@@ -253,7 +253,7 @@ Polh_Fields = fieldnames(Pol_filteredStruct_medium);
 subStrHolo = '_HoloData';
 Holo_filteredStruct_medium = rmfield( medium_filteredStruct, namesMedium(find(cellfun(@isempty, strfind( namesMedium, subStrHolo)))));
 Holo_Fields = fieldnames(Holo_filteredStruct_medium);
-lag_term_medium = 0.4;
+
 %% edit ID number here !!
 close all;
 vels_cell_medium_ID_5 = cell(0, 3);
@@ -359,8 +359,8 @@ try
         comparing_diff = abs(pol_binned_data(:) - holo_filtered(:,2));
         if length(comparing_diff)>0
             rmse = sqrt((sum(comparing_diff).^2)/length(comparing_diff));
-            if rmse < 60
-%             if rmse < 10000    
+%             if rmse < 60
+            if rmse < 10000    
             vels_cell_medium_ID_5{end+1, 1}  = pol_dynamic;
             vels_cell_medium_ID_5{end, 2} = avg_vel;
             vels_cell_medium_ID_5{end, 3} = rmse;
@@ -379,17 +379,16 @@ try
         title(rmse, avg_vel)
         hold off 
         
-%             elseif rmse > 120
-%                 pol_dynamic = 0;
-%                 avg_vel = 0;
-%                 rmse = 0;
-%             end
-            else
-            
+            elseif rmse > 120
                 pol_dynamic = 0;
                 avg_vel = 0;
                 rmse = 0;
             end
+        else
+            
+                pol_dynamic = 0;
+                avg_vel = 0;
+                rmse = 0;
         end
        
 %         
@@ -442,7 +441,7 @@ Polh_Fields = fieldnames(Pol_filteredStruct);
 subStrHolo = '_HoloData';
 Holo_filteredStruct_fast = rmfield( fast_filteredStruct, namesFast(find(cellfun(@isempty, strfind( namesFast, subStrHolo)))));
 Holo_Fields = fieldnames(Holo_filteredStruct_fast);
-lag_term_fast = 0.2;
+
 %% edit ID number here !! and everywhere
 vels_cell_fast_ID_5 = cell(0, 3);
 for trialnum = 1:length(Polh_Fields)
