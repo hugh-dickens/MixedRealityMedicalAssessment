@@ -476,7 +476,7 @@ close all;
 vels_cell_fast_ID_14 = cell(0, 3);
 integer = 0;
 for trialnum = 1:length(Polh_Fields)
-    
+%     for trialnum = 11
 %     pol_dynamic = [string(Polh_Fields(trialnum + integer))] ;
 %     
 %     if trialnum < length(Holo_Fields)
@@ -539,6 +539,17 @@ for trialnum = 1:length(Polh_Fields)
         
         max_angle = find(sgf==max(sgf(length_v_half:end)));
         min_angle = find(sgf==min(sgf(length_v_half:end)));
+        if trialnum == 10 | 15| 17| 18| 21| 23
+            max_angle = min_angle + 150;
+        end
+        
+        if trialnum == 11
+            length_v_half = round(3*length(v)/4);
+            length_v_end_part = round(length(v) * 0.99);
+
+            max_angle = find(sgf==max(sgf(length_v_half:end)));
+            min_angle = max_angle - 120;
+        end
 %         start_ind = max_inst_vel - 100;
 %         end_ind = max_inst_vel + 200;
         start_ind = min_angle;
@@ -557,8 +568,8 @@ for trialnum = 1:length(Polh_Fields)
             
             
         elseif end_ind >= length(v)
-            avg_vel = mean(v(start_ind:end));
-            pol_comp = pol_dataframe(end-500:end, :);
+            avg_vel = mean(v(start_ind:end-500));
+            pol_comp = pol_dataframe(start_ind:end-500, :);
         else
             avg_vel = 0;
             pol_comp = [0 0];
@@ -590,8 +601,8 @@ for trialnum = 1:length(Polh_Fields)
         comparing_diff = abs(pol_binned_data(:) - holo_filtered(:,2));
         if length(comparing_diff)>0
             rmse = sqrt((sum(comparing_diff).^2)/length(comparing_diff));
-            if rmse < 70 | avg_vel > 100
-%             if rmse < 10000
+%             if rmse < 70 | avg_vel > 100
+            if rmse < 10000
             vels_cell_fast_ID_14{end+1, 1}  = pol_dynamic;
             vels_cell_fast_ID_14{end, 2} = avg_vel;
             vels_cell_fast_ID_14{end, 3} = rmse;

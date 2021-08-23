@@ -1,7 +1,7 @@
 clc; close all;
 clear all;
 %% Input the ID of data you want to analyse here. The .mat file will then be auto-loaded.
-IDs = [1,4,5,6,7,8,9,10,11,12,13];
+IDs = [1,4,5,6,7,8,9,10,11,12,13, 14];
 chk = exist('Nodes','var');
 if ~chk
     for ID = IDs
@@ -18,12 +18,15 @@ mergeVelErrors = cell2struct([struct2cell(VelErrorData1);struct2cell(VelErrorDat
     struct2cell(VelErrorData7);struct2cell(VelErrorData8);...
     struct2cell(VelErrorData9);struct2cell(VelErrorData10);...
     struct2cell(VelErrorData11);...
-    struct2cell(VelErrorData12);struct2cell(VelErrorData13)],...
+    struct2cell(VelErrorData12);struct2cell(VelErrorData13);...
+    struct2cell(VelErrorData14)],...
 [fieldnames(VelErrorData1);fieldnames(VelErrorData4);...
     fieldnames(VelErrorData5);fieldnames(VelErrorData6);...
     fieldnames(VelErrorData7);fieldnames(VelErrorData8);fieldnames(VelErrorData9);...
     fieldnames(VelErrorData10);...
-    fieldnames(VelErrorData11);fieldnames(VelErrorData12);fieldnames(VelErrorData13)]);
+    fieldnames(VelErrorData11);fieldnames(VelErrorData12);fieldnames(VelErrorData13);...
+    fieldnames(VelErrorData14)]);
+
 figure(1)
 x = [];
 y = [];
@@ -87,9 +90,10 @@ plot(mdl)
 
 % legend('Slow 10', 'Medium 10', 'Fast 10', 'Slow 11', 'Medium 11', 'Fast 11','Slow 12', 'Medium 12', 'Fast 12')
 
-title('Velocity against error between hololens and polhemus recordings for all participants')
-xlabel('Velocity (rad/s)')
-ylabel('RMSE error')
+title('Velocity against error between hololens and polhemus recordings for all participants', 'FontSize', 20)
+xlabel('Velocity (rad/s)', 'FontSize', 20)
+ylabel('RMSE error', 'FontSize', 20)
+ylim([0 200])
 
 hold off
 
@@ -99,6 +103,7 @@ Fast_tot= cell2mat([mergeFast_vel mergeFast_RMSE]);
 % A = Slow_tot(mergeSlow_RsMSE~=0);
 
 %% new sec
+close all;
 
 merge_all_vels = [Slow_tot; Med_tot; Fast_tot];
 
@@ -129,6 +134,7 @@ vel_140_160 = vel_140_160((vel_140_160(:,1) < 160 ),:);
 vel_above_160 = merge_all_vels((merge_all_vels(:,1) > 160),:);
 
 %%
+close all;
 figure(1)
 
 subplot(3,3,1)
@@ -136,72 +142,72 @@ boxplot(vel_bel_20(:,2))
 ylim([0 150])
 yticks([0:30:150])
 hold on
-ylabel('RMSE')
-xlabel('Below 20rad/s')
+ylabel('RMSE', 'FontSize', 20)
+xlabel('Below 20rad/s', 'FontSize', 20)
 
 subplot(3,3,2)
 boxplot(vel_20_40(:,2))
 ylim([0 150])
 yticks([0:30:150])
 hold on
-ylabel('RMSE')
-xlabel('20-40 rad/s')
+% ylabel('RMSE')
+xlabel('20-40 rad/s','FontSize', 20)
 
 subplot(3,3,3)
 boxplot(vel_40_60(:,2))
 ylim([0 150])
 yticks([0:30:150])
 hold on
-ylabel('RMSE')
-xlabel('40-60 rad/s')
+% ylabel('RMSE')
+xlabel('40-60 rad/s', 'FontSize', 20)
 
 subplot(3,3,4)
 boxplot(vel_60_80(:,2))
 ylim([0 150])
 yticks([0:30:150])
 hold on
-ylabel('RMSE')
-xlabel('60-80 rad/s')
+ylabel('RMSE', 'FontSize', 20)
+xlabel('60-80 rad/s', 'FontSize', 20)
 
 subplot(3,3,5)
 boxplot(vel_80_100(:,2))
 ylim([0 150])
 yticks([0:30:150])
 hold on
-ylabel('RMSE')
-xlabel('80-100 rad/s')
+% ylabel('RMSE')
+xlabel('80-100 rad/s', 'FontSize', 20)
 
 subplot(3,3,6)
 boxplot(vel_100_120(:,2))
 ylim([0 150])
 yticks([0:30:150])
 hold on
-ylabel('RMSE')
-xlabel('100-120 rad/s')
+% ylabel('RMSE')
+xlabel('100-120 rad/s', 'FontSize', 20)
 
 subplot(3,3,7)
 boxplot(vel_120_140(:,2))
 ylim([0 150])
 yticks([0:30:150])
 hold on
-ylabel('RMSE')
-xlabel('120-140 rad/s')
+ylabel('RMSE', 'FontSize', 20)
+xlabel('120-140 rad/s', 'FontSize', 20)
 
 subplot(3,3,8)
 boxplot(vel_140_160(:,2))
 ylim([0 150])
 yticks([0:30:150])
 hold on
-ylabel('RMSE')
-xlabel('140-160 rad/s')
+% ylabel('RMSE')
+xlabel('140-160 rad/s', 'FontSize', 20)
 
 subplot(3,3,9)
 boxplot(vel_above_160(:,2))
 ylim([0 150])
 yticks([0:30:150])
 hold on
-ylabel('RMSE')
-xlabel('Above 160 rad/s')
+% ylabel('RMSE')
+xlabel('Above 160 rad/s', 'FontSize', 20)
 
 %% new section
 figure(2)
