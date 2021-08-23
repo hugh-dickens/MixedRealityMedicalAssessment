@@ -67,7 +67,7 @@ x = [x; vel];
 y = [y; rmse];
 
 plot([vel{:}], [rmse{:}], 'o')
-xlabel('Velocity (rad/s)')
+xlabel('Velocity (rad/s)', 'FontSize', 20)
 ylabel('RMSE error')
 
 hold on
