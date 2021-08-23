@@ -64,10 +64,12 @@ if counter == 2 & counter_bool == true
     mergeRMSE = [mergeRMSE; rmse];
     counter = 0;
     counter_bool = false;
+    mergevel = mergevel(~cellfun('isempty',mergevel));
+    mergeRMSE = mergeRMSE(~cellfun('isempty',mergeRMSE));
     mergevel = mergevel(all(cell2mat(mergevel) ~= 0,2),:);
     mergeRMSE = mergeRMSE(all(cell2mat(mergeRMSE) ~= 0,2),:);
-     R(~cellfun('isempty',R))
-      R(~cellfun('isempty',R))
+   
+    
     x = mergevel;
     y = mergeRMSE;
 %     x = [x; vel];
@@ -84,15 +86,15 @@ if counter == 2 & counter_bool == true
 
     plot(mdl)
     
-    title('Velocity against error between hololens and polhemus recordings for participant', i/3)
+    title('Velocity against error between hololens and polhemus recordings for participant', i/3, ave_rmse)
     xlabel('Velocity (rad/s)')
     ylabel('RMSE error')
 
     hold off
-%     mergevel = [];
-%     mergeRMSE = [];
-%     x = [];
-%     y = [];
+    mergevel = [];
+    mergeRMSE = [];
+    x = [];
+    y = [];
  
 end
 
@@ -102,9 +104,9 @@ end
 % legend('Slow 10', 'Medium 10', 'Fast 10', 'Slow 11', 'Medium 11', 'Fast 11','Slow 12', 'Medium 12', 'Fast 12')
 
 
-Slow_tot= cell2mat([mergeSlow_vel mergeSlow_RMSE]);
-Med_tot= cell2mat([mergeMed_vel mergeMed_RMSE]);
-Fast_tot= cell2mat([mergeFast_vel mergeFast_RMSE]);
+% Slow_tot= cell2mat([mergeSlow_vel mergeSlow_RMSE]);
+% Med_tot= cell2mat([mergeMed_vel mergeMed_RMSE]);
+% Fast_tot= cell2mat([mergeFast_vel mergeFast_RMSE]);
 % A = Slow_tot(mergeSlow_RsMSE~=0);
 
 %% new sec

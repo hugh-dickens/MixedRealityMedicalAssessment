@@ -5,7 +5,7 @@ clear all;
 chk = exist('Nodes','var');
 if ~chk
      
-    ID = 7;
+    ID = 13;
     ID = num2str(ID);
     ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_MATLAB\UnprocessedData';
     ID_folder =  [ID_folder '\'];
@@ -50,8 +50,8 @@ subStrFast_v3 = '_fastv3';
 fast_filteredStruct_v3 = rmfield( experiment_data, names( find( cellfun( @isempty, strfind( names , subStrFast_v3 ) ) ) ) );
 % these need to be changed depending on participant
 
-calibration_term_slow = 5;
-lag_term_slow = 0.25;
+calibration_term_slow = 3;
+lag_term_slow = 0.18;
 %% slow
 close all;
 namesSlow = fieldnames( slow_filteredStruct );
@@ -64,7 +64,7 @@ Holo_filteredStruct = rmfield( slow_filteredStruct, namesSlow(find(cellfun(@isem
 Holo_Fields = fieldnames(Holo_filteredStruct);
 
 
-vels_cell_slow_ID_7 = cell(0, 3);
+vels_cell_slow_ID_13 = cell(0, 3);
 
 integer = 0;
 for trialnum = 1:length(Polh_Fields)
@@ -77,7 +77,7 @@ for trialnum = 1:length(Polh_Fields)
 %     newStr = erase(pol_dynamic,'_POLGroundTruth');
 %     newSubstr = erase(holo_dynamic, '_HoloData');
 
-    pol_dynamic = [string(Polh_Fields(trialnum - integer))]; 
+    pol_dynamic = [string(Polh_Fields(trialnum - integer ))]; 
     
     if trialnum < length(Holo_Fields)
         
@@ -180,11 +180,11 @@ try
         if length(comparing_diff)>0
             rmse = sqrt((sum(comparing_diff).^2)/(length(comparing_diff)));
             
-            if rmse < 40
+            if (rmse < 40 & avg_vel < 50) | (rmse < 50 & avg_vel > 50 & avg_vel < 80)
                 
-            vels_cell_slow_ID_7{end+1, 1}  = pol_dynamic;
-            vels_cell_slow_ID_7{end, 2} = avg_vel;
-            vels_cell_slow_ID_7{end, 3} = rmse;
+            vels_cell_slow_ID_13{end+1, 1}  = pol_dynamic;
+            vels_cell_slow_ID_13{end, 2} = avg_vel;
+            vels_cell_slow_ID_13{end, 3} = rmse;
             
             figure(trialnum)
             subplot(2,1,1)
@@ -239,8 +239,8 @@ end
 %% just plot
 close all;
 figure(1)
-avg_vel_tot_slow = vels_cell_slow_ID_7(:,2);
-rmse_tot_slow = vels_cell_slow_ID_7(:,3);
+avg_vel_tot_slow = vels_cell_slow_ID_13(:,2);
+rmse_tot_slow = vels_cell_slow_ID_13(:,3);
 % avg_vel_tot_slow = avg_vel_tot_slow(all(cell2mat(avg_vel_tot_slow) ~= 0,2),:);
 % rmse_tot_slow = rmse_tot_slow(all(cell2mat(rmse_tot_slow) ~= 0,2),:);
 
@@ -264,11 +264,13 @@ Polh_Fields = fieldnames(Pol_filteredStruct_medium);
 subStrHolo = '_HoloData';
 Holo_filteredStruct_medium = rmfield( medium_filteredStruct, namesMedium(find(cellfun(@isempty, strfind( namesMedium, subStrHolo)))));
 Holo_Fields = fieldnames(Holo_filteredStruct_medium);
-lag_term_medium = 0.2;
-calibration_term_medium = -1;
+lag_term_medium = 0.18;
+calibration_term_medium = 3;
+
+
 %% edit ID number here !!
 close all;
-vels_cell_medium_ID_7 = cell(0, 3);
+vels_cell_medium_ID_13 = cell(0, 3);
 integer = 0;
 for trialnum = 1:length(Polh_Fields)
     
@@ -280,7 +282,7 @@ for trialnum = 1:length(Polh_Fields)
 %     holo_dynamic = [string(Holo_Fields(trialnum))];
 %     newStr = erase(pol_dynamic,'_POLGroundTruth');
 %     newSubstr = erase(holo_dynamic, '_HoloData');
-    pol_dynamic = [string(Polh_Fields(trialnum - integer))]; 
+    pol_dynamic = [string(Polh_Fields(trialnum + integer))]; 
     
     if trialnum < length(Holo_Fields)
         
@@ -328,7 +330,7 @@ try
             v(i) = abs((sgf(i+1)-sgf(i))/(pol_millis(i+1)-pol_millis(i)) * 1000000);
         end
         
-        length_v_half = round(3*length(v)/7);
+        length_v_half = round(3*length(v)/8);
         
         max_angle = find(sgf==max(sgf(length_v_half:end)));
         min_angle = find(sgf==min(sgf(length_v_half:end)));
@@ -383,11 +385,11 @@ try
         comparing_diff = abs(pol_binned_data(:) - holo_filtered(:,2));
         if length(comparing_diff)>0
             rmse = sqrt((sum(comparing_diff).^2)/length(comparing_diff));
-            if rmse < 60
+            if (rmse < 50 & avg_vel < 60) | (rmse > 50 & rmse < 70 & avg_vel> 70)
 %             if rmse < 10000    
-            vels_cell_medium_ID_7{end+1, 1}  = pol_dynamic;
-            vels_cell_medium_ID_7{end, 2} = avg_vel;
-            vels_cell_medium_ID_7{end, 3} = rmse;
+            vels_cell_medium_ID_13{end+1, 1}  = pol_dynamic;
+            vels_cell_medium_ID_13{end, 2} = avg_vel;
+            vels_cell_medium_ID_13{end, 3} = rmse;
         figure(trialnum)
         subplot(2,1,1)
         plot(holo_filtered(:,1), holo_filtered(:,2) )
@@ -447,8 +449,8 @@ end
 %% just plot
 close all;
 figure(1)
-avg_vel_tot_medium = vels_cell_medium_ID_7(:,2);
-rmse_tot_medium = vels_cell_medium_ID_7(:,3);
+avg_vel_tot_medium = vels_cell_medium_ID_13(:,2);
+rmse_tot_medium = vels_cell_medium_ID_13(:,3);
 % avg_vel_tot_medium = avg_vel_tot_medium(all(cell2mat(avg_vel_tot_medium) ~= 0,2),:);
 % rmse_tot_medium = rmse_tot_medium(all(cell2mat(rmse_tot_medium) ~= 0,2),:);
 % 
@@ -467,20 +469,34 @@ Polh_Fields = fieldnames(Pol_filteredStruct);
 subStrHolo = '_HoloData';
 Holo_filteredStruct_fast = rmfield( fast_filteredStruct, namesFast(find(cellfun(@isempty, strfind( namesFast, subStrHolo)))));
 Holo_Fields = fieldnames(Holo_filteredStruct_fast);
-lag_term_fast = 0.28;
-calibration_term_fast = 0;
+lag_term_fast = 0.18;
+calibration_term_fast = 4;
 %% edit ID number here !! and everywhere
 close all;
-vels_cell_fast_ID_7 = cell(0, 3);
+vels_cell_fast_ID_13 = cell(0, 3);
+integer = 0;
 for trialnum = 1:length(Polh_Fields)
     
-    pol_dynamic = [string(Polh_Fields(trialnum))] ;
+%     pol_dynamic = [string(Polh_Fields(trialnum + integer))] ;
+%     
+%     if trialnum < length(Holo_Fields)
+%         
+%     holo_dynamic = [string(Holo_Fields(trialnum))];
+%     newStr = erase(pol_dynamic,'_POLGroundTruth');
+%     newSubstr = erase(holo_dynamic, '_HoloData');
+
+    pol_dynamic = [string(Polh_Fields(trialnum - integer))]; 
     
     if trialnum < length(Holo_Fields)
         
     holo_dynamic = [string(Holo_Fields(trialnum))];
     newStr = erase(pol_dynamic,'_POLGroundTruth');
     newSubstr = erase(holo_dynamic, '_HoloData');
+    
+    if newStr ~= newSubstr
+        integer = integer+1;
+        
+    elseif newStr == newSubstr
 
         if isfield(experiment_data,pol_dynamic) == 1
             Pol_data = experiment_data.(pol_dynamic);
@@ -576,9 +592,9 @@ for trialnum = 1:length(Polh_Fields)
             rmse = sqrt((sum(comparing_diff).^2)/length(comparing_diff));
             if rmse < 70 | avg_vel > 100
 %             if rmse < 10000
-            vels_cell_fast_ID_7{end+1, 1}  = pol_dynamic;
-            vels_cell_fast_ID_7{end, 2} = avg_vel;
-            vels_cell_fast_ID_7{end, 3} = rmse;
+            vels_cell_fast_ID_13{end+1, 1}  = pol_dynamic;
+            vels_cell_fast_ID_13{end, 2} = avg_vel;
+            vels_cell_fast_ID_13{end, 3} = rmse;
         
         figure(trialnum)
         subplot(2,1,1)
@@ -627,7 +643,7 @@ for trialnum = 1:length(Polh_Fields)
 else
         fprintf('No polhemus data for trial %i\n; fast trial \n',i)
             end
-            
+    end
     end
         
 end
@@ -635,8 +651,8 @@ end
 %% just plot
 close all;
 figure(1)
-avg_vel_tot_fast = vels_cell_fast_ID_7(:,2);
-rmse_tot_fast = vels_cell_fast_ID_7(:,3);
+avg_vel_tot_fast = vels_cell_fast_ID_13(:,2);
+rmse_tot_fast = vels_cell_fast_ID_13(:,3);
 % avg_vel_tot_fast = avg_vel_tot_fast(all(cell2mat(avg_vel_tot_fast) ~= 0,2),:);
 % rmse_tot_fast = rmse_tot_fast(all(cell2mat(rmse_tot_fast) ~= 0,2),:);
 % 
@@ -681,13 +697,13 @@ hold off
 
 
 %%
-slow_ID_7 = 'VelSlow_ID_7';
-medium_ID_7 = 'VelMedium_ID_7';
-fast_ID_7 = 'VelFast_ID_7';
-VelErrorData7.(slow_ID_7) = cell2table(vels_cell_slow_ID_7);
-VelErrorData7.(medium_ID_7) = cell2table(vels_cell_medium_ID_7) ;
-VelErrorData7.(fast_ID_7) = cell2table(vels_cell_fast_ID_7);
-save('VelErrorData7', 'VelErrorData7')
+slow_ID_13 = 'VelSlow_ID_13';
+medium_ID_13 = 'VelMedium_ID_13';
+fast_ID_13 = 'VelFast_ID_13';
+VelErrorData13.(slow_ID_13) = cell2table(vels_cell_slow_ID_13);
+VelErrorData13.(medium_ID_13) = cell2table(vels_cell_medium_ID_13) ;
+VelErrorData13.(fast_ID_13) = cell2table(vels_cell_fast_ID_13);
+save('VelErrorData13', 'VelErrorData13')
 %% Code only used to troubleshoot/ plot the data=> put above 'index_holo' if required
 
 %         %%%% CODE ONLY USED FOR PLOTTING HOLO SPLINE 

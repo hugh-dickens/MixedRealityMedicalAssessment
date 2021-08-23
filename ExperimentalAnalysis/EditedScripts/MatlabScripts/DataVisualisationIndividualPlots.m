@@ -43,7 +43,7 @@ vel = temp(:,2);
 rmse = temp(:,3);
 
 if counter == 0 & counter_bool == true
-    figure(i)
+   
     mergevel = [mergevel; vel];
     mergeRMSE = [mergeRMSE; rmse];
     
@@ -60,6 +60,7 @@ if counter == 1 & counter_bool == true
 
 end
 if counter == 2 & counter_bool == true
+    figure(i/3)
     mergevel = [mergevel; vel];
     mergeRMSE = [mergeRMSE; rmse];
     counter = 0;
@@ -85,8 +86,9 @@ if counter == 2 & counter_bool == true
     mdl = fitlm(x,y);
 
     plot(mdl)
-    
-    title('Velocity against error between hololens and polhemus recordings for participant', i/3)
+    ave_v = mean(x);
+    ave_rmse = mean(y);
+    title(["Velocity against error between hololens and polhemus: ", "Ave. RMSE = " num2str(ave_rmse) "Ave Vel = " num2str(ave_v)])
     xlabel('Velocity (rad/s)')
     ylabel('RMSE error')
 
@@ -103,142 +105,142 @@ end
 
 % legend('Slow 10', 'Medium 10', 'Fast 10', 'Slow 11', 'Medium 11', 'Fast 11','Slow 12', 'Medium 12', 'Fast 12')
 
-
-Slow_tot= cell2mat([mergeSlow_vel mergeSlow_RMSE]);
-Med_tot= cell2mat([mergeMed_vel mergeMed_RMSE]);
-Fast_tot= cell2mat([mergeFast_vel mergeFast_RMSE]);
+% 
+% Slow_tot= cell2mat([mergeSlow_vel mergeSlow_RMSE]);
+% Med_tot= cell2mat([mergeMed_vel mergeMed_RMSE]);
+% Fast_tot= cell2mat([mergeFast_vel mergeFast_RMSE]);
 % A = Slow_tot(mergeSlow_RsMSE~=0);
 
-%% new sec
-
-merge_all_vels = [Slow_tot; Med_tot; Fast_tot];
-
-vel_bel_20 = merge_all_vels((merge_all_vels(:,1) < 20),:);
-vel_bel_20 = vel_bel_20((vel_bel_20(:,1) > 0),:);
-
-vel_20_40 = merge_all_vels((merge_all_vels(:,1) > 20),:);
-vel_20_40 = vel_20_40((vel_20_40(:,1) < 40 ),:);
-
-vel_40_60 = merge_all_vels((merge_all_vels(:,1) > 40),:);
-vel_40_60 = vel_40_60((vel_40_60(:,1) < 60 ),:);
-
-vel_60_80 = merge_all_vels((merge_all_vels(:,1) > 60),:);
-vel_60_80 = vel_60_80((vel_60_80(:,1) < 80 ),:);
-
-vel_80_100 = merge_all_vels((merge_all_vels(:,1) > 80),:);
-vel_80_100 = vel_80_100((vel_80_100(:,1) < 100 ),:);
-
-vel_100_120 = merge_all_vels((merge_all_vels(:,1) > 100),:);
-vel_100_120 = vel_100_120((vel_100_120(:,1) < 120 ),:);
-
-vel_120_140 = merge_all_vels((merge_all_vels(:,1) > 120),:);
-vel_120_140 = vel_120_140((vel_120_140(:,1) < 140 ),:);
-
-vel_140_160 = merge_all_vels((merge_all_vels(:,1) > 140),:);
-vel_140_160 = vel_140_160((vel_140_160(:,1) < 160 ),:);
-
-vel_above_160 = merge_all_vels((merge_all_vels(:,1) > 160),:);
-
-%%
-figure(1)
-
-subplot(3,3,1)
-boxplot(vel_bel_20(:,2))
-ylim([0 150])
-yticks([0:30:150])
-hold on
-ylabel('RMSE')
-xlabel('Below 20rad/s')
-
-subplot(3,3,2)
-boxplot(vel_20_40(:,2))
-ylim([0 150])
-yticks([0:30:150])
-hold on
-ylabel('RMSE')
-xlabel('20-40 rad/s')
-
-subplot(3,3,3)
-boxplot(vel_40_60(:,2))
-ylim([0 150])
-yticks([0:30:150])
-hold on
-ylabel('RMSE')
-xlabel('40-60 rad/s')
-
-subplot(3,3,4)
-boxplot(vel_60_80(:,2))
-ylim([0 150])
-yticks([0:30:150])
-hold on
-ylabel('RMSE')
-xlabel('60-80 rad/s')
-
-subplot(3,3,5)
-boxplot(vel_80_100(:,2))
-ylim([0 150])
-yticks([0:30:150])
-hold on
-ylabel('RMSE')
-xlabel('80-100 rad/s')
-
-subplot(3,3,6)
-boxplot(vel_100_120(:,2))
-ylim([0 150])
-yticks([0:30:150])
-hold on
-ylabel('RMSE')
-xlabel('100-120 rad/s')
-
-subplot(3,3,7)
-boxplot(vel_120_140(:,2))
-ylim([0 150])
-yticks([0:30:150])
-hold on
-ylabel('RMSE')
-xlabel('120-140 rad/s')
-
-subplot(3,3,8)
-boxplot(vel_140_160(:,2))
-ylim([0 150])
-yticks([0:30:150])
-hold on
-ylabel('RMSE')
-xlabel('140-160 rad/s')
-
-subplot(3,3,9)
-boxplot(vel_above_160(:,2))
-ylim([0 150])
-yticks([0:30:150])
-hold on
-ylabel('RMSE')
-xlabel('Above 160 rad/s')
-
-%% new section
-figure(2)
-subplot(1,3,1)
-boxplot(Slow_tot(:,2))
-ylim([0 150])
-yticks([0:10:150])
-
-hold on
-ylabel('RMSE')
-xlabel('slow')
-
-subplot(1,3,2)
-boxplot(Med_tot(:,2))
-ylim([0 150])
-yticks([0:10:150])
-
-hold on
-xlabel('medium')
-
-subplot(1,3,3)
-boxplot(Fast_tot(:,2))
-ylim([0 150])
-yticks([0:10:150])
-
-hold on
-xlabel('fast')
- 
-
+% %% new sec
+% 
+% merge_all_vels = [Slow_tot; Med_tot; Fast_tot];
+% 
+% vel_bel_20 = merge_all_vels((merge_all_vels(:,1) < 20),:);
+% vel_bel_20 = vel_bel_20((vel_bel_20(:,1) > 0),:);
+% 
+% vel_20_40 = merge_all_vels((merge_all_vels(:,1) > 20),:);
+% vel_20_40 = vel_20_40((vel_20_40(:,1) < 40 ),:);
+% 
+% vel_40_60 = merge_all_vels((merge_all_vels(:,1) > 40),:);
+% vel_40_60 = vel_40_60((vel_40_60(:,1) < 60 ),:);
+% 
+% vel_60_80 = merge_all_vels((merge_all_vels(:,1) > 60),:);
+% vel_60_80 = vel_60_80((vel_60_80(:,1) < 80 ),:);
+% 
+% vel_80_100 = merge_all_vels((merge_all_vels(:,1) > 80),:);
+% vel_80_100 = vel_80_100((vel_80_100(:,1) < 100 ),:);
+% 
+% vel_100_120 = merge_all_vels((merge_all_vels(:,1) > 100),:);
+% vel_100_120 = vel_100_120((vel_100_120(:,1) < 120 ),:);
+% 
+% vel_120_140 = merge_all_vels((merge_all_vels(:,1) > 120),:);
+% vel_120_140 = vel_120_140((vel_120_140(:,1) < 140 ),:);
+% 
+% vel_140_160 = merge_all_vels((merge_all_vels(:,1) > 140),:);
+% vel_140_160 = vel_140_160((vel_140_160(:,1) < 160 ),:);
+% 
+% vel_above_160 = merge_all_vels((merge_all_vels(:,1) > 160),:);
+% 
+% %%
+% figure(1)
+% 
+% subplot(3,3,1)
+% boxplot(vel_bel_20(:,2))
+% ylim([0 150])
+% yticks([0:30:150])
+% hold on
+% ylabel('RMSE')
+% xlabel('Below 20rad/s')
+% 
+% subplot(3,3,2)
+% boxplot(vel_20_40(:,2))
+% ylim([0 150])
+% yticks([0:30:150])
+% hold on
+% ylabel('RMSE')
+% xlabel('20-40 rad/s')
+% 
+% subplot(3,3,3)
+% boxplot(vel_40_60(:,2))
+% ylim([0 150])
+% yticks([0:30:150])
+% hold on
+% ylabel('RMSE')
+% xlabel('40-60 rad/s')
+% 
+% subplot(3,3,4)
+% boxplot(vel_60_80(:,2))
+% ylim([0 150])
+% yticks([0:30:150])
+% hold on
+% ylabel('RMSE')
+% xlabel('60-80 rad/s')
+% 
+% subplot(3,3,5)
+% boxplot(vel_80_100(:,2))
+% ylim([0 150])
+% yticks([0:30:150])
+% hold on
+% ylabel('RMSE')
+% xlabel('80-100 rad/s')
+% 
+% subplot(3,3,6)
+% boxplot(vel_100_120(:,2))
+% ylim([0 150])
+% yticks([0:30:150])
+% hold on
+% ylabel('RMSE')
+% xlabel('100-120 rad/s')
+% 
+% subplot(3,3,7)
+% boxplot(vel_120_140(:,2))
+% ylim([0 150])
+% yticks([0:30:150])
+% hold on
+% ylabel('RMSE')
+% xlabel('120-140 rad/s')
+% 
+% subplot(3,3,8)
+% boxplot(vel_140_160(:,2))
+% ylim([0 150])
+% yticks([0:30:150])
+% hold on
+% ylabel('RMSE')
+% xlabel('140-160 rad/s')
+% 
+% subplot(3,3,9)
+% boxplot(vel_above_160(:,2))
+% ylim([0 150])
+% yticks([0:30:150])
+% hold on
+% ylabel('RMSE')
+% xlabel('Above 160 rad/s')
+% 
+% %% new section
+% figure(2)
+% subplot(1,3,1)
+% boxplot(Slow_tot(:,2))
+% ylim([0 150])
+% yticks([0:10:150])
+% 
+% hold on
+% ylabel('RMSE')
+% xlabel('slow')
+% 
+% subplot(1,3,2)
+% boxplot(Med_tot(:,2))
+% ylim([0 150])
+% yticks([0:10:150])
+% 
+% hold on
+% xlabel('medium')
+% 
+% subplot(1,3,3)
+% boxplot(Fast_tot(:,2))
+% ylim([0 150])
+% yticks([0:10:150])
+% 
+% hold on
+% xlabel('fast')
+%  
+% 
