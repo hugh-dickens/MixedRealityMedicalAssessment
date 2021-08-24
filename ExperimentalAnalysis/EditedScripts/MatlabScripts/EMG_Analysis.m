@@ -6,7 +6,7 @@ clear all;
 chk = exist('Nodes','var');
 if ~chk
     calibration_flag = 0;
-    ID = 10;
+    ID = 14;
     ID = num2str(ID);
     ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_MATLAB\UnprocessedData';
     ID_folder =  [ID_folder '\'];
@@ -18,9 +18,9 @@ end
 %% Calibration sequence to associate myo electrodes with muscles.
 if calibration_flag == 0 %% at the moment this isnt set to 1 anywhere on purpose
     names = fieldnames( experiment_data );
-    subStr = 'ID_10_test_EMG_data';
+    subStr = 'ID_14_test_EMG_data';
     Calibration_filteredStruct = rmfield( experiment_data, names( find( cellfun( @isempty, strfind( names , subStr ) ) ) ) );
-    EMG_data = ['ID_10_test_EMG_data_calib']; 
+    EMG_data = ['ID_14_test_EMG_data_calib']; 
     EMG_calibration_data = experiment_data.(EMG_data);
     
     EMG_calibration_data_split = datevec(EMG_calibration_data.Timestamp);
@@ -77,7 +77,7 @@ end
 
 %% Plot spectral analysis of EMG data
 EMG_data = experiment_data.(EMG_data);
-fs = 150;
+fs = 200;
 
 figure(1)
 for i= bands_EMG_flex
@@ -103,7 +103,7 @@ hold off
 
 %% Find time of 'catch' and then plot spectral analysis for EMG of stretch reflex
 % slow
-for trial = 1:30
+for trial = 2
  holo_dynamic = ['ID_',num2str(ID),'_slow_', num2str(trial), '_HoloData'];
  EMG_data_used = ['ID_',num2str(ID),'_test_EMG_data_slow']; 
  figure(trial)
@@ -129,16 +129,16 @@ if isfield(experiment_data,holo_dynamic) == 1
     EMG_date_timestamp = EMG_data.Timestamp;
     
     EMG_date_timestamp.Format = 'hh:mm:ss';
-    dt_catch = datetime('2021-08-18')+timestamp_catch; 
+    dt_catch = datetime('2021-08-23')+timestamp_catch; 
     dt_catch.Format = 'hh:mm:ss';
-    dt_end_trial = datetime('2021-08-18')+end_trial; 
+    dt_end_trial = datetime('2021-08-23')+end_trial; 
     dt_end_trial.Format = 'hh:mm:ss';
     
     
     EMG_indexes = (EMG_date_timestamp >= dt_catch - seconds(1) ) & (EMG_date_timestamp <= dt_end_trial) ;
     EMG_catch = EMG_data(EMG_indexes,:);
     
-    fs = 150;
+    fs = 200;
 
 
 for i= bands_EMG_flex
@@ -152,9 +152,11 @@ for i= bands_EMG_flex
 
     % just get rid of low frequencies instead of getting rid of the first
     % 118 datapoints
-    plot(f(118:floor(n/2)),power(118:floor(n/2)))
+    plot(f(3:floor(n/2)),power(3:floor(n/2)))
     xlabel('Frequency')
     ylabel('Power')
+    legend(strcat('EMG band', num2str(bands_EMG_flex(1))),strcat('EMG band', num2str(bands_EMG_flex(2))),strcat('EMG band', num2str(bands_EMG_flex(3))));
+
 
     hold on
 end
@@ -174,7 +176,7 @@ end
 
 %% medium 
 
-for trial = 1:30
+for trial = 2
     %%replace this with polhemus
  holo_dynamic = ['ID_',num2str(ID),'_medium_', num2str(trial), '_HoloData'];
  EMG_data_used = ['ID_',num2str(ID),'_test_EMG_data_medium'];  
@@ -201,16 +203,16 @@ if isfield(experiment_data,holo_dynamic) == 1
     EMG_date_timestamp = EMG_data.Timestamp;
     
     EMG_date_timestamp.Format = 'hh:mm:ss';
-    dt_catch = datetime('2021-08-18')+timestamp_catch; 
+    dt_catch = datetime('2021-08-23')+timestamp_catch; 
     dt_catch.Format = 'hh:mm:ss';
-    dt_end_trial = datetime('2021-08-18')+end_trial; 
+    dt_end_trial = datetime('2021-08-23')+end_trial; 
     dt_end_trial.Format = 'hh:mm:ss';
     
     
     EMG_indexes = (EMG_date_timestamp >= dt_catch - seconds(1) ) & (EMG_date_timestamp <= dt_end_trial) ;
     EMG_catch = EMG_data(EMG_indexes,:);
     
-    fs = 150;
+    fs = 200;
 
 
 for i= bands_EMG_flex
@@ -223,9 +225,12 @@ for i= bands_EMG_flex
     power = abs(y).^2/n;    % power of the DFT
 
 
-    plot(f(118:floor(n/2)),power(118:floor(n/2)))
+        % 118 datapoints
+    plot(f(3:floor(n/2)),power(3:floor(n/2)))
     xlabel('Frequency')
     ylabel('Power')
+    legend(strcat('EMG band', num2str(bands_EMG_flex(1))),strcat('EMG band', num2str(bands_EMG_flex(2))),strcat('EMG band', num2str(bands_EMG_flex(3))));
+
 
     hold on
 end
@@ -245,7 +250,7 @@ end
 
 %% fast 
 
-for trial = 1:30
+for trial = 3
     %%replace this with polhemus
  holo_dynamic = ['ID_',num2str(ID),'_fast_', num2str(trial), '_HoloData'];
  EMG_data_used = ['ID_',num2str(ID),'_test_EMG_data_calib'];  
@@ -272,16 +277,16 @@ if isfield(experiment_data,holo_dynamic) == 1
     EMG_date_timestamp = EMG_data.Timestamp;
     
     EMG_date_timestamp.Format = 'hh:mm:ss';
-    dt_catch = datetime('2021-08-18')+timestamp_catch; 
+    dt_catch = datetime('2021-08-23')+timestamp_catch; 
     dt_catch.Format = 'hh:mm:ss';
-    dt_end_trial = datetime('2021-08-18')+end_trial; 
+    dt_end_trial = datetime('2021-08-23')+end_trial; 
     dt_end_trial.Format = 'hh:mm:ss';
     
     
     EMG_indexes = (EMG_date_timestamp >= dt_catch - seconds(1) ) & (EMG_date_timestamp <= dt_end_trial) ;
     EMG_catch = EMG_data(EMG_indexes,:);
     
-    fs = 150;
+    fs = 200;
 
 
 for i= bands_EMG_flex
@@ -294,9 +299,12 @@ for i= bands_EMG_flex
     power = abs(y).^2/n;    % power of the DFT
 
 
-    plot(f(118:floor(n/2)),power(118:floor(n/2)))
+        % 118 datapoints
+    plot(f(3:floor(n/2)),power(3:floor(n/2)))
     xlabel('Frequency')
     ylabel('Power')
+    legend(strcat('EMG band', num2str(bands_EMG_flex(1))),strcat('EMG band', num2str(bands_EMG_flex(2))),strcat('EMG band', num2str(bands_EMG_flex(3))));
+
 
     hold on
 end

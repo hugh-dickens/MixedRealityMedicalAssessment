@@ -69,44 +69,44 @@ class EmgCollector(myo.DeviceListener):
       temp = (sum(res))
       self.sum_emg_list.append(temp)
 
-class SaveRoutine(object):
-  def __init__(self, dataA): #, listenerB):
-    self.dataA = dataA
+# class SaveRoutine(object):
+#   def __init__(self, dataA): #, listenerB):
+#     self.dataA = dataA
     #self.listenerB = listenerB    
 
-  def save_to_CSV(self):  
-    # field names 
-    fields = ['EMG 1', 'EMG 2', 'EMG 3', 'EMG 4', 'EMG 5', 'EMG 6', 'EMG 7', 'EMG 8', 'Timestamp', 'Milliseconds'] 
+  # def save_to_CSV(self):  
+  #   # field names 
+  #   fields = ['EMG 1', 'EMG 2', 'EMG 3', 'EMG 4', 'EMG 5', 'EMG 6', 'EMG 7', 'EMG 8', 'Timestamp', 'Milliseconds'] 
     
-    # data rows of csv file 
-    rows = self.dataA[1:len(self.dataA)]
-    prot_directory = "ProtocolData./"
-    f = open(prot_directory + "ParticipantID.txt", "r")
-    ID = str(f.read())
-    g = open(prot_directory + "Condition.txt", "r")
-    condition = str(g.read())
-    h = open(prot_directory + "Trial.txt", "r")
-    trial = str(h.read())
+  #   # data rows of csv file 
+  #   rows = self.dataA[1:len(self.dataA)]
+  #   prot_directory = "ProtocolData./"
+  #   f = open(prot_directory + "ParticipantID.txt", "r")
+  #   ID = str(f.read())
+  #   g = open(prot_directory + "Condition.txt", "r")
+  #   condition = str(g.read())
+  #   h = open(prot_directory + "Trial.txt", "r")
+  #   trial = str(h.read())
 
-    # Directory
-    directory = "./Data_ID_%s/" % ID
+  #   # Directory
+  #   directory = "./Data_ID_%s/" % ID
   
-    try:
-        os.mkdir(directory)
-    except OSError as e:
-        print("Directory exists")
+  #   try:
+  #       os.mkdir(directory)
+  #   except OSError as e:
+  #       print("Directory exists")
 
-    filename_EMG = "%s_%s_%s_EMG.csv" % (ID, condition, trial)
+  #   filename_EMG = "%s_%s_%s_EMG.csv" % (ID, condition, trial)
 
-    # with open(directory + filename_GUI, 'w') as f:
+  #   # with open(directory + filename_GUI, 'w') as f:
       
-    with open(directory + filename_EMG, 'w', encoding = 'UTF8', newline = '') as f:
-        writer = csv.writer(f)
-        # write the header
-        writer.writerow(fields)
-        # write multiple rows
-        writer.writerows(rows) 
-    sys.exit()
+  #   with open(directory + filename_EMG, 'w', encoding = 'UTF8', newline = '') as f:
+  #       writer = csv.writer(f)
+  #       # write the header
+  #       writer.writerow(fields)
+  #       # write multiple rows
+  #       writer.writerows(rows) 
+  #   sys.exit()
 
 class packet(object):
 
@@ -124,25 +124,26 @@ class packet(object):
       while True:
         emg_data = self.listener.get_packet_emg_data()
         counter +=1
-        if ((counter % 800000) == 0) :
+        if ((counter % 1000) == 0) :
           emg_data = sum(emg_data)/5
           emg_data = str(int(emg_data))
+          # print(emg_data)
+          sock.sendto(emg_data.encode('utf-8'), ("192.168.1.139", 9050))
           print(emg_data)
-          sock.sendto(emg_data.encode('utf-8'), ("192.168.1.139", 9050))   
-          f = open(prot_directory + "KeyboardInterruptBoolean.txt", "r")
-          keyboardVariable = str(f.read())
           ## if script A writes a 1 to the .txt file then a keyboard interrupt will be thrown to stop recording emg data
-          if (keyboardVariable == "1"):
-            raise KeyboardInterrupt
+          # if (keyboardVariable == "1"):
+            # raise KeyboardInterrupt
           ### Could try just saving the data here
-          else:
-            pass  
+          # else:
+          #   pass  
             # print(self.emg_total)       
             # REmember this should be the holo ip
             # Same port as we specified in UDPComm.cs 
     except KeyboardInterrupt:
-      emgMatrix = self.listener.get_emg_data()
-      SaveRoutine(emgMatrix).save_to_CSV()
+      sys.exit()
+      # emgMatrix = self.listener.get_emg_data()
+      # SaveRoutine(emgMatrix).save_to_CSV()
+
 
 def main():
   ### enter the path to your own MyoSDK package and .dll file here. Download 
@@ -157,13 +158,14 @@ def main():
 
 if __name__ == '__main__':
   while True:
-    prot_directory = "ProtocolData./"
-    f = open(prot_directory + "StartRunning.txt", "r")
-    runVariableMyo = str(f.read())
-    ## if script A writes a 1 to the .txt file then a keyboard interrupt will be thrown to stop recording emg data
-    if (runVariableMyo == "1"):
-      main()
-    elif (runVariableMyo == "0"):
-      time.sleep(1)
+    main()
+    # prot_directory = "ProtocolData./"
+    # f = open(prot_directory + "StartRunning.txt", "r")
+    # runVariableMyo = str(f.read())
+    # ## if script A writes a 1 to the .txt file then a keyboard interrupt will be thrown to stop recording emg data
+    # if (runVariableMyo == "1"):
+    #   main()
+    # elif (runVariableMyo == "0"):
+    #   time.sleep(1)
 
   

@@ -67,8 +67,8 @@ Holo_Fields = fieldnames(Holo_filteredStruct);
 vels_cell_slow_ID_14 = cell(0, 3);
 
 integer = 0;
-for trialnum = 1:length(Polh_Fields)
-% for trialnum = 16
+% for trialnum = 1:length(Polh_Fields)
+for trialnum = 20
 %    pol_dynamic = [string(Polh_Fields(trialnum ))] ;
 %     
 %     if trialnum < length(Holo_Fields)
@@ -320,6 +320,8 @@ try
         pol_millis(more_rowsToDelete) = [];
         pol_millis(rowsToDelete) = [];
         
+        
+        
         order = 3;
         framelen = 93;
 
@@ -524,6 +526,27 @@ for trialnum = 1:length(Polh_Fields)
         pol_millis(more_rowsToDelete) = [];
         pol_millis(rowsToDelete) = [];
         
+        %%% added for presentation 
+        
+         steps_holo = (x_holo(length(x_holo)) - x_holo(1)) / sum(x_holo);
+        xx_holo = x_holo(1):steps_holo:x_holo(length(x_holo));
+        
+%         try     
+%             yy_holo = spline(x_holo,y_holo,xx_holo);
+%             subplot(2,1,1);
+%             plot(x_holo,y_holo,'o',xx_holo,yy_holo);
+%             hold on
+%         catch ME
+            % removing duplicate data
+            [~, indexA, ~] = unique(y_holo);
+            A = sort(indexA);
+            y_holo_spline = y_holo(A);
+            x_holo_spline = x_holo(A);
+            steps_holo_spline = (x_holo_spline(length(x_holo_spline)) - x_holo_spline(1)) / sum(x_holo_spline);
+            xx_holo_spline = x_holo_spline(1):steps_holo_spline:x_holo_spline(length(x_holo_spline));
+            if length(y_holo_spline) > 1
+                yy_holo_spline = spline(x_holo_spline,y_holo_spline,xx_holo_spline);
+        
         order = 3;
         framelen = 93;
 
@@ -616,8 +639,10 @@ for trialnum = 1:length(Polh_Fields)
         hold off 
 
         subplot(2,1,2)
-        plot(holo_data_comp(:,1), holo_data_comp(:,2) )
+        plot(x_holo_spline,y_holo_spline,'o',xx_holo_spline,yy_holo_spline);
         hold on
+%         plot(holo_data_comp(:,1), holo_data_comp(:,2) )
+%         hold on
         plot(pol_dataframe(:,1), pol_dataframe(:,2))
         title(rmse, avg_vel)
         hold off 
@@ -649,6 +674,7 @@ for trialnum = 1:length(Polh_Fields)
 %         hold on
 %         plot(pol_dataframe(:,1), pol_dataframe(:,2))
 %         hold off 
+end
             catch me
             end
 else
