@@ -1,7 +1,7 @@
 clc; close all;
 clear all;
 %% Input the ID of data you want to analyse here. The .mat file will then be auto-loaded.
-IDs = [1,4,5,6,7,8,9,10,11,12,13, 14];
+IDs = [1,4,5,6,7,8,9,10,11,12,13, 14, 15];
 chk = exist('Nodes','var');
 if ~chk
     for ID = IDs
@@ -19,13 +19,13 @@ mergeVelErrors = cell2struct([struct2cell(VelErrorData1);struct2cell(VelErrorDat
     struct2cell(VelErrorData9);struct2cell(VelErrorData10);...
     struct2cell(VelErrorData11);...
     struct2cell(VelErrorData12);struct2cell(VelErrorData13);...
-    struct2cell(VelErrorData14)],...
+    struct2cell(VelErrorData14); struct2cell(VelErrorData15)],...
 [fieldnames(VelErrorData1);fieldnames(VelErrorData4);...
     fieldnames(VelErrorData5);fieldnames(VelErrorData6);...
     fieldnames(VelErrorData7);fieldnames(VelErrorData8);fieldnames(VelErrorData9);...
     fieldnames(VelErrorData10);...
     fieldnames(VelErrorData11);fieldnames(VelErrorData12);fieldnames(VelErrorData13);...
-    fieldnames(VelErrorData14)]);
+    fieldnames(VelErrorData14);fieldnames(VelErrorData15)]);
 
 figure(1)
 x = [];
@@ -102,6 +102,28 @@ Med_tot= cell2mat([mergeMed_vel mergeMed_RMSE]);
 Fast_tot= cell2mat([mergeFast_vel mergeFast_RMSE]);
 % A = Slow_tot(mergeSlow_RsMSE~=0);
 
+%% robust fit
+bls = regress(y,[ones(length(x),1) x]);
+[brob,stats] = robustfit(x,y);
+
+outliers_ind = find(abs(stats.resid)>stats.mad_s);
+
+scatter(x,y,'filled');
+
+hold on 
+plot(x(outliers_ind),y(outliers_ind),'mo','LineWidth',1)
+
+
+plot(x,bls(1)+bls(2)*x,'r')
+plot(x,brob(1)+brob(2)*x,'g')
+hold off
+xlabel('x')
+ylabel('y')
+xlabel('Velocity (rad/s)', 'FontSize', 20)
+ylabel('RMSE error', 'FontSize', 20)
+% ylim([0 100])
+legend('Data','Outlier','Ordinary Least Squares','Robust Regression')
+grid on
 %% new sec
 close all;
 
