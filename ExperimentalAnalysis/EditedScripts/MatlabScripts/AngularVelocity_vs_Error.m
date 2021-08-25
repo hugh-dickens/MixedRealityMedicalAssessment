@@ -7,7 +7,7 @@ if ~chk
     
     ID = 17;
     ID = num2str(ID);
-    ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_MATLAB\UnprocessedData';
+    ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\UnprocessedData';
     ID_folder =  [ID_folder '\'];
     mat_data = ['Data_' ID];
 
@@ -101,8 +101,7 @@ try
         
         
         % % plot holo data with points and a spline overlaid
-        x_holo = seconds(Holo_data.Timestamp);
-        x_holo_no_lag = x_holo - lag_term_slow;
+        x_holo = seconds(Holo_data.Timestamp) - lag_term_slow;
         y_holo = Holo_data.Angle + calibration_term_slow;
 
         
@@ -139,7 +138,7 @@ try
 %         end
         
         pol_dataframe = [x_pol sgf];
-        holo_data_comp = [x_holo_no_lag y_holo];
+        holo_data_comp = [x_holo y_holo];
         
         if end_ind < length(v)
             avg_vel = mean(v(start_ind:end_ind));
@@ -306,8 +305,7 @@ try
         
         
         % % plot holo data with points and a spline overlaid
-        x_holo = seconds(Holo_data.Timestamp);
-        x_holo_no_lag = x_holo - lag_term_medium;
+        x_holo = seconds(Holo_data.Timestamp) - lag_term_medium;
         y_holo = Holo_data.Angle + calibration_term_medium;
 
         
@@ -350,7 +348,7 @@ try
 %         end
         
         pol_dataframe = [x_pol sgf];
-        holo_data_comp = [x_holo_no_lag y_holo];
+        holo_data_comp = [x_holo y_holo];
         
         if end_ind < length(v)
             avg_vel = mean(v(start_ind:end_ind));
@@ -481,15 +479,8 @@ calibration_term_fast = 2;
 close all;
 vels_cell_fast_ID_17 = cell(0, 3);
 integer = 0;
-for trialnum = 1:length(Polh_Fields)
-%     for trialnum = 29
-%     pol_dynamic = [string(Polh_Fields(trialnum + integer))] ;
-%     
-%     if trialnum < length(Holo_Fields)
-%         
-%     holo_dynamic = [string(Holo_Fields(trialnum))];
-%     newStr = erase(pol_dynamic,'_POLGroundTruth');
-%     newSubstr = erase(holo_dynamic, '_HoloData');
+% for trialnum = 1:length(Polh_Fields)
+    for trialnum = 29
 
     pol_dynamic = [string(Polh_Fields(trialnum - integer))]; 
     
@@ -504,20 +495,20 @@ for trialnum = 1:length(Polh_Fields)
         
     elseif newStr == newSubstr
 
-        if isfield(experiment_data,pol_dynamic) == 1
-            Pol_data = experiment_data.(pol_dynamic);
-            Holo_data = experiment_data.(holo_dynamic);
-            
-            try
-                
+    if isfield(experiment_data,pol_dynamic) == 1
+        Pol_data = experiment_data.(pol_dynamic);
+        Holo_data = experiment_data.(holo_dynamic);
+
+    try
+
         x_pol = seconds(Pol_data.Timestamp);
         y_pol = Pol_data.Angle;
         pol_millis = Pol_data.Milliseconds;
         
         
         % % plot holo data with points and a spline overlaid
-        x_holo = seconds(Holo_data.Timestamp);
-        x_holo_no_lag = x_holo - lag_term_fast;
+        x_holo = seconds(Holo_data.Timestamp) - lag_term_fast;
+     
         y_holo = Holo_data.Angle + calibration_term_fast;
 
         
@@ -532,24 +523,20 @@ for trialnum = 1:length(Polh_Fields)
         
         %%% added for presentation 
         
-%          steps_holo = (x_holo(length(x_holo)) - x_holo(1)) / sum(x_holo);
-%         xx_holo = x_holo(1):steps_holo:x_holo(length(x_holo));
-%         
-% %         try     
-% %             yy_holo = spline(x_holo,y_holo,xx_holo);
-% %             subplot(2,1,1);
-% %             plot(x_holo,y_holo,'o',xx_holo,yy_holo);
-% %             hold on
-% %         catch ME
-%             % removing duplicate data
-%             [~, indexA, ~] = unique(y_holo);
-%             A = sort(indexA);
-%             y_holo_spline = y_holo(A);
-%             x_holo_spline = x_holo(A);
-%             steps_holo_spline = (x_holo_spline(length(x_holo_spline)) - x_holo_spline(1)) / sum(x_holo_spline);
-%             xx_holo_spline = x_holo_spline(1):steps_holo_spline:x_holo_spline(length(x_holo_spline));
-%             if length(y_holo_spline) > 1
-%                 yy_holo_spline = spline(x_holo_spline,y_holo_spline,xx_holo_spline);
+        steps_holo = (x_holo(length(x_holo)) - x_holo(1)) / sum(x_holo);
+        xx_holo = x_holo(1):steps_holo:x_holo(length(x_holo));
+        
+
+        % removing duplicate data
+        [~, indexA, ~] = unique(y_holo);
+        A = sort(indexA);
+        y_holo_spline = y_holo(A);
+        x_holo_spline = x_holo(A);
+        steps_holo_spline = (x_holo_spline(length(x_holo_spline)) - x_holo_spline(1)) / sum(x_holo_spline);
+        xx_holo_spline = x_holo_spline(1):steps_holo_spline:x_holo_spline(length(x_holo_spline));
+        if length(y_holo_spline) > 1
+            yy_holo_spline = spline(x_holo_spline,y_holo_spline,xx_holo_spline);
+        end
         
         order = 3;
         framelen = 93;
@@ -566,34 +553,14 @@ for trialnum = 1:length(Polh_Fields)
         
         max_angle = find(v==max(v(length_v_half:end)))+ 50;
         min_angle = max_angle - 150;
-%         min_angle = find(sgf==min(sgf(length_v_half:length_v_end_part)))
-%         if trialnum == 29 | 28
-%             max_angle = min_angle + 150;
-%         end
-        
-%         if trialnum ==  21| 24 | 20 |19 | 13 | 12 | 11 | 8 | 5 | 3 | 1
-%             max_angle = max_angle - 300;
-%             min_angle = max_angle - 150;
-%         end
-        
-%         if trialnum == 25 
-%             length_v_half = round(1*length(v)/4);
-%             length_v_end_part = round(length(v) * 0.65);
-% 
-%             max_angle = find(sgf==max(sgf(length_v_half:length_v_end_part)));
-%             min_angle = max_angle - 150;
-%         end
-%         start_ind = max_inst_vel - 100;
-%         end_ind = max_inst_vel + 200;
+
         start_ind = min_angle;
         end_ind = max_angle;
         
-%         if start_ind + 600 < end_ind
-%             end_ind = start_ind + 600;
-%         end
+
         
         pol_dataframe = [x_pol sgf];
-        holo_data_comp = [x_holo_no_lag y_holo];
+        holo_data_comp = [x_holo y_holo];
         
         if end_ind < length(v)
             avg_vel = mean(v(start_ind:end_ind));
@@ -649,8 +616,8 @@ for trialnum = 1:length(Polh_Fields)
         hold off 
 
         subplot(2,1,2)
-        plot(x_holo_no_lag, y_holo)
-%         plot(x_holo_spline,y_holo_spline,'o',xx_holo_spline,yy_holo_spline);
+%         plot(x_holo, y_holo)
+        plot(x_holo_spline,y_holo_spline,'o',xx_holo_spline,yy_holo_spline);
         hold on
 %         plot(holo_data_comp(:,1), holo_data_comp(:,2) )
 %         hold on
@@ -669,43 +636,22 @@ for trialnum = 1:length(Polh_Fields)
             rmse = 0;
         end
         
-%         vels_cell_fast_ID_1{trialnum, 1}  = pol_dynamic;
-%         vels_cell_fast_ID_1{trialnum,2} = avg_vel;
-%         vels_cell_fast_ID_1{trialnum,3} = rmse;
-%         
-%         figure(trialnum)
-%         plot(holo_filtered(:,1), holo_filtered(:,2) )
-%         hold on
-%         plot(pol_comp(:,1), pol_comp(:,2))
-%         hold off 
-%         
-%         
-%         figure(trialnum)
-%         plot(holo_data_comp(:,1), holo_data_comp(:,2) )
-%         hold on
-%         plot(pol_dataframe(:,1), pol_dataframe(:,2))
-%         hold off 
-% end
             catch me
             end
 else
         fprintf('No polhemus data for trial %i\n; fast trial \n',i)
             end
     end
+    
     end
-        
 end
+
 
 %% just plot
 close all;
 figure(1)
 avg_vel_tot_fast = vels_cell_fast_ID_17(:,2);
 rmse_tot_fast = vels_cell_fast_ID_17(:,3);
-% avg_vel_tot_fast = avg_vel_tot_fast(all(cell2mat(avg_vel_tot_fast) ~= 0,2),:);
-% rmse_tot_fast = rmse_tot_fast(all(cell2mat(rmse_tot_fast) ~= 0,2),:);
-% 
-% avg_vel_tot_fast = avg_vel_tot_fast(all(cell2mat(avg_vel_tot_fast) ~= 0,2),:);
-% rmse_tot_fast = rmse_tot_fast(all(cell2mat(rmse_tot_fast) ~= 0,2),:);
 
 plot([avg_vel_tot_fast{:}], [rmse_tot_fast{:}], 'o')
 xlabel('Velocity (rad/s)')
@@ -752,44 +698,4 @@ VelErrorData17.(slow_ID_17) = cell2table(vels_cell_slow_ID_17);
 VelErrorData17.(medium_ID_17) = cell2table(vels_cell_medium_ID_17) ;
 VelErrorData17.(fast_ID_17) = cell2table(vels_cell_fast_ID_17);
 save('VelErrorData17', 'VelErrorData17')
-%% Code only used to troubleshoot/ plot the data=> put above 'index_holo' if required
-
-%         %%%% CODE ONLY USED FOR PLOTTING HOLO SPLINE 
-%         x_holo = x_holo_no_lag;
-%         steps_holo = (x_holo(length(x_holo)) - x_holo(1)) / sum(x_holo);
-%         xx_holo = x_holo(1):steps_holo:x_holo(length(x_holo));
-%         
-%         % removing duplicate data
-%         [~, indexA, ~] = unique(y_holo);
-%         A = sort(indexA);
-%         y_holo_spline = y_holo(A);
-%         x_holo_spline = x_holo(A);
-%         steps_holo_spline = (x_holo_spline(length(x_holo_spline)) - x_holo_spline(1)) / sum(x_holo_spline);
-%         xx_holo_spline = x_holo_spline(1):steps_holo_spline:x_holo_spline(length(x_holo_spline));
-%         if length(y_holo_spline) > 1
-%             yy_holo_spline = spline(x_holo_spline,y_holo_spline,xx_holo_spline);
-%         end
-%         
-%         figure(trialnum)
-% %         %%% with all holo data
-% %         plot(x_holo_spline ,y_holo_spline,'o',xx_holo_spline,yy_holo_spline);
-% %         hold on
-%         
-%         %%% without all holo data
-%         index_start = x_holo_spline > pol_comp(1,1);
-%         index_end = x_holo_spline < pol_comp(end,1);
-%         index_start_spline = xx_holo_spline > pol_comp(1,1);
-%         index_end_spline = xx_holo_spline < pol_comp(end,1);
-%         plot(x_holo_spline(index_start) ,y_holo_spline(index_start),'o',xx_holo_spline(index_start_spline),yy_holo_spline(index_start_spline));
-%         hold on
-%         
-%         plot(pol_comp(:,1), pol_comp(:,2));
-% % 
-%         xlabel('Time')
-%         ylabel('Angle')
-%         title('Medium trial')
-%         legend('Holo Data','Holo Spline','Polh Data')
-%         
-%         hold off
-
 
