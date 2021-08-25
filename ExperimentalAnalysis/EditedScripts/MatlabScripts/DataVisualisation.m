@@ -1,7 +1,7 @@
 clc; close all;
 clear all;
 %% Input the ID of data you want to analyse here. The .mat file will then be auto-loaded.
-IDs = [1,4,5,6,7,8,9,10,11,12,13, 14, 15];
+IDs = [1,4,5,6,7,8,9,10,11,12,13, 14, 15, 16, 17];
 chk = exist('Nodes','var');
 if ~chk
     for ID = IDs
@@ -19,13 +19,15 @@ mergeVelErrors = cell2struct([struct2cell(VelErrorData1);struct2cell(VelErrorDat
     struct2cell(VelErrorData9);struct2cell(VelErrorData10);...
     struct2cell(VelErrorData11);...
     struct2cell(VelErrorData12);struct2cell(VelErrorData13);...
-    struct2cell(VelErrorData14); struct2cell(VelErrorData15)],...
+    struct2cell(VelErrorData14); struct2cell(VelErrorData15);...
+    struct2cell(VelErrorData16); struct2cell(VelErrorData17)],...
 [fieldnames(VelErrorData1);fieldnames(VelErrorData4);...
     fieldnames(VelErrorData5);fieldnames(VelErrorData6);...
     fieldnames(VelErrorData7);fieldnames(VelErrorData8);fieldnames(VelErrorData9);...
     fieldnames(VelErrorData10);...
     fieldnames(VelErrorData11);fieldnames(VelErrorData12);fieldnames(VelErrorData13);...
-    fieldnames(VelErrorData14);fieldnames(VelErrorData15)]);
+    fieldnames(VelErrorData14);fieldnames(VelErrorData15);...
+    fieldnames(VelErrorData16);fieldnames(VelErrorData17)]);
 
 figure(1)
 x = [];
@@ -121,6 +123,10 @@ xlabel('x')
 ylabel('y')
 xlabel('Velocity (rad/s)', 'FontSize', 20)
 ylabel('RMSE error', 'FontSize', 20)
+xlim=get(gca,'XLim');
+ylim=get(gca,'YLim');
+text(0.8*xlim(1)+0.2*xlim(2),0.2*ylim(1)+0.8*ylim(2),['y = ' num2str(bls(1)) '+' num2str(bls(2)) 'x'],'Color', 'r', 'FontSize', 20)
+text(0.8*xlim(1)+0.2*xlim(2),0.3*ylim(1)+0.7*ylim(2),['y = ' num2str(brob(1)) '+' num2str(brob(2)) 'x'],'Color', 'g', 'FontSize', 20)
 % ylim([0 100])
 legend('Data','Outlier','Ordinary Least Squares','Robust Regression')
 grid on
@@ -157,6 +163,8 @@ vel_above_160 = merge_all_vels((merge_all_vels(:,1) > 160),:);
 
 %%
 close all;
+clear xlim;
+clear ylim;
 figure(1)
 
 subplot(3,3,1)

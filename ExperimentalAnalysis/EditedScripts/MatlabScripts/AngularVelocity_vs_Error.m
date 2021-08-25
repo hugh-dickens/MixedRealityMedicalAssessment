@@ -5,7 +5,7 @@ clear all;
 chk = exist('Nodes','var');
 if ~chk
     
-    ID = 16;
+    ID = 17;
     ID = num2str(ID);
     ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_MATLAB\UnprocessedData';
     ID_folder =  [ID_folder '\'];
@@ -51,7 +51,7 @@ fast_filteredStruct_v3 = rmfield( experiment_data, names( find( cellfun( @isempt
 % these need to be changed depending on participant
 
 calibration_term_slow = 2;
-lag_term_slow = 0.15;
+lag_term_slow = 0.17;
 %% slow
 close all;
 namesSlow = fieldnames( slow_filteredStruct );
@@ -64,7 +64,7 @@ Holo_filteredStruct = rmfield( slow_filteredStruct, namesSlow(find(cellfun(@isem
 Holo_Fields = fieldnames(Holo_filteredStruct);
 
 
-vels_cell_slow_ID_16 = cell(0, 3);
+vels_cell_slow_ID_17 = cell(0, 3);
 
 integer = 0;
 for trialnum = 1:length(Polh_Fields)
@@ -180,11 +180,11 @@ try
         if length(comparing_diff)>0
             rmse = sqrt((sum(comparing_diff).^2)/(length(comparing_diff)));
             
-            if (rmse < 40 & avg_vel < 50) | (rmse < 50 & avg_vel > 50 & avg_vel < 80)
+            if (rmse < 39 & avg_vel < 50) | (rmse < 50 & avg_vel > 50 & avg_vel < 80)
 %             if rmse < 10000
-            vels_cell_slow_ID_16{end+1, 1}  = pol_dynamic;
-            vels_cell_slow_ID_16{end, 2} = avg_vel;
-            vels_cell_slow_ID_16{end, 3} = rmse;
+            vels_cell_slow_ID_17{end+1, 1}  = pol_dynamic;
+            vels_cell_slow_ID_17{end, 2} = avg_vel;
+            vels_cell_slow_ID_17{end, 3} = rmse;
             
             figure(trialnum)
             subplot(2,1,1)
@@ -239,8 +239,8 @@ end
 %% just plot
 close all;
 figure(1)
-avg_vel_tot_slow = vels_cell_slow_ID_16(:,2);
-rmse_tot_slow = vels_cell_slow_ID_16(:,3);
+avg_vel_tot_slow = vels_cell_slow_ID_17(:,2);
+rmse_tot_slow = vels_cell_slow_ID_17(:,3);
 % avg_vel_tot_slow = avg_vel_tot_slow(all(cell2mat(avg_vel_tot_slow) ~= 0,2),:);
 % rmse_tot_slow = rmse_tot_slow(all(cell2mat(rmse_tot_slow) ~= 0,2),:);
 
@@ -264,13 +264,13 @@ Polh_Fields = fieldnames(Pol_filteredStruct_medium);
 subStrHolo = '_HoloData';
 Holo_filteredStruct_medium = rmfield( medium_filteredStruct, namesMedium(find(cellfun(@isempty, strfind( namesMedium, subStrHolo)))));
 Holo_Fields = fieldnames(Holo_filteredStruct_medium);
-lag_term_medium = 0.15;
+lag_term_medium = 0.17;
 calibration_term_medium = 2;
 
 
 %% edit ID number here !!
 close all;
-vels_cell_medium_ID_15 = cell(0, 3);
+vels_cell_medium_ID_17 = cell(0, 3);
 integer = 0;
 for trialnum = 1:length(Polh_Fields)
     
@@ -336,6 +336,10 @@ try
         
         max_angle = find(sgf==max(sgf(length_v_half:end)));
         min_angle = find(sgf==min(sgf(length_v_half:end)));
+        if trialnum == 1 | 29
+            max_angle = min_angle + 300;
+        end
+            
 %         start_ind = max_inst_vel - 100;
 %         end_ind = max_inst_vel + 200;
         start_ind = min_angle;
@@ -389,9 +393,9 @@ try
             rmse = sqrt((sum(comparing_diff).^2)/length(comparing_diff));
             if (rmse < 50 & avg_vel < 60) | (rmse < 70 & avg_vel> 70)
 %             if rmse < 10000    
-            vels_cell_medium_ID_15{end+1, 1}  = pol_dynamic;
-            vels_cell_medium_ID_15{end, 2} = avg_vel;
-            vels_cell_medium_ID_15{end, 3} = rmse;
+            vels_cell_medium_ID_17{end+1, 1}  = pol_dynamic;
+            vels_cell_medium_ID_17{end, 2} = avg_vel;
+            vels_cell_medium_ID_17{end, 3} = rmse;
         figure(trialnum)
         subplot(2,1,1)
         plot(holo_filtered(:,1), holo_filtered(:,2) )
@@ -451,8 +455,8 @@ end
 %% just plot
 close all;
 figure(1)
-avg_vel_tot_medium = vels_cell_medium_ID_15(:,2);
-rmse_tot_medium = vels_cell_medium_ID_15(:,3);
+avg_vel_tot_medium = vels_cell_medium_ID_17(:,2);
+rmse_tot_medium = vels_cell_medium_ID_17(:,3);
 % avg_vel_tot_medium = avg_vel_tot_medium(all(cell2mat(avg_vel_tot_medium) ~= 0,2),:);
 % rmse_tot_medium = rmse_tot_medium(all(cell2mat(rmse_tot_medium) ~= 0,2),:);
 % 
@@ -471,14 +475,14 @@ Polh_Fields = fieldnames(Pol_filteredStruct);
 subStrHolo = '_HoloData';
 Holo_filteredStruct_fast = rmfield( fast_filteredStruct, namesFast(find(cellfun(@isempty, strfind( namesFast, subStrHolo)))));
 Holo_Fields = fieldnames(Holo_filteredStruct_fast);
-lag_term_fast = 0.15;
+lag_term_fast = 0.1;
 calibration_term_fast = 2;
 %% edit ID number here !! and everywhere
 close all;
-vels_cell_fast_ID_15 = cell(0, 3);
+vels_cell_fast_ID_17 = cell(0, 3);
 integer = 0;
 for trialnum = 1:length(Polh_Fields)
-%     for trialnum = 11
+%     for trialnum = 29
 %     pol_dynamic = [string(Polh_Fields(trialnum + integer))] ;
 %     
 %     if trialnum < length(Holo_Fields)
@@ -528,24 +532,24 @@ for trialnum = 1:length(Polh_Fields)
         
         %%% added for presentation 
         
-         steps_holo = (x_holo(length(x_holo)) - x_holo(1)) / sum(x_holo);
-        xx_holo = x_holo(1):steps_holo:x_holo(length(x_holo));
-        
-%         try     
-%             yy_holo = spline(x_holo,y_holo,xx_holo);
-%             subplot(2,1,1);
-%             plot(x_holo,y_holo,'o',xx_holo,yy_holo);
-%             hold on
-%         catch ME
-            % removing duplicate data
-            [~, indexA, ~] = unique(y_holo);
-            A = sort(indexA);
-            y_holo_spline = y_holo(A);
-            x_holo_spline = x_holo(A);
-            steps_holo_spline = (x_holo_spline(length(x_holo_spline)) - x_holo_spline(1)) / sum(x_holo_spline);
-            xx_holo_spline = x_holo_spline(1):steps_holo_spline:x_holo_spline(length(x_holo_spline));
-            if length(y_holo_spline) > 1
-                yy_holo_spline = spline(x_holo_spline,y_holo_spline,xx_holo_spline);
+%          steps_holo = (x_holo(length(x_holo)) - x_holo(1)) / sum(x_holo);
+%         xx_holo = x_holo(1):steps_holo:x_holo(length(x_holo));
+%         
+% %         try     
+% %             yy_holo = spline(x_holo,y_holo,xx_holo);
+% %             subplot(2,1,1);
+% %             plot(x_holo,y_holo,'o',xx_holo,yy_holo);
+% %             hold on
+% %         catch ME
+%             % removing duplicate data
+%             [~, indexA, ~] = unique(y_holo);
+%             A = sort(indexA);
+%             y_holo_spline = y_holo(A);
+%             x_holo_spline = x_holo(A);
+%             steps_holo_spline = (x_holo_spline(length(x_holo_spline)) - x_holo_spline(1)) / sum(x_holo_spline);
+%             xx_holo_spline = x_holo_spline(1):steps_holo_spline:x_holo_spline(length(x_holo_spline));
+%             if length(y_holo_spline) > 1
+%                 yy_holo_spline = spline(x_holo_spline,y_holo_spline,xx_holo_spline);
         
         order = 3;
         framelen = 93;
@@ -557,22 +561,28 @@ for trialnum = 1:length(Polh_Fields)
             v(i) = abs((sgf(i+1)-sgf(i))/(pol_millis(i+1)-pol_millis(i)) * 1000000);
         end
         
-        length_v_half = round(length(v)/3);
-        length_v_end_part = round(length(v) * 0.9);
+        length_v_half = round(3*length(v)/9);
+        length_v_end_part = round(length(v) * 0.8);
         
-        max_angle = find(sgf==max(sgf(length_v_half:end)));
-        min_angle = find(sgf==min(sgf(length_v_half:end)));
-        if trialnum == 10 | 15| 17| 18| 21| 23
-            max_angle = min_angle + 150;
-        end
+        max_angle = find(v==max(v(length_v_half:end)))+ 50;
+        min_angle = max_angle - 150;
+%         min_angle = find(sgf==min(sgf(length_v_half:length_v_end_part)))
+%         if trialnum == 29 | 28
+%             max_angle = min_angle + 150;
+%         end
         
-        if trialnum == 11
-            length_v_half = round(3*length(v)/4);
-            length_v_end_part = round(length(v) * 0.99);
-
-            max_angle = find(sgf==max(sgf(length_v_half:end)));
-            min_angle = max_angle - 120;
-        end
+%         if trialnum ==  21| 24 | 20 |19 | 13 | 12 | 11 | 8 | 5 | 3 | 1
+%             max_angle = max_angle - 300;
+%             min_angle = max_angle - 150;
+%         end
+        
+%         if trialnum == 25 
+%             length_v_half = round(1*length(v)/4);
+%             length_v_end_part = round(length(v) * 0.65);
+% 
+%             max_angle = find(sgf==max(sgf(length_v_half:length_v_end_part)));
+%             min_angle = max_angle - 150;
+%         end
 %         start_ind = max_inst_vel - 100;
 %         end_ind = max_inst_vel + 200;
         start_ind = min_angle;
@@ -626,9 +636,9 @@ for trialnum = 1:length(Polh_Fields)
             rmse = sqrt((sum(comparing_diff).^2)/length(comparing_diff));
             if rmse < 70 | avg_vel > 100
 %             if rmse < 10000
-            vels_cell_fast_ID_15{end+1, 1}  = pol_dynamic;
-            vels_cell_fast_ID_15{end, 2} = avg_vel;
-            vels_cell_fast_ID_15{end, 3} = rmse;
+            vels_cell_fast_ID_17{end+1, 1}  = pol_dynamic;
+            vels_cell_fast_ID_17{end, 2} = avg_vel;
+            vels_cell_fast_ID_17{end, 3} = rmse;
         
         figure(trialnum)
         subplot(2,1,1)
@@ -639,7 +649,8 @@ for trialnum = 1:length(Polh_Fields)
         hold off 
 
         subplot(2,1,2)
-        plot(x_holo_spline,y_holo_spline,'o',xx_holo_spline,yy_holo_spline);
+        plot(x_holo_no_lag, y_holo)
+%         plot(x_holo_spline,y_holo_spline,'o',xx_holo_spline,yy_holo_spline);
         hold on
 %         plot(holo_data_comp(:,1), holo_data_comp(:,2) )
 %         hold on
@@ -674,7 +685,7 @@ for trialnum = 1:length(Polh_Fields)
 %         hold on
 %         plot(pol_dataframe(:,1), pol_dataframe(:,2))
 %         hold off 
-end
+% end
             catch me
             end
 else
@@ -688,8 +699,8 @@ end
 %% just plot
 close all;
 figure(1)
-avg_vel_tot_fast = vels_cell_fast_ID_15(:,2);
-rmse_tot_fast = vels_cell_fast_ID_15(:,3);
+avg_vel_tot_fast = vels_cell_fast_ID_17(:,2);
+rmse_tot_fast = vels_cell_fast_ID_17(:,3);
 % avg_vel_tot_fast = avg_vel_tot_fast(all(cell2mat(avg_vel_tot_fast) ~= 0,2),:);
 % rmse_tot_fast = rmse_tot_fast(all(cell2mat(rmse_tot_fast) ~= 0,2),:);
 % 
@@ -734,13 +745,13 @@ hold off
 
 
 %%
-slow_ID_15 = 'VelSlow_ID_15';
-medium_ID_15 = 'VelMedium_ID_15';
-fast_ID_15 = 'VelFast_ID_15';
-VelErrorData15.(slow_ID_15) = cell2table(vels_cell_slow_ID_15);
-VelErrorData15.(medium_ID_15) = cell2table(vels_cell_medium_ID_15) ;
-VelErrorData15.(fast_ID_15) = cell2table(vels_cell_fast_ID_15);
-save('VelErrorData15', 'VelErrorData15')
+slow_ID_17 = 'VelSlow_ID_17';
+medium_ID_17 = 'VelMedium_ID_17';
+fast_ID_17 = 'VelFast_ID_17';
+VelErrorData17.(slow_ID_17) = cell2table(vels_cell_slow_ID_17);
+VelErrorData17.(medium_ID_17) = cell2table(vels_cell_medium_ID_17) ;
+VelErrorData17.(fast_ID_17) = cell2table(vels_cell_fast_ID_17);
+save('VelErrorData17', 'VelErrorData17')
 %% Code only used to troubleshoot/ plot the data=> put above 'index_holo' if required
 
 %         %%%% CODE ONLY USED FOR PLOTTING HOLO SPLINE 
