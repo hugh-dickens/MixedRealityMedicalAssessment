@@ -5,7 +5,7 @@ clear all;
 chk = exist('Nodes','var');
 if ~chk
     
-    ID = 17;
+    ID = 14;
     ID = num2str(ID);
     ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\UnprocessedData';
     ID_folder =  [ID_folder '\'];
@@ -59,9 +59,14 @@ subStrHolo = '_HoloData';
 Holo_filteredStruct_slow = rmfield( slow_filteredStruct, namesslow(find(cellfun(@isempty, strfind( namesslow, subStrHolo)))));
 Holo_Fields = fieldnames(Holo_filteredStruct_slow);
 lag_term_slow = 0.15;
-calibration_term_slow = 2;
+calibration_term_slow = 4;
+lag_term_medium = 0.15;
+calibration_term_medium = 4;
+lag_term_fast = 0.15;
+calibration_term_fast = 4;
+
 %% slow
-vels_cell_slow_ID_17 = cell(0, 11);
+vels_cell_slow_ID_14 = cell(0, 12);
 integer = 0;
 for trialnum = 1:length(Polh_Fields)
 %     for trialnum = 11
@@ -118,6 +123,7 @@ for trialnum = 1:length(Polh_Fields)
         v = zeros(length(pol_millis),1) ;
         for i = 1:length(pol_millis)-1
             v(i) = abs((sgf(i+1)-sgf(i))/(pol_millis(i+1)-pol_millis(i)) * 1000000);
+%             v(i) = abs((y_pol(i+1)-y_pol(i))/(pol_millis(i+1)-pol_millis(i)) * 1000000);
         end
         
         length_v_half = round(3*length(v)/9);
@@ -239,15 +245,15 @@ for trialnum = 1:length(Polh_Fields)
 %         comparing_diff = abs(pol_binned_data(:) - holo_filtered(:,2));
         comparing_diff = abs(pol_comp_non_spline(:,2) - holo_repeat_bins(:));
         
-        if length(comparing_diff) > 0 & onset_time < 1.4 
+        if length(comparing_diff) > 0 & onset_time < 1.2
              
             rmse = sqrt((sum(comparing_diff).^2)/length(comparing_diff));
 
-            vels_cell_slow_ID_17{end+1, 1}  = pol_dynamic;
-            vels_cell_slow_ID_17{end, 2} = avg_vel;
-            vels_cell_slow_ID_17{end, 3} = rmse;
-            vels_cell_slow_ID_17{end, 5} = pol_comp_non_spline(:,1:2);
-            vels_cell_slow_ID_17{end, 6} = holo_repeat_bins(:);
+            vels_cell_slow_ID_14{end+1, 1}  = pol_dynamic;
+            vels_cell_slow_ID_14{end, 2} = avg_vel;
+            vels_cell_slow_ID_14{end, 3} = rmse;
+            vels_cell_slow_ID_14{end, 5} = pol_comp_non_spline(:,1:2);
+            vels_cell_slow_ID_14{end, 6} = holo_repeat_bins(:);
                    
             
             %spline rmse work: .....>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -272,13 +278,13 @@ for trialnum = 1:length(Polh_Fields)
             rmse_spline = sqrt((sum(comparing_diff_spline).^2)/length(comparing_diff_spline));
             avg_vel_whole_trial = mean(v);
             
-            vels_cell_slow_ID_17{end, 4} = rmse_spline;
-            vels_cell_slow_ID_17{end, 7} = pol_comp(:,2);
-            vels_cell_slow_ID_17{end, 8} = spline_binned_data(:);
-            vels_cell_slow_ID_17{end, 9 } = onset_time;
-            vels_cell_slow_ID_17{end, 10} = avg_vel_whole_trial;
-            vels_cell_slow_ID_17{end, 11} = holo_freq;
-            vels_cell_slow_ID_17{end, 12} = velocities;
+            vels_cell_slow_ID_14{end, 4} = rmse_spline;
+            vels_cell_slow_ID_14{end, 7} = pol_comp(:,2);
+            vels_cell_slow_ID_14{end, 8} = spline_binned_data(:);
+            vels_cell_slow_ID_14{end, 9 } = onset_time;
+            vels_cell_slow_ID_14{end, 10} = avg_vel_whole_trial;
+            vels_cell_slow_ID_14{end, 11} = holo_freq;
+            vels_cell_slow_ID_14{end, 12} = velocities;
             
             
 %             figure(trialnum)
@@ -289,10 +295,13 @@ for trialnum = 1:length(Polh_Fields)
 %             plot(pol_comp_non_spline(:,1) - pol_comp_non_spline(1,1), pol_comp_non_spline(:,2))
 %             title(['onset time: ' num2str(onset_time)], ['rmse with raw data: ' num2str(rmse)])
 %             hold off 
-% %             plot(x_holo_spline - x_pol(1), y_holo_spline, 'x')
-% %             hold on
-% %             plot(x_pol- x_pol(1), y_pol)
-% %             hold off 
+            if trialnum == 10
+            figure(4)
+            plot(x_holo_spline - x_pol(1), y_holo_spline)
+            hold on
+            plot(x_pol- x_pol(1), y_pol)
+            hold off 
+            end
 %             
 %             subplot(2,1,2)
 %             plot(xx_holo_spline_post-pol_comp(1,1), yy_holo_spline_post);
@@ -314,34 +323,34 @@ for trialnum = 1:length(Polh_Fields)
 end
 
 %% just plot
-close all;
-figure(1)
-avg_vel_tot_slow = vels_cell_slow_ID_17(:,2);
-rmse_tot_slow_raw = vels_cell_slow_ID_17(:,3);
-rmse_tot_slow_spline = vels_cell_slow_ID_17(:,4);
+% close all;
+% figure(1)
+avg_vel_tot_slow = vels_cell_slow_ID_14(:,2);
+rmse_tot_slow_raw = vels_cell_slow_ID_14(:,3);
+rmse_tot_slow_spline = vels_cell_slow_ID_14(:,4);
 
-plot([avg_vel_tot_slow{:}], [rmse_tot_slow_raw{:}], 'o')
-hold on
-plot([avg_vel_tot_slow{:}], [rmse_tot_slow_spline{:}], 'X')
-hold off
-xlabel('Velocity (rad/s)')
-ylabel('RMSE error')
-legend('Raw data', 'Spline data')
+% plot([avg_vel_tot_slow{:}], [rmse_tot_slow_raw{:}], 'o')
+% hold on
+% plot([avg_vel_tot_slow{:}], [rmse_tot_slow_spline{:}], 'X')
+% hold off
+% xlabel('Velocity (rad/s)')
+% ylabel('RMSE error')
+% legend('Raw data', 'Spline data')
 
 %%
-close all;
-figure(2)
-time_onset_slow = vels_cell_slow_ID_17(:,9);
-rmse_tot_slow_raw = vels_cell_slow_ID_17(:,3);
-rmse_tot_slow_spline = vels_cell_slow_ID_17(:,4);
+% close all;
+% figure(2)
+time_onset_slow = vels_cell_slow_ID_14(:,9);
+rmse_tot_slow_raw = vels_cell_slow_ID_14(:,3);
+rmse_tot_slow_spline = vels_cell_slow_ID_14(:,4);
 
-plot([time_onset_slow{:}], [rmse_tot_slow_raw{:}], 'o')
-hold on
-plot([time_onset_slow{:}], [rmse_tot_slow_spline{:}], 'X')
-hold off
-xlabel('Time onset (s)')
-ylabel('RMSE error')
-legend('Raw data', 'Spline data')
+% plot([time_onset_slow{:}], [rmse_tot_slow_raw{:}], 'o')
+% hold on
+% plot([time_onset_slow{:}], [rmse_tot_slow_spline{:}], 'X')
+% hold off
+% xlabel('Time onset (s)')
+% ylabel('RMSE error')
+% legend('Raw data', 'Spline data')
 % 
 %% medium
 namesMedium = fieldnames( medium_filteredStruct );
@@ -351,12 +360,10 @@ Polh_Fields = fieldnames(Pol_filteredStruct_medium);
 subStrHolo = '_HoloData';
 Holo_filteredStruct_medium = rmfield( medium_filteredStruct, namesMedium(find(cellfun(@isempty, strfind( namesMedium, subStrHolo)))));
 Holo_Fields = fieldnames(Holo_filteredStruct_medium);
-lag_term_medium = 0.15;
-calibration_term_medium = 2;
 
 
 %% edit ID number here !!
-vels_cell_medium_ID_17 = cell(0, 11);
+vels_cell_medium_ID_14 = cell(0, 12);
 integer = 0;
 for trialnum = 1:length(Polh_Fields)
 %     for trialnum = 11
@@ -412,7 +419,8 @@ for trialnum = 1:length(Polh_Fields)
         
         v = zeros(length(pol_millis),1) ;
         for i = 1:length(pol_millis)-1
-            v(i) = abs((sgf(i+1)-sgf(i))/(pol_millis(i+1)-pol_millis(i)) * 1000000);
+%             v(i) = abs((sgf(i+1)-sgf(i))/(pol_millis(i+1)-pol_millis(i)) * 1000000);
+            v(i) = abs((y_pol(i+1)-y_pol(i))/(pol_millis(i+1)-pol_millis(i)) * 1000000);
         end
         
         length_v_half = round(3*length(v)/9);
@@ -532,15 +540,15 @@ for trialnum = 1:length(Polh_Fields)
 %         comparing_diff = abs(pol_binned_data(:) - holo_filtered(:,2));
         comparing_diff = abs(pol_comp_non_spline(:,2) - holo_repeat_bins(:));
         
-        if length(comparing_diff) > 0 & onset_time < 1.4 & avg_vel > 30
+        if length(comparing_diff) > 0 & onset_time < 1.2 & avg_vel > 30
              
             rmse = sqrt((sum(comparing_diff).^2)/length(comparing_diff));
 
-            vels_cell_medium_ID_17{end+1, 1}  = pol_dynamic;
-            vels_cell_medium_ID_17{end, 2} = avg_vel;
-            vels_cell_medium_ID_17{end, 3} = rmse;
-            vels_cell_medium_ID_17{end, 5} = pol_comp_non_spline(:,1:2);
-            vels_cell_medium_ID_17{end, 6} = holo_repeat_bins(:);
+            vels_cell_medium_ID_14{end+1, 1}  = pol_dynamic;
+            vels_cell_medium_ID_14{end, 2} = avg_vel;
+            vels_cell_medium_ID_14{end, 3} = rmse;
+            vels_cell_medium_ID_14{end, 5} = pol_comp_non_spline(:,1:2);
+            vels_cell_medium_ID_14{end, 6} = holo_repeat_bins(:);
                    
             
             %spline rmse work: .....>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -565,15 +573,21 @@ for trialnum = 1:length(Polh_Fields)
             rmse_spline = sqrt((sum(comparing_diff_spline).^2)/length(comparing_diff_spline));
             avg_vel_whole_trial = mean(v);
             
-            vels_cell_medium_ID_17{end, 4} = rmse_spline;
-            vels_cell_medium_ID_17{end, 7} = pol_comp(:,2);
-            vels_cell_medium_ID_17{end, 8} = spline_binned_data(:);
-            vels_cell_medium_ID_17{end, 9 } = onset_time;
-            vels_cell_medium_ID_17{end, 10} = avg_vel_whole_trial;
-            vels_cell_medium_ID_17{end, 11} = holo_freq;
-            vels_cell_medium_ID_17{end, 12} = velocities;
+            vels_cell_medium_ID_14{end, 4} = rmse_spline;
+            vels_cell_medium_ID_14{end, 7} = pol_comp(:,2);
+            vels_cell_medium_ID_14{end, 8} = spline_binned_data(:);
+            vels_cell_medium_ID_14{end, 9 } = onset_time;
+            vels_cell_medium_ID_14{end, 10} = avg_vel_whole_trial;
+            vels_cell_medium_ID_14{end, 11} = holo_freq;
+            vels_cell_medium_ID_14{end, 12} = velocities;
             
-            
+            if trialnum == 10
+            figure(5)
+            plot(x_holo_spline - x_pol(1), y_holo_spline)
+            hold on
+            plot(x_pol- x_pol(1), y_pol)
+            hold off 
+            end
 %             figure(trialnum)
 %             subplot(2,1,1)
 % %             plot(holo_filtered(:,1), holo_filtered(:,2), 'x' )
@@ -607,34 +621,34 @@ for trialnum = 1:length(Polh_Fields)
 end
 
 %% just plot
-close all;
-figure(1)
-avg_vel_tot_medium = vels_cell_medium_ID_17(:,2);
-rmse_tot_medium_raw = vels_cell_medium_ID_17(:,3);
-rmse_tot_medium_spline = vels_cell_medium_ID_17(:,4);
+% close all;
+% figure(1)
+avg_vel_tot_medium = vels_cell_medium_ID_14(:,2);
+rmse_tot_medium_raw = vels_cell_medium_ID_14(:,3);
+rmse_tot_medium_spline = vels_cell_medium_ID_14(:,4);
 
-plot([avg_vel_tot_medium{:}], [rmse_tot_medium_raw{:}], 'o')
-hold on
-plot([avg_vel_tot_medium{:}], [rmse_tot_medium_spline{:}], 'X')
-hold off
-xlabel('Velocity (rad/s)')
-ylabel('RMSE error')
-legend('Raw data', 'Spline data')
+% plot([avg_vel_tot_medium{:}], [rmse_tot_medium_raw{:}], 'o')
+% hold on
+% plot([avg_vel_tot_medium{:}], [rmse_tot_medium_spline{:}], 'X')
+% hold off
+% xlabel('Velocity (rad/s)')
+% ylabel('RMSE error')
+% legend('Raw data', 'Spline data')
 
 %%
-close all;
-figure(2)
-time_onset_medium = vels_cell_medium_ID_17(:,9);
-rmse_tot_medium_raw = vels_cell_medium_ID_17(:,3);
-rmse_tot_medium_spline = vels_cell_medium_ID_17(:,4);
+% close all;
+% figure(2)
+time_onset_medium = vels_cell_medium_ID_14(:,9);
+rmse_tot_medium_raw = vels_cell_medium_ID_14(:,3);
+rmse_tot_medium_spline = vels_cell_medium_ID_14(:,4);
 
-plot([time_onset_medium{:}], [rmse_tot_medium_raw{:}], 'o')
-hold on
-plot([time_onset_medium{:}], [rmse_tot_medium_spline{:}], 'X')
-hold off
-xlabel('Time onset (s)')
-ylabel('RMSE error')
-legend('Raw data', 'Spline data')
+% plot([time_onset_medium{:}], [rmse_tot_medium_raw{:}], 'o')
+% hold on
+% plot([time_onset_medium{:}], [rmse_tot_medium_spline{:}], 'X')
+% hold off
+% xlabel('Time onset (s)')
+% ylabel('RMSE error')
+% legend('Raw data', 'Spline data')
 
 %% fast
 namesFast = fieldnames( fast_filteredStruct );
@@ -644,11 +658,10 @@ Polh_Fields = fieldnames(Pol_filteredStruct);
 subStrHolo = '_HoloData';
 Holo_filteredStruct_fast = rmfield( fast_filteredStruct, namesFast(find(cellfun(@isempty, strfind( namesFast, subStrHolo)))));
 Holo_Fields = fieldnames(Holo_filteredStruct_fast);
-lag_term_fast = 0.15;
-calibration_term_fast = 2;
+
 %% edit ID number here !! and everywhere
-close all;
-vels_cell_fast_ID_17 = cell(0, 12);
+% close all;
+vels_cell_fast_ID_14 = cell(0, 12);
 integer = 0;
 for trialnum = 1:length(Polh_Fields)
 %     for trialnum = 11
@@ -703,8 +716,12 @@ for trialnum = 1:length(Polh_Fields)
         sgf = sgolayfilt(y_pol,order,framelen);
         
         v = zeros(length(pol_millis),1) ;
-        for i = 1:length(pol_millis)-1
-            v(i) = abs((sgf(i+1)-sgf(i))/(pol_millis(i+1)-pol_millis(i)) * 1000000);
+        for i = 1:length(pol_millis)-3
+            sgf_moving = movmean(sgf(i),3);
+            time_moving = pol_millis(i+3)-pol_millis(i);
+            v(i) = abs(sgf_moving/(time_moving))* 1000; >>>>>>>>>>>>>>>> left off 
+%             v(i) = abs((sgf(i+10)-sgf(i))/(pol_millis(i+10)-pol_millis(i)) * 1000000);
+%             v(i) = abs((y_pol(i+1)-y_pol(i))/(pol_millis(i+1)-pol_millis(i)) * 1000000);
         end
         
         length_v_half = round(3*length(v)/9);
@@ -817,15 +834,15 @@ for trialnum = 1:length(Polh_Fields)
 %         comparing_diff = abs(pol_binned_data(:) - holo_filtered(:,2));
         comparing_diff = abs(pol_comp_non_spline(:,2) - holo_repeat_bins(:));
         
-        if length(comparing_diff) > 0 & onset_time < 1.4
+        if length(comparing_diff) > 0 & onset_time < 1.2
              
             rmse = sqrt((sum(comparing_diff).^2)/length(comparing_diff));
 
-            vels_cell_fast_ID_17{end+1, 1}  = pol_dynamic;
-            vels_cell_fast_ID_17{end, 2} = avg_vel;
-            vels_cell_fast_ID_17{end, 3} = rmse;
-            vels_cell_fast_ID_17{end, 5} = pol_comp_non_spline(:,1:2);
-            vels_cell_fast_ID_17{end, 6} = holo_repeat_bins(:);
+            vels_cell_fast_ID_14{end+1, 1}  = pol_dynamic;
+            vels_cell_fast_ID_14{end, 2} = avg_vel;
+            vels_cell_fast_ID_14{end, 3} = rmse;
+            vels_cell_fast_ID_14{end, 5} = pol_comp_non_spline(:,1:2);
+            vels_cell_fast_ID_14{end, 6} = holo_repeat_bins(:);
                    
             
             %spline rmse work: .....>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -850,14 +867,21 @@ for trialnum = 1:length(Polh_Fields)
             rmse_spline = sqrt((sum(comparing_diff_spline).^2)/length(comparing_diff_spline));
             avg_vel_whole_trial = mean(v);
             
-            vels_cell_fast_ID_17{end, 4} = rmse_spline;
-            vels_cell_fast_ID_17{end, 7} = pol_comp(:,2);
-            vels_cell_fast_ID_17{end, 8} = spline_binned_data(:);
-            vels_cell_fast_ID_17{end, 9 } = onset_time;
-            vels_cell_fast_ID_17{end, 10} = avg_vel_whole_trial;
-            vels_cell_fast_ID_17{end, 11} = holo_freq;
-            vels_cell_fast_ID_17{end, 12} = velocities;
+            vels_cell_fast_ID_14{end, 4} = rmse_spline;
+            vels_cell_fast_ID_14{end, 7} = pol_comp(:,2);
+            vels_cell_fast_ID_14{end, 8} = spline_binned_data(:);
+            vels_cell_fast_ID_14{end, 9 } = onset_time;
+            vels_cell_fast_ID_14{end, 10} = avg_vel_whole_trial;
+            vels_cell_fast_ID_14{end, 11} = holo_freq;
+            vels_cell_fast_ID_14{end, 12} = velocities;
             
+            if trialnum == 10
+            figure(6)
+            plot(x_holo_spline - x_pol(1), y_holo_spline)
+            hold on
+            plot(x_pol- x_pol(1), y_pol)
+            hold off 
+            end
             
 %             figure(trialnum)
 %             subplot(2,1,1)
@@ -893,81 +917,116 @@ end
 
 
 %% just plot
-close all;
-figure(1)
-avg_vel_tot_fast = vels_cell_fast_ID_17(:,2);
-rmse_tot_fast_raw = vels_cell_fast_ID_17(:,3);
-rmse_tot_fast_spline = vels_cell_fast_ID_17(:,4);
+% close all;
+% figure(1)
+avg_vel_tot_fast = vels_cell_fast_ID_14(:,2);
+rmse_tot_fast_raw = vels_cell_fast_ID_14(:,3);
+rmse_tot_fast_spline = vels_cell_fast_ID_14(:,4);
 
-plot([avg_vel_tot_fast{:}], [rmse_tot_fast_raw{:}], 'o')
-hold on
-plot([avg_vel_tot_fast{:}], [rmse_tot_fast_spline{:}], 'X')
-hold off
-xlabel('Velocity (rad/s)')
-ylabel('RMSE error')
-legend('Raw data', 'Spline data')
+% plot([avg_vel_tot_fast{:}], [rmse_tot_fast_raw{:}], 'o')
+% hold on
+% plot([avg_vel_tot_fast{:}], [rmse_tot_fast_spline{:}], 'X')
+% hold off
+% xlabel('Velocity (rad/s)')
+% ylabel('RMSE error')
+% legend('Raw data', 'Spline data')
 
 %%
-close all;
-figure(2)
-time_onset_fast = vels_cell_fast_ID_17(:,9);
-rmse_tot_fast_raw = vels_cell_fast_ID_17(:,3);
-rmse_tot_fast_spline = vels_cell_fast_ID_17(:,4);
+% close all;
+% figure(2)
+time_onset_fast = vels_cell_fast_ID_14(:,9);
+rmse_tot_fast_raw = vels_cell_fast_ID_14(:,3);
+rmse_tot_fast_spline = vels_cell_fast_ID_14(:,4);
 
-plot([time_onset_fast{:}], [rmse_tot_fast_raw{:}], 'o')
-hold on
-plot([time_onset_fast{:}], [rmse_tot_fast_spline{:}], 'X')
-hold off
-xlabel('Time onset (s)')
-ylabel('RMSE error')
-legend('Raw data', 'Spline data')
+% plot([time_onset_fast{:}], [rmse_tot_fast_raw{:}], 'o')
+% hold on
+% plot([time_onset_fast{:}], [rmse_tot_fast_spline{:}], 'X')
+% hold off
+% xlabel('Time onset (s)')
+% ylabel('RMSE error')
+% legend('Raw data', 'Spline data')
+% 
 
+%>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 %% plot all
 fname = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\VelocityErrorData\Plots\IDPlots';
-close all;
+% close all;
 FigH = figure('Position', get(0, 'Screensize'));
 x = [[avg_vel_tot_slow{:}] [avg_vel_tot_medium{:}] [avg_vel_tot_fast{:}]]';
 y_raw = [[rmse_tot_slow_raw{:}] [rmse_tot_medium_raw{:}] [rmse_tot_fast_raw{:}]]';
 y_spline = [[rmse_tot_slow_spline{:}] [rmse_tot_medium_spline{:}] [rmse_tot_fast_spline{:}]]';
 
-bls_raw = regress(y_raw,[ones(length(x),1) x]);
-bls_spline = regress(y_spline,[ones(length(x),1) x]);
+% bls_raw = regress(y_raw,[ones(length(x),1) x]);
+% bls_spline = regress(y_spline,[ones(length(x),1) x]);
 
+[brob_raw,stats_raw] = robustfit(x,y_raw);
+[brob_spline,stats_spline] = robustfit(x,y_spline);
 
-leg_vel_raw = plot([avg_vel_tot_slow{:}], [rmse_tot_slow_raw{:}], 'ko','color', 'red');
+outliers_ind_raw = find(abs(stats_raw.resid)>stats_raw.mad_s);
+outliers_ind_spline = find(abs(stats_spline.resid)>stats_spline.mad_s);
+
+leg_vel_raw = plot(x,y_raw,'s','color','red');
+hold on 
+outliers_raw = scatter(x(outliers_ind_raw),y_raw(outliers_ind_raw),[],'r','filled','s');
 hold on
-plot([avg_vel_tot_medium{:}], [rmse_tot_medium_raw{:}], 'ko','color','red');
-hold on
-plot([avg_vel_tot_fast{:}], [rmse_tot_fast_raw{:}], 'ko','color','red');
-hold on
-leg_raw_LR = plot(x,bls_raw(1)+bls_raw(2)*x,'r');
+leg_raw_LR = plot(x,brob_raw(1)+brob_raw(2)*x,'r');
 hold on
 
-leg_vel_spline = plot([avg_vel_tot_slow{:}], [rmse_tot_slow_spline{:}], 'X','color', 'b');
+leg_vel_spline = plot(x,y_spline,'o','color','b');
+hold on 
+outliers_spline = scatter(x(outliers_ind_spline),y_spline(outliers_ind_spline),'filled','b');
 hold on
-plot([avg_vel_tot_medium{:}], [rmse_tot_medium_spline{:}], 'X','color','b');
+leg_spline_LR = plot(x,brob_spline(1)+brob_spline(2)*x,'b');
 hold on
-plot([avg_vel_tot_fast{:}], [rmse_tot_fast_spline{:}], 'X','color','b');
-hold on
-leg_spline_LR = plot(x,bls_spline(1)+bls_spline(2)*x,'b');
+
+% leg_vel_raw = plot([avg_vel_tot_slow{:}], [rmse_tot_slow_raw{:}], 'ko','color', 'red');
+% hold on
+% plot([avg_vel_tot_medium{:}], [rmse_tot_medium_raw{:}], 'ko','color','red');
+% hold on
+% plot([avg_vel_tot_fast{:}], [rmse_tot_fast_raw{:}], 'ko','color','red');
+% hold on
+% leg_raw_LR = plot(x,bls_raw(1)+bls_raw(2)*x,'r');
+% hold on
+
+% leg_vel_spline = plot([avg_vel_tot_slow{:}], [rmse_tot_slow_spline{:}], 'X','color', 'b');
+% hold on
+% plot([avg_vel_tot_medium{:}], [rmse_tot_medium_spline{:}], 'X','color','b');
+% hold on
+% plot([avg_vel_tot_fast{:}], [rmse_tot_fast_spline{:}], 'X','color','b');
+% hold on
+% leg_spline_LR = plot(x,bls_spline(1)+bls_spline(2)*x,'b');
 
 hold off
 clear ylim xlim
-ylim([0 1000])
-xlim([0 200])
+% y_top = max(y_spline)+250;
+% x_top = max(x)+ 20;
+ylim([0 600])
+xlim([0 180])
 yticks([0:100:1000])
-legend([leg_vel_raw, leg_raw_LR, leg_vel_spline, leg_spline_LR], {'Raw data','Raw linear model', 'Spline data','Spline linear model'},'FontSize', 20,'Location', 'northwest')
+legend([leg_vel_raw,outliers_raw, leg_raw_LR, leg_vel_spline, outliers_spline, leg_spline_LR], {'Raw data','Raw outliers'...
+    'Raw robust linear model', 'Spline data','Spline outliers','Spline robust linear model'},'FontSize', 20,'Location', 'northwest');
 xlim=get(gca,'XLim');
 ylim=get(gca,'YLim');
-text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.72*ylim(2),['y = ' num2str(bls_raw(1)) '+' num2str(bls_raw(2)) 'x'],'Color', 'r', 'FontSize', 20)
-text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.62*ylim(2),['y = ' num2str(bls_spline(1)) '+' num2str(bls_spline(2)) 'x'],'Color', 'b', 'FontSize', 20)
-title(['Velocity against RMSE between hololens and polhemus angle readings for participant 17'],'FontSize', 18)
+if brob_raw(2) > 0 & brob_spline(2) > 0
+    text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.62*ylim(2),['y = ' num2str(brob_raw(1)) '+' num2str(brob_raw(2)) 'x'],'Color', 'r', 'FontSize', 20)
+    text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.52*ylim(2),['y = ' num2str(brob_spline(1)) '+' num2str(brob_spline(2)) 'x'],'Color', 'b', 'FontSize', 20)
+elseif brob_raw(2) > 0 & brob_spline(2) < 0 
+    text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.62*ylim(2),['y = ' num2str(brob_raw(1)) '+' num2str(brob_raw(2)) 'x'],'Color', 'r', 'FontSize', 20)
+    text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.52*ylim(2),['y = ' num2str(brob_spline(1)) num2str(brob_spline(2)) 'x'],'Color', 'b', 'FontSize', 20)
+elseif brob_raw(2) < 0 & brob_spline(2) > 0 
+    text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.62*ylim(2),['y = ' num2str(brob_raw(1)) num2str(brob_raw(2)) 'x'],'Color', 'r', 'FontSize', 20)
+    text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.52*ylim(2),['y = ' num2str(brob_spline(1)) '+' num2str(brob_spline(2)) 'x'],'Color', 'b', 'FontSize', 20)
+else
+    text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.62*ylim(2),['y = ' num2str(brob_raw(1)) num2str(brob_raw(2)) 'x'],'Color', 'r', 'FontSize', 20)
+    text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.52*ylim(2),['y = ' num2str(brob_spline(1)) num2str(brob_spline(2)) 'x'],'Color', 'b', 'FontSize', 20)
+end
+    title(['Velocity against RMSE between Polhemus and Hololens angle readings for participant 14'],'FontSize', 18)
 xlabel('Velocity (deg/s)','FontSize', 18)
-ylabel('RMSE error', 'FontSize', 18)
+ylabel('RMSE', 'FontSize', 18)
 hold on
 
 
-mkdir 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\VelocityErrorData\Plots\IDPlots'  '\ID17'
+mkdir 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\VelocityErrorData\Plots\IDPlots'  '\ID14'
 filename = ['ID' num2str(ID) '\VelErrorID' num2str(ID)];
 saveas(FigH, fullfile(fname, filename), 'png');
 
@@ -977,42 +1036,75 @@ FigHRaw = figure('Position', get(0, 'Screensize'));
 
 x_time_onset = [[time_onset_slow{:}] [time_onset_medium{:}] [time_onset_fast{:}]]';
 
-bls_raw_onset = regress(y_raw,[ones(length(x_time_onset),1) x_time_onset]);
-bls_spline_onset = regress(y_spline,[ones(length(x_time_onset),1) x_time_onset]);
+% bls_raw_onset = regress(y_raw,[ones(length(x_time_onset),1) x_time_onset]);
+% bls_spline_onset = regress(y_spline,[ones(length(x_time_onset),1) x_time_onset]);
 
+[brob_raw_onset,stats_raw_onset] = robustfit(x_time_onset,y_raw);
+[brob_spline_onset,stats_spline_onset] = robustfit(x_time_onset,y_spline);
 
-leg_onset_raw = plot([time_onset_slow{:}], [rmse_tot_slow_raw{:}], 'o', 'color','r');
+outliers_ind_raw_onset = find(abs(stats_raw_onset.resid)>stats_raw_onset.mad_s);
+outliers_ind_spline_onset = find(abs(stats_spline_onset.resid)>stats_spline_onset.mad_s);
+
+leg_vel_raw_onset = plot(x_time_onset,y_raw,'s','color','red');
+hold on 
+outliers_raw_onset = scatter(x_time_onset(outliers_ind_raw_onset),y_raw(outliers_ind_raw_onset),[],'r','filled','s');
 hold on
-plot([time_onset_medium{:}], [rmse_tot_medium_raw{:}], 'o', 'color','r');
-hold on
-plot([time_onset_fast{:}], [rmse_tot_fast_raw{:}], 'o', 'color','r');
-hold on
-leg_raw_LR_onset = plot(x_time_onset,bls_raw_onset(1)+bls_raw_onset(2)*x_time_onset,'r');
+leg_raw_LR_onset = plot(x_time_onset,brob_raw_onset(1)+brob_raw_onset(2)*x_time_onset,'r');
 hold on
 
-leg_onset_spline = plot([time_onset_slow{:}], [rmse_tot_slow_spline{:}], 'x', 'color','b');
+leg_vel_spline_onset = plot(x_time_onset,y_spline,'o','color','b');
+hold on 
+outliers_spline_onset = scatter(x_time_onset(outliers_ind_spline_onset),y_spline(outliers_ind_spline_onset),'filled','b');
 hold on
-plot([time_onset_medium{:}], [rmse_tot_medium_spline{:}], 'x', 'color','b');
+leg_spline_LR_onset = plot(x_time_onset,brob_spline_onset(1)+brob_spline_onset(2)*x_time_onset,'b');
 hold on
-plot([time_onset_fast{:}], [rmse_tot_fast_spline{:}], 'x', 'color','b');
-hold on
-leg_spline_LR_onset = plot(x_time_onset,bls_spline_onset(1)+bls_spline_onset(2)*x_time_onset,'b');
 
-hold off
+% 
+% leg_onset_raw = plot([time_onset_slow{:}], [rmse_tot_slow_raw{:}], 'o', 'color','r');
+% hold on
+% plot([time_onset_medium{:}], [rmse_tot_medium_raw{:}], 'o', 'color','r');
+% hold on
+% plot([time_onset_fast{:}], [rmse_tot_fast_raw{:}], 'o', 'color','r');
+% hold on
+% leg_raw_LR_onset = plot(x_time_onset,bls_raw_onset(1)+bls_raw_onset(2)*x_time_onset,'r');
+% hold on
+% 
+% leg_onset_spline = plot([time_onset_slow{:}], [rmse_tot_slow_spline{:}], 'x', 'color','b');
+% hold on
+% plot([time_onset_medium{:}], [rmse_tot_medium_spline{:}], 'x', 'color','b');
+% hold on
+% plot([time_onset_fast{:}], [rmse_tot_fast_spline{:}], 'x', 'color','b');
+% hold on
+% leg_spline_LR_onset = plot(x_time_onset,bls_spline_onset(1)+bls_spline_onset(2)*x_time_onset,'b');
+
 hold off
 clear ylim xlim
-ylim([0 1000])
-xlim([0 1.4])
+% y_top = max(y_spline)+250;
+ylim([0 600])
+xlim([0 1.2])
 yticks([0:100:1000])
-legend([leg_onset_raw, leg_raw_LR_onset, leg_onset_spline, leg_spline_LR_onset], {'Raw data','Raw linear model', 'Spline data','Spline linear model'},'FontSize', 20,'Location', 'northwest')
+legend([leg_vel_raw_onset,outliers_raw_onset, leg_raw_LR_onset, leg_vel_spline_onset, outliers_spline_onset, leg_spline_LR_onset], {'Raw data','Raw outliers'...
+    'Raw robust linear model', 'Spline data','Spline outliers','Spline robust linear model'},'FontSize', 20,'Location', 'northwest')
 xlim=get(gca,'XLim');
 ylim=get(gca,'YLim');
-text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.72*ylim(2),['y = ' num2str(bls_raw_onset(1)) '+' num2str(bls_raw_onset(2)) 'x'],'Color', 'r', 'FontSize', 20)
-text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.62*ylim(2),['y = ' num2str(bls_spline_onset(1)) '+' num2str(bls_spline_onset(2)) 'x'],'Color', 'b', 'FontSize', 20)
-title('RMSE error between Polhemus and Hololens angle recordings against time onset for participant 17', 'FontSize', 18)
+if brob_raw_onset(2) > 0 & brob_spline_onset(2) > 0
+    text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.62*ylim(2),['y = ' num2str(brob_raw_onset(1)) '+' num2str(brob_raw_onset(2)) 'x'],'Color', 'r', 'FontSize', 20)
+    text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.52*ylim(2),['y = ' num2str(brob_spline_onset(1)) '+' num2str(brob_spline_onset(2)) 'x'],'Color', 'b', 'FontSize', 20)
+elseif brob_raw_onset(2) > 0 & brob_spline_onset(2) < 0 
+    text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.62*ylim(2),['y = ' num2str(brob_raw_onset(1)) '+' num2str(brob_raw_onset(2)) 'x'],'Color', 'r', 'FontSize', 20)
+    text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.52*ylim(2),['y = ' num2str(brob_spline_onset(1)) num2str(brob_spline_onset(2)) 'x'],'Color', 'b', 'FontSize', 20)
+elseif brob_raw_onset(2) < 0 & brob_spline_onset(2) > 0 
+    text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.62*ylim(2),['y = ' num2str(brob_raw_onset(1)) num2str(brob_raw_onset(2)) 'x'],'Color', 'r', 'FontSize', 20)
+    text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.52*ylim(2),['y = ' num2str(brob_spline_onset(1)) '+' num2str(brob_spline_onset(2)) 'x'],'Color', 'b', 'FontSize', 20)
+else
+    text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.62*ylim(2),['y = ' num2str(brob_raw_onset(1)) num2str(brob_raw_onset(2)) 'x'],'Color', 'r', 'FontSize', 20)
+    text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.52*ylim(2),['y = ' num2str(brob_spline_onset(1)) num2str(brob_spline_onset(2)) 'x'],'Color', 'b', 'FontSize', 20)
+end
+
+title('Time onset against RMSE between Polhemus and Hololens angle recordings for participant 14', 'FontSize', 18)
 xlabel('Time onset (s)', 'FontSize',18)
-ylabel('RMSE error', 'FontSize', 18)
-hold on
+ylabel('RMSE', 'FontSize', 18)
+
 
 filename = ['ID' num2str(ID) '\TimeOnsetErrorID' num2str(ID)];
 saveas(FigHRaw, fullfile(fname, filename), 'png');
@@ -1020,35 +1112,35 @@ saveas(FigHRaw, fullfile(fname, filename), 'png');
 
 %%
 figure(3)
-length_fast = length(vels_cell_fast_ID_17{1, 7});
-length_medium = length(vels_cell_medium_ID_17{1, 7});
+length_fast = length(vels_cell_fast_ID_14{1, 7});
+% length_medium = length(vels_cell_medium_ID_14{1, 7});
 
-angle_pol_fast = reshape(cell2mat(vels_cell_fast_ID_17(:,7)), [length_fast,length(vels_cell_fast_ID_17)]);
-angle_holo_fast = reshape(cell2mat(vels_cell_fast_ID_17(:,8)), [length_fast,length(vels_cell_fast_ID_17)]);
-angular_velocity_fast = reshape(cell2mat(vels_cell_fast_ID_17(:,12)), [length_fast,length(vels_cell_fast_ID_17)]);
+angle_pol_fast = reshape(cell2mat(vels_cell_fast_ID_14(:,7)), [length_fast,length(vels_cell_fast_ID_14)]);
+angle_holo_fast = reshape(cell2mat(vels_cell_fast_ID_14(:,8)), [length_fast,length(vels_cell_fast_ID_14)]);
+angular_velocity_fast = reshape(cell2mat(vels_cell_fast_ID_14(:,12)), [length_fast,length(vels_cell_fast_ID_14)]);
 
-angle_pol_medium = reshape(cell2mat(vels_cell_medium_ID_17(:,7)), [length_medium,length(vels_cell_medium_ID_17)]);
-angle_holo_medium = reshape(cell2mat(vels_cell_medium_ID_17(:,8)), [length_medium, length(vels_cell_medium_ID_17)]);
-angular_velocity_medium = reshape(cell2mat(vels_cell_medium_ID_17(:,12)), [length_medium, length(vels_cell_medium_ID_17)]);
+% angle_pol_medium = reshape(cell2mat(vels_cell_medium_ID_14(:,7)), [length_medium,length(vels_cell_medium_ID_14)]);
+% angle_holo_medium = reshape(cell2mat(vels_cell_medium_ID_14(:,8)), [length_medium, length(vels_cell_medium_ID_14)]);
+% angular_velocity_medium = reshape(cell2mat(vels_cell_medium_ID_14(:,12)), [length_medium, length(vels_cell_medium_ID_14)]);
 
-% angle_pol_slow = reshape(cell2mat(vels_cell_slow_ID_17(:,7)), [151,28]);
-% angle_holo_slow = reshape(cell2mat(vels_cell_slow_ID_17(:,8)), [151,28]);
-% angular_velocity = reshape(cell2mat(vels_cell_slow_ID_17(:,12)), [151,28]);
+% angle_pol_slow = reshape(cell2mat(vels_cell_slow_ID_14(:,7)), [141,28]);
+% angle_holo_slow = reshape(cell2mat(vels_cell_slow_ID_14(:,8)), [141,28]);
+% angular_velocity = reshape(cell2mat(vels_cell_slow_ID_14(:,12)), [141,28]);
 % surf(angle_pol_fast,angle_holo_fast,angular_velocity)
-% plot3(angle_pol_fast,angle_holo_fast,angular_velocity_fast);
-plot3(angle_pol_medium,angle_holo_medium,angular_velocity);
+plot3(angle_pol_fast,angle_holo_fast,angular_velocity_fast);
+% plot3(angle_pol_medium,angle_holo_medium,angular_velocity);
 xlabel('Angle polhemus')
 ylabel('Angle holo')
 zlabel('Angular vel')
 
 %%
-slow_ID_17 = 'VelSlow_ID_17';
-medium_ID_17 = 'VelMedium_ID_17';
-fast_ID_17 = 'VelFast_ID_17';
-VelErrorData17.(slow_ID_17) = cell2table(vels_cell_slow_ID_17);
-VelErrorData17.(medium_ID_17) = cell2table(vels_cell_medium_ID_17) ;
-VelErrorData17.(fast_ID_17) = cell2table(vels_cell_fast_ID_17);
+slow_ID_14 = 'VelSlow_ID_14';
+medium_ID_14 = 'VelMedium_ID_14';
+fast_ID_14 = 'VelFast_ID_14';
+VelErrorData14.(slow_ID_14) = cell2table(vels_cell_slow_ID_14);
+VelErrorData14.(medium_ID_14) = cell2table(vels_cell_medium_ID_14) ;
+VelErrorData14.(fast_ID_14) = cell2table(vels_cell_fast_ID_14);
 foldersave = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\VelocityErrorData';
-filesave = 'VelErrorData17';
-save(fullfile(foldersave, filesave), 'VelErrorData17')
+filesave = 'VelErrorData14';
+save(fullfile(foldersave, filesave), 'VelErrorData14')
 
