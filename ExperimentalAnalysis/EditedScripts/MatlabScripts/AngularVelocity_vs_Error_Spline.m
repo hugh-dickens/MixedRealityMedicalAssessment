@@ -239,7 +239,7 @@ for trialnum = 1:length(Polh_Fields)
 %         comparing_diff = abs(pol_binned_data(:) - holo_filtered(:,2));
         comparing_diff = abs(pol_comp_non_spline(:,2) - holo_repeat_bins(:));
         
-        if length(comparing_diff) > 0 & onset_time < 2 
+        if length(comparing_diff) > 0 & onset_time < 1.4 
              
             rmse = sqrt((sum(comparing_diff).^2)/length(comparing_diff));
 
@@ -273,7 +273,7 @@ for trialnum = 1:length(Polh_Fields)
             avg_vel_whole_trial = mean(v);
             
             vels_cell_slow_ID_17{end, 4} = rmse_spline;
-            vels_cell_slow_ID_17{end, 7} = pol_comp(:,1:2);
+            vels_cell_slow_ID_17{end, 7} = pol_comp(:,2);
             vels_cell_slow_ID_17{end, 8} = spline_binned_data(:);
             vels_cell_slow_ID_17{end, 9 } = onset_time;
             vels_cell_slow_ID_17{end, 10} = avg_vel_whole_trial;
@@ -532,7 +532,7 @@ for trialnum = 1:length(Polh_Fields)
 %         comparing_diff = abs(pol_binned_data(:) - holo_filtered(:,2));
         comparing_diff = abs(pol_comp_non_spline(:,2) - holo_repeat_bins(:));
         
-        if length(comparing_diff) > 0 & onset_time < 2 & avg_vel > 30
+        if length(comparing_diff) > 0 & onset_time < 1.4 & avg_vel > 30
              
             rmse = sqrt((sum(comparing_diff).^2)/length(comparing_diff));
 
@@ -566,7 +566,7 @@ for trialnum = 1:length(Polh_Fields)
             avg_vel_whole_trial = mean(v);
             
             vels_cell_medium_ID_17{end, 4} = rmse_spline;
-            vels_cell_medium_ID_17{end, 7} = pol_comp(:,1:2);
+            vels_cell_medium_ID_17{end, 7} = pol_comp(:,2);
             vels_cell_medium_ID_17{end, 8} = spline_binned_data(:);
             vels_cell_medium_ID_17{end, 9 } = onset_time;
             vels_cell_medium_ID_17{end, 10} = avg_vel_whole_trial;
@@ -817,7 +817,7 @@ for trialnum = 1:length(Polh_Fields)
 %         comparing_diff = abs(pol_binned_data(:) - holo_filtered(:,2));
         comparing_diff = abs(pol_comp_non_spline(:,2) - holo_repeat_bins(:));
         
-        if length(comparing_diff) > 0 & onset_time < 2
+        if length(comparing_diff) > 0 & onset_time < 1.4
              
             rmse = sqrt((sum(comparing_diff).^2)/length(comparing_diff));
 
@@ -923,76 +923,120 @@ ylabel('RMSE error')
 legend('Raw data', 'Spline data')
 
 %% plot all
+fname = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\VelocityErrorData\Plots\IDPlots';
 close all;
-figure(1)
+FigH = figure('Position', get(0, 'Screensize'));
 x = [[avg_vel_tot_slow{:}] [avg_vel_tot_medium{:}] [avg_vel_tot_fast{:}]]';
 y_raw = [[rmse_tot_slow_raw{:}] [rmse_tot_medium_raw{:}] [rmse_tot_fast_raw{:}]]';
 y_spline = [[rmse_tot_slow_spline{:}] [rmse_tot_medium_spline{:}] [rmse_tot_fast_spline{:}]]';
 
-mdl_raw = fitlm(x,y_raw)
-mdl_spline = fitlm(x,y_spline)
+bls_raw = regress(y_raw,[ones(length(x),1) x]);
+bls_spline = regress(y_spline,[ones(length(x),1) x]);
 
-plot([avg_vel_tot_slow{:}], [rmse_tot_slow_raw{:}], 'o','color', 'red')
+
+leg_vel_raw = plot([avg_vel_tot_slow{:}], [rmse_tot_slow_raw{:}], 'ko','color', 'red');
 hold on
-plot([avg_vel_tot_medium{:}], [rmse_tot_medium_raw{:}], 'o','color','red')
+plot([avg_vel_tot_medium{:}], [rmse_tot_medium_raw{:}], 'ko','color','red');
 hold on
-plot([avg_vel_tot_fast{:}], [rmse_tot_fast_raw{:}], 'o','color','red')
+plot([avg_vel_tot_fast{:}], [rmse_tot_fast_raw{:}], 'ko','color','red');
 hold on
-plot(mdl_raw, 'color', 'red')
+leg_raw_LR = plot(x,bls_raw(1)+bls_raw(2)*x,'r');
 hold on
 
-plot([avg_vel_tot_slow{:}], [rmse_tot_slow_spline{:}], 'x','color', 'green')
+leg_vel_spline = plot([avg_vel_tot_slow{:}], [rmse_tot_slow_spline{:}], 'X','color', 'b');
 hold on
-plot([avg_vel_tot_medium{:}], [rmse_tot_medium_spline{:}], 'x','color','green')
+plot([avg_vel_tot_medium{:}], [rmse_tot_medium_spline{:}], 'X','color','b');
 hold on
-plot([avg_vel_tot_fast{:}], [rmse_tot_fast_spline{:}], 'x','color','green')
+plot([avg_vel_tot_fast{:}], [rmse_tot_fast_spline{:}], 'X','color','b');
 hold on
-plot(mdl_spline,'color','green')
+leg_spline_LR = plot(x,bls_spline(1)+bls_spline(2)*x,'b');
 
 hold off
+clear ylim xlim
+ylim([0 1000])
+xlim([0 200])
+yticks([0:100:1000])
+legend([leg_vel_raw, leg_raw_LR, leg_vel_spline, leg_spline_LR], {'Raw data','Raw linear model', 'Spline data','Spline linear model'},'FontSize', 20,'Location', 'northwest')
+xlim=get(gca,'XLim');
+ylim=get(gca,'YLim');
+text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.72*ylim(2),['y = ' num2str(bls_raw(1)) '+' num2str(bls_raw(2)) 'x'],'Color', 'r', 'FontSize', 20)
+text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.62*ylim(2),['y = ' num2str(bls_spline(1)) '+' num2str(bls_spline(2)) 'x'],'Color', 'b', 'FontSize', 20)
+title(['Velocity against RMSE between hololens and polhemus angle readings for participant 17'],'FontSize', 18)
+xlabel('Velocity (deg/s)','FontSize', 18)
+ylabel('RMSE error', 'FontSize', 18)
+hold on
 
-title('Velocity against error between hololens and polhemus recordings for participant', ID)
-xlabel('Velocity')
-ylabel('RMSE error')
 
+mkdir 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\VelocityErrorData\Plots\IDPlots'  '\ID17'
+filename = ['ID' num2str(ID) '\VelErrorID' num2str(ID)];
+saveas(FigH, fullfile(fname, filename), 'png');
 
 %%
-close all;
-figure(2)
+% close all;
+FigHRaw = figure('Position', get(0, 'Screensize'));
 
 x_time_onset = [[time_onset_slow{:}] [time_onset_medium{:}] [time_onset_fast{:}]]';
 
-mdl_raw_onset = fitlm(x_time_onset,y_raw)
-mdl_spline_onset = fitlm(x_time_onset,y_spline)
+bls_raw_onset = regress(y_raw,[ones(length(x_time_onset),1) x_time_onset]);
+bls_spline_onset = regress(y_spline,[ones(length(x_time_onset),1) x_time_onset]);
 
 
-plot([time_onset_slow{:}], [rmse_tot_slow_raw{:}], 'o', 'color','r')
+leg_onset_raw = plot([time_onset_slow{:}], [rmse_tot_slow_raw{:}], 'o', 'color','r');
 hold on
-plot([time_onset_medium{:}], [rmse_tot_medium_raw{:}], 'o', 'color','r')
+plot([time_onset_medium{:}], [rmse_tot_medium_raw{:}], 'o', 'color','r');
 hold on
-plot([time_onset_fast{:}], [rmse_tot_fast_raw{:}], 'o', 'color','r')
+plot([time_onset_fast{:}], [rmse_tot_fast_raw{:}], 'o', 'color','r');
 hold on
-plot(mdl_raw_onset, 'color', 'red')
+leg_raw_LR_onset = plot(x_time_onset,bls_raw_onset(1)+bls_raw_onset(2)*x_time_onset,'r');
 hold on
 
-plot([time_onset_slow{:}], [rmse_tot_slow_spline{:}], 'X', 'color','g')
+leg_onset_spline = plot([time_onset_slow{:}], [rmse_tot_slow_spline{:}], 'x', 'color','b');
 hold on
-plot([time_onset_medium{:}], [rmse_tot_medium_spline{:}], 'X', 'color','g')
+plot([time_onset_medium{:}], [rmse_tot_medium_spline{:}], 'x', 'color','b');
 hold on
-plot([time_onset_fast{:}], [rmse_tot_fast_spline{:}], 'X', 'color','g')
+plot([time_onset_fast{:}], [rmse_tot_fast_spline{:}], 'x', 'color','b');
 hold on
-plot(mdl_spline_onset, 'color', 'g')
+leg_spline_LR_onset = plot(x_time_onset,bls_spline_onset(1)+bls_spline_onset(2)*x_time_onset,'b');
 
 hold off
-title('RMSE error against time onset')
-xlabel('Time onset (s)')
-ylabel('RMSE error')
+hold off
+clear ylim xlim
+ylim([0 1000])
+xlim([0 1.4])
+yticks([0:100:1000])
+legend([leg_onset_raw, leg_raw_LR_onset, leg_onset_spline, leg_spline_LR_onset], {'Raw data','Raw linear model', 'Spline data','Spline linear model'},'FontSize', 20,'Location', 'northwest')
+xlim=get(gca,'XLim');
+ylim=get(gca,'YLim');
+text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.72*ylim(2),['y = ' num2str(bls_raw_onset(1)) '+' num2str(bls_raw_onset(2)) 'x'],'Color', 'r', 'FontSize', 20)
+text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.62*ylim(2),['y = ' num2str(bls_spline_onset(1)) '+' num2str(bls_spline_onset(2)) 'x'],'Color', 'b', 'FontSize', 20)
+title('RMSE error between Polhemus and Hololens angle recordings against time onset for participant 17', 'FontSize', 18)
+xlabel('Time onset (s)', 'FontSize',18)
+ylabel('RMSE error', 'FontSize', 18)
+hold on
+
+filename = ['ID' num2str(ID) '\TimeOnsetErrorID' num2str(ID)];
+saveas(FigHRaw, fullfile(fname, filename), 'png');
+
 
 %%
-angle_pol_fast = reshape(cell2mat(vels_cell_fast_ID_17(:,7)), [151,28]);
-angle_holo_fast = reshape(cell2mat(vels_cell_fast_ID_17(:,8)), [151,28]);
-angular_velocity = reshape(cell2mat(vels_cell_fast_ID_17(:,12)), [151,28]);
-surf(angle_pol_fast,angle_holo_fast,angular_velocity)
+figure(3)
+length_fast = length(vels_cell_fast_ID_17{1, 7});
+length_medium = length(vels_cell_medium_ID_17{1, 7});
+
+angle_pol_fast = reshape(cell2mat(vels_cell_fast_ID_17(:,7)), [length_fast,length(vels_cell_fast_ID_17)]);
+angle_holo_fast = reshape(cell2mat(vels_cell_fast_ID_17(:,8)), [length_fast,length(vels_cell_fast_ID_17)]);
+angular_velocity_fast = reshape(cell2mat(vels_cell_fast_ID_17(:,12)), [length_fast,length(vels_cell_fast_ID_17)]);
+
+angle_pol_medium = reshape(cell2mat(vels_cell_medium_ID_17(:,7)), [length_medium,length(vels_cell_medium_ID_17)]);
+angle_holo_medium = reshape(cell2mat(vels_cell_medium_ID_17(:,8)), [length_medium, length(vels_cell_medium_ID_17)]);
+angular_velocity_medium = reshape(cell2mat(vels_cell_medium_ID_17(:,12)), [length_medium, length(vels_cell_medium_ID_17)]);
+
+% angle_pol_slow = reshape(cell2mat(vels_cell_slow_ID_17(:,7)), [151,28]);
+% angle_holo_slow = reshape(cell2mat(vels_cell_slow_ID_17(:,8)), [151,28]);
+% angular_velocity = reshape(cell2mat(vels_cell_slow_ID_17(:,12)), [151,28]);
+% surf(angle_pol_fast,angle_holo_fast,angular_velocity)
+% plot3(angle_pol_fast,angle_holo_fast,angular_velocity_fast);
+plot3(angle_pol_medium,angle_holo_medium,angular_velocity);
 xlabel('Angle polhemus')
 ylabel('Angle holo')
 zlabel('Angular vel')
@@ -1004,5 +1048,7 @@ fast_ID_17 = 'VelFast_ID_17';
 VelErrorData17.(slow_ID_17) = cell2table(vels_cell_slow_ID_17);
 VelErrorData17.(medium_ID_17) = cell2table(vels_cell_medium_ID_17) ;
 VelErrorData17.(fast_ID_17) = cell2table(vels_cell_fast_ID_17);
-save('VelErrorData17', 'VelErrorData17')
+foldersave = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\VelocityErrorData';
+filesave = 'VelErrorData17';
+save(fullfile(foldersave, filesave), 'VelErrorData17')
 
