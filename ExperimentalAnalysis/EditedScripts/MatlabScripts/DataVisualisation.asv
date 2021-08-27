@@ -7,7 +7,7 @@ if ~chk
     for ID = IDs
 %     ID = 11;
     ID = num2str(ID);
-    ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_MATLAB\VelocityErrorData\';
+    ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\VelocityErrorData\';
     mat_data = ['VelErrorData' ID];
     load([ID_folder mat_data])
     end
@@ -29,16 +29,19 @@ mergeVelErrors = cell2struct([struct2cell(VelErrorData1);struct2cell(VelErrorDat
     fieldnames(VelErrorData14);fieldnames(VelErrorData15);...
     fieldnames(VelErrorData16);fieldnames(VelErrorData17)]);
 
-figure(1)
 x = [];
-y = [];
+y_raw = [];
+y_spline = [];
 fields = fieldnames(mergeVelErrors);
 mergeSlow_vel = [];
 mergeMed_vel = [];
 mergeFast_vel = [];
-mergeSlow_RMSE = [];
-mergeMed_RMSE = [];
-mergeFast_RMSE = [];
+mergeSlow_RMSE_raw = [];
+mergeMed_RMSE_raw = [];
+mergeFast_RMSE_raw = [];
+mergeSlow_RMSE_spline = [];
+mergeMed_RMSE_spline = [];
+mergeFast_RMSE_spline = [];
 % fields = fieldnames(VelErrorData11);
 counter = 0;
 for i = 1:numel(fields)
@@ -47,221 +50,284 @@ temp = table2cell(mergeVelErrors.(fields{i}));
 % temp = table2cell(VelErrorData11.(fields{i}));
 
 vel = temp(:,2);
-rmse = temp(:,3);
+rmse_raw = temp(:,3);
+rmse_spline = temp(:,4);
 
 if counter == 0
     mergeSlow_vel = [mergeSlow_vel; vel];
-    mergeSlow_RMSE = [mergeSlow_RMSE; rmse];
+    mergeSlow_RMSE_raw = [mergeSlow_RMSE_raw; rmse_raw];
+    mergeSlow_RMSE_spline = [mergeSlow_RMSE_spline; rmse_spline];
     counter = 1;
     
 elseif counter == 1
     mergeMed_vel = [mergeMed_vel; vel];
-    mergeMed_RMSE = [mergeMed_RMSE; rmse];
+    mergeMed_RMSE_raw = [mergeMed_RMSE_raw; rmse_raw];
+    mergeMed_RMSE_spline = [mergeMed_RMSE_spline; rmse_spline];
     counter = 2;
 elseif counter == 2
     mergeFast_vel = [mergeFast_vel; vel];
-    mergeFast_RMSE = [mergeFast_RMSE; rmse];
+    mergeFast_RMSE_raw = [mergeFast_RMSE_raw; rmse_raw];
+    mergeFast_RMSE_spline = [mergeFast_RMSE_spline; rmse_spline];
     counter = 0;
 end
     
     
 
 vel = vel(all(cell2mat(vel) ~= 0,2),:);
-rmse = rmse(all(cell2mat(rmse) ~= 0,2),:);
+rmse_raw = rmse_raw(all(cell2mat(rmse_raw) ~= 0,2),:);
+rmse_spline = rmse_spline(all(cell2mat(rmse_spline) ~= 0,2),:);
 x = [x; vel];
-y = [y; rmse];
-
-plot([vel{:}], [rmse{:}], 'o')
-xlabel('Velocity (rad/s)', 'FontSize', 20)
-ylabel('RMSE error')
-
-hold on
-
-% 
-
-
-
+y_raw = [y_raw; rmse_raw];
+y_spline = [y_spline; rmse_spline];
 
 end
 
+
+fname = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\VelocityErrorData\Plots\';
+% close all;
+FigH = figure('Position', get(0, 'Screensize'));
+
 x = cell2mat(x);
-y = cell2mat(y);
-mdl = fitlm(x,y)
+y_raw = cell2mat(y_raw);
+y_spline = cell2mat(y_spline);
 
-plot(mdl)
 
-% legend('Slow 10', 'Medium 10', 'Fast 10', 'Slow 11', 'Medium 11', 'Fast 11','Slow 12', 'Medium 12', 'Fast 12')
+[brob_raw,stats_raw] = robustfit(x,y_raw);
+[brob_spline,stats_spline] = robustfit(x,y_spline);
 
-title('Velocity against error between hololens and polhemus recordings for all participants', 'FontSize', 20)
-xlabel('Velocity (rad/s)', 'FontSize', 20)
-ylabel('RMSE error', 'FontSize', 20)
-ylim([0 200])
+outliers_ind_raw = find(abs(stats_raw.resid)>stats_raw.mad_s);
+outliers_ind_spline = find(abs(stats_spline.resid)>stats_spline.mad_s);
 
-hold off
-
-Slow_tot= cell2mat([mergeSlow_vel mergeSlow_RMSE]);
-Med_tot= cell2mat([mergeMed_vel mergeMed_RMSE]);
-Fast_tot= cell2mat([mergeFast_vel mergeFast_RMSE]);
-% A = Slow_tot(mergeSlow_RsMSE~=0);
-
-%% robust fit
-bls = regress(y,[ones(length(x),1) x]);
-[brob,stats] = robustfit(x,y);
-
-outliers_ind = find(abs(stats.resid)>stats.mad_s);
-
-scatter(x,y,'filled');
-
+leg_vel_raw = plot(x,y_raw,'s','color','red');
 hold on 
-plot(x(outliers_ind),y(outliers_ind),'mo','LineWidth',1)
+outliers_raw = scatter(x(outliers_ind_raw),y_raw(outliers_ind_raw),[],'r','filled','s');
+hold on
+leg_raw_LR = plot(x,brob_raw(1)+brob_raw(2)*x,'r');
+hold on
 
+leg_vel_spline = plot(x,y_spline,'o','color','b');
+hold on 
+outliers_spline = scatter(x(outliers_ind_spline),y_spline(outliers_ind_spline),'filled','b');
+hold on
+leg_spline_LR = plot(x,brob_spline(1)+brob_spline(2)*x,'b');
+hold on
 
-plot(x,bls(1)+bls(2)*x,'r')
-plot(x,brob(1)+brob(2)*x,'g')
+% leg_vel_raw = plot([avg_vel_tot_slow{:}], [rmse_tot_slow_raw{:}], 'ko','color', 'red');
+% hold on
+% plot([avg_vel_tot_medium{:}], [rmse_tot_medium_raw{:}], 'ko','color','red');
+% hold on
+% plot([avg_vel_tot_fast{:}], [rmse_tot_fast_raw{:}], 'ko','color','red');
+% hold on
+% leg_raw_LR = plot(x,bls_raw(1)+bls_raw(2)*x,'r');
+% hold on
+
+% leg_vel_spline = plot([avg_vel_tot_slow{:}], [rmse_tot_slow_spline{:}], 'X','color', 'b');
+% hold on
+% plot([avg_vel_tot_medium{:}], [rmse_tot_medium_spline{:}], 'X','color','b');
+% hold on
+% plot([avg_vel_tot_fast{:}], [rmse_tot_fast_spline{:}], 'X','color','b');
+% hold on
+% leg_spline_LR = plot(x,bls_spline(1)+bls_spline(2)*x,'b');
+
 hold off
-xlabel('x')
-ylabel('y')
-xlabel('Velocity (rad/s)', 'FontSize', 20)
-ylabel('RMSE error', 'FontSize', 20)
+clear ylim xlim
+% y_top = max(y_spline)+250;
+% x_top = max(x)+ 20;
+ylim([0 800])
+% xlim([20 180])
+yticks([0:100:1000])
+legend([leg_vel_raw,outliers_raw, leg_raw_LR, leg_vel_spline, outliers_spline, leg_spline_LR], {'Raw data','Raw outliers'...
+    'Raw robust linear model', 'Spline data','Spline outliers','Spline robust linear model'},'FontSize', 20,'Location', 'northwest');
 xlim=get(gca,'XLim');
 ylim=get(gca,'YLim');
-text(0.8*xlim(1)+0.2*xlim(2),0.2*ylim(1)+0.8*ylim(2),['y = ' num2str(bls(1)) '+' num2str(bls(2)) 'x'],'Color', 'r', 'FontSize)
-text(0.8*xlim(1)+0.2*xlim(2),0.3*ylim(1)+0.7*ylim(2),['y = ' num2str(brob(1)) '+' num2str(brob(2)) 'x'],'Color', 'g')
+if brob_raw(2) > 0 & brob_spline(2) > 0
+    text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.62*ylim(2),['y = ' num2str(brob_raw(1)) '+' num2str(brob_raw(2)) 'x'],'Color', 'r', 'FontSize', 20)
+    text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.52*ylim(2),['y = ' num2str(brob_spline(1)) '+' num2str(brob_spline(2)) 'x'],'Color', 'b', 'FontSize', 20)
+elseif brob_raw(2) > 0 & brob_spline(2) < 0 
+    text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.62*ylim(2),['y = ' num2str(brob_raw(1)) '+' num2str(brob_raw(2)) 'x'],'Color', 'r', 'FontSize', 20)
+    text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.52*ylim(2),['y = ' num2str(brob_spline(1)) num2str(brob_spline(2)) 'x'],'Color', 'b', 'FontSize', 20)
+elseif brob_raw(2) < 0 & brob_spline(2) > 0 
+    text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.62*ylim(2),['y = ' num2str(brob_raw(1)) num2str(brob_raw(2)) 'x'],'Color', 'r', 'FontSize', 20)
+    text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.52*ylim(2),['y = ' num2str(brob_spline(1)) '+' num2str(brob_spline(2)) 'x'],'Color', 'b', 'FontSize', 20)
+else
+    text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.62*ylim(2),['y = ' num2str(brob_raw(1)) num2str(brob_raw(2)) 'x'],'Color', 'r', 'FontSize', 20)
+    text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.52*ylim(2),['y = ' num2str(brob_spline(1)) num2str(brob_spline(2)) 'x'],'Color', 'b', 'FontSize', 20)
+end
+    title(['Velocity against RMSE between Polhemus and Hololens angle readings for all participants'],'FontSize', 18)
+xlabel('Velocity (deg/s)','FontSize', 18)
+ylabel('RMSE', 'FontSize', 18)
+hold off
+
+mkdir 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\VelocityErrorData\Plots\IDPlots'  '\ID1'
+filename = ['OverallPlot'];
+% filename = ['\VelErrorID' num2str(ID)];
+saveas(FigH, fullfile(fname, filename), 'fig');
+
+% A = Slow_tot(mergeSlow_RsMSE~=0);
+
+%% robust fit just spline
+% bls = regress(y,[ones(length(x),1) x]);
+% [brob,stats] = robustfit(x,y);
+fname = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\VelocityErrorData\Plots\';
+% close all;
+FigH_spline = figure('Position', get(0, 'Screensize'));
+
+outliers_ind_spline = find(abs(stats_spline.resid)>stats_spline.mad_s);
+
+scatter(x,y_spline,'filled');
+
+hold on 
+plot(x(outliers_ind_spline),y_spline(outliers_ind_spline),'mo','LineWidth',1)
+
+
+% plot(x,bls(1)+bls(2)*x,'r')
+plot(x,brob_spline(1)+brob_spline(2)*x,'LineWidth',2,'color','b')
+hold off
+xlabel('Velocity (deg/s)', 'FontSize', 20)
+ylabel('RMSE', 'FontSize', 20)
+title({'Velocity against RMSE between Polhemus and Hololens angle readings for' ;'all participants using the spline and robust regression'}, 'FontSize',20)
+clear ylim
+ylim([0 300])
+xlim=get(gca,'XLim');
+ylim=get(gca,'YLim');
+% text(0.8*xlim(1)+0.2*xlim(2),0.2*ylim(1)+0.8*ylim(2),['y = ' num2str(bls(1)) '+' num2str(bls(2)) 'x'],'Color', 'r', 'FontSize', 20)
+text(0.2*xlim(1)+0.8*xlim(2),0.6*ylim(1)+0.4*ylim(2),['y = ' num2str(brob_spline(1)) '+' num2str(brob_spline(2)) 'x'],'Color', 'b', 'FontSize', 20)
 % ylim([0 100])
-legend('Data','Outlier','Ordinary Least Squares','Robust Regression')
+legend('Data','Outlier','Robust Regression', 'FontSize', 20)
 grid on
+mkdir 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\VelocityErrorData\Plots\IDPlots'  '\ID1'
+filename = ['SplinePlot'];
+% filename = ['\VelErrorID' num2str(ID)];
+saveas(FigH_spline, fullfile(fname, filename), 'fig');
+
 %% new sec
 close all;
+Slow_tot= cell2mat([mergeSlow_vel mergeSlow_RMSE_spline]);
+Med_tot= cell2mat([mergeMed_vel mergeMed_RMSE_spline]);
+Fast_tot= cell2mat([mergeFast_vel mergeFast_RMSE_spline]);
 
 merge_all_vels = [Slow_tot; Med_tot; Fast_tot];
 
-vel_bel_20 = merge_all_vels((merge_all_vels(:,1) < 20),:);
-vel_bel_20 = vel_bel_20((vel_bel_20(:,1) > 0),:);
+vel_bel_60 = merge_all_vels((merge_all_vels(:,1) < 60),:);
+vel_bel_60 = vel_bel_60((vel_bel_60(:,1) > 0),:);
+vel_bel_60 = vel_bel_60((vel_bel_60(:,2) < 300 ),:);
 
-vel_20_40 = merge_all_vels((merge_all_vels(:,1) > 20),:);
-vel_20_40 = vel_20_40((vel_20_40(:,1) < 40 ),:);
+vel_60_90 = merge_all_vels((merge_all_vels(:,1) > 60),:);
+vel_60_90 = vel_60_90((vel_60_90(:,1) < 90 ),:);
+vel_60_90 = vel_60_90((vel_60_90(:,2) < 300 ),:);
 
-vel_40_60 = merge_all_vels((merge_all_vels(:,1) > 40),:);
-vel_40_60 = vel_40_60((vel_40_60(:,1) < 60 ),:);
+vel_90_120 = merge_all_vels((merge_all_vels(:,1) > 90),:);
+vel_90_120 = vel_90_120((vel_90_120(:,1) < 120 ),:);
+vel_90_120 = vel_90_120((vel_90_120(:,2) < 300 ),:);
 
-vel_60_80 = merge_all_vels((merge_all_vels(:,1) > 60),:);
-vel_60_80 = vel_60_80((vel_60_80(:,1) < 80 ),:);
 
-vel_80_100 = merge_all_vels((merge_all_vels(:,1) > 80),:);
-vel_80_100 = vel_80_100((vel_80_100(:,1) < 100 ),:);
+vel_120_150 = merge_all_vels((merge_all_vels(:,1) > 120),:);
+vel_120_150 = vel_120_150((vel_120_150(:,1) < 150 ),:);
+vel_120_150 = vel_120_150((vel_120_150(:,2) < 300 ),:);
 
-vel_100_120 = merge_all_vels((merge_all_vels(:,1) > 100),:);
-vel_100_120 = vel_100_120((vel_100_120(:,1) < 120 ),:);
+vel_150_180 = merge_all_vels((merge_all_vels(:,1) > 150),:);
+vel_150_180 = vel_150_180((vel_150_180(:,1) < 180 ),:);
+vel_150_180 = vel_150_180((vel_150_180(:,2) < 300 ),:);
 
-vel_120_140 = merge_all_vels((merge_all_vels(:,1) > 120),:);
-vel_120_140 = vel_120_140((vel_120_140(:,1) < 140 ),:);
-
-vel_140_160 = merge_all_vels((merge_all_vels(:,1) > 140),:);
-vel_140_160 = vel_140_160((vel_140_160(:,1) < 160 ),:);
-
-vel_above_160 = merge_all_vels((merge_all_vels(:,1) > 160),:);
+vel_above_180 = merge_all_vels((merge_all_vels(:,1) > 180),:);
+vel_above_180 = vel_above_180((vel_above_180(:,2) < 300 ),:);
 
 %%
 close all;
-figure(1)
+clear xlim;
+clear ylim;
+FigH_boxplots = figure('Position', get(0, 'Screensize'));
 
-subplot(3,3,1)
-boxplot(vel_bel_20(:,2))
-ylim([0 150])
-yticks([0:30:150])
+
+subplot(3,2,1)
+boxplot(vel_bel_60(:,2))
+ylim([0 300])
+yticks([0:50:300])
 hold on
 ylabel('RMSE', 'FontSize', 20)
-xlabel('Below 20rad/s', 'FontSize', 20)
+xlabel('Below 60 deg/s', 'FontSize', 20)
 
-subplot(3,3,2)
-boxplot(vel_20_40(:,2))
-ylim([0 150])
-yticks([0:30:150])
+subplot(3,2,2)
+boxplot(vel_60_90(:,2))
+ylim([0 300])
+yticks([0:50:300])
 hold on
 % ylabel('RMSE')
-xlabel('20-40 rad/s','FontSize', 20)
+xlabel('60-90 deg/s','FontSize', 20)
 
-subplot(3,3,3)
-boxplot(vel_40_60(:,2))
-ylim([0 150])
-yticks([0:30:150])
+subplot(3,2,3)
+boxplot(vel_90_120(:,2))
+ylim([0 300])
+yticks([0:50:300])
 hold on
 % ylabel('RMSE')
-xlabel('40-60 rad/s', 'FontSize', 20)
-
-subplot(3,3,4)
-boxplot(vel_60_80(:,2))
-ylim([0 150])
-yticks([0:30:150])
-hold on
 ylabel('RMSE', 'FontSize', 20)
-xlabel('60-80 rad/s', 'FontSize', 20)
+xlabel('90-120 deg/s', 'FontSize', 20)
 
-subplot(3,3,5)
-boxplot(vel_80_100(:,2))
-ylim([0 150])
-yticks([0:30:150])
+subplot(3,2,4)
+boxplot(vel_120_150(:,2))
+ylim([0 300])
+yticks([0:50:300])
+hold on
+xlabel('120-150 deg/s', 'FontSize', 20)
+
+subplot(3,2,5)
+boxplot(vel_150_180(:,2))
+ylim([0 300])
+yticks([0:50:300])
 hold on
 % ylabel('RMSE')
-xlabel('80-100 rad/s', 'FontSize', 20)
-
-subplot(3,3,6)
-boxplot(vel_100_120(:,2))
-ylim([0 150])
-yticks([0:30:150])
-hold on
-% ylabel('RMSE')
-xlabel('100-120 rad/s', 'FontSize', 20)
-
-subplot(3,3,7)
-boxplot(vel_120_140(:,2))
-ylim([0 150])
-yticks([0:30:150])
-hold on
 ylabel('RMSE', 'FontSize', 20)
-xlabel('120-140 rad/s', 'FontSize', 20)
+xlabel('150-180 deg/s', 'FontSize', 20)
 
-subplot(3,3,8)
-boxplot(vel_140_160(:,2))
-ylim([0 150])
-yticks([0:30:150])
+subplot(3,2,6)
+boxplot(vel_above_180(:,2))
+ylim([0 300])
+yticks([0:50:300])
 hold on
 % ylabel('RMSE')
-xlabel('140-160 rad/s', 'FontSize', 20)
+xlabel('Above 180 deg/s', 'FontSize', 20)
 
-subplot(3,3,9)
-boxplot(vel_above_160(:,2))
-ylim([0 150])
-yticks([0:30:150])
-hold on
-% ylabel('RMSE')
-xlabel('Above 160 rad/s', 'FontSize', 20)
+sgtitle({'Boxplot of RMSE between Hololens and Polhemus angle recordings against velocity for different velocity bands'}, 'FontSize', 20)
+
+filename = ['BoxPlots'];
+% filename = ['\VelErrorID' num2str(ID)];
+saveas(FigH_boxplots, fullfile(fname, filename), 'fig');
+
 
 %% new section
-figure(2)
+clear ylim 
+clear xlim
+FigH_boxplot_myAssess = figure('Position', get(0, 'Screensize'));
+
+Slow_tot = Slow_tot((Slow_tot(:,2) < 300 ),:);
+Slow_tot = vel_above_180((vel_above_180(:,2) < 300 ),:);
+vel_above_180 = vel_above_180((vel_above_180(:,2) < 300 ),:);
+
+
 subplot(1,3,1)
 boxplot(Slow_tot(:,2))
-ylim([0 150])
-yticks([0:10:150])
+ylim([0 300])
+yticks([0:30:300])
 
 hold on
 ylabel('RMSE')
-xlabel('slow')
+xlabel('Slow')
 
 subplot(1,3,2)
 boxplot(Med_tot(:,2))
-ylim([0 150])
-yticks([0:10:150])
+ylim([0 300])
+yticks([0:30:300])
 
 hold on
-xlabel('medium')
+xlabel('Medium')
 
 subplot(1,3,3)
 boxplot(Fast_tot(:,2))
-ylim([0 150])
-yticks([0:10:150])
+ylim([0 300])
+yticks([0:30:300])
 
 hold on
-xlabel('fast')
+xlabel('Fast')
  
 
