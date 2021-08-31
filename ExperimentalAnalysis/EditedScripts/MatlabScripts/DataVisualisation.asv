@@ -202,7 +202,7 @@ filename = ['SplinePlot'];
 % saveas(FigH_spline, fullfile(fname, filename), 'fig');
 
 %%
-x_onset = [];
+x = [];
 mergeSlow_onset = [];
 mergeMed_onset = [];
 mergeFast_onset = [];
@@ -231,8 +231,6 @@ x_onset = [x_onset; time_onset];
 end
 % close all;
 FigHOnset = figure('Position', get(0, 'Screensize'));
-x_onset = cell2mat(x_onset);
-
 
 [brob_raw_onset,stats_raw_onset] = robustfit(x_onset,y_raw);
 [brob_spline_onset,stats_spline_onset] = robustfit(x_onset,y_spline);
@@ -296,15 +294,14 @@ else
     text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.52*ylim(2),['y = ' num2str(brob_spline_onset(1)) num2str(brob_spline_onset(2)) 'x'],'Color', 'b', 'FontSize', 20)
 end
 
-% title('Time onset against RMSE between Polhemus and Hololens angle recordings for participant 1', 'FontSize', 18)
-xlabel('Time onset (s)', 'FontSize',20)
-ylabel('RMSE', 'FontSize', 20)
-ax = gca;
-ax.FontSize = 16;
+title('Time onset against RMSE between Polhemus and Hololens angle recordings for participant 1', 'FontSize', 18)
+xlabel('Time onset (s)', 'FontSize',18)
+ylabel('RMSE', 'FontSize', 18)
+
 
 filename = ['ID' num2str(ID) '\TimeOnsetErrorID' num2str(ID)];
 % filename = ['\TimeOnsetErrorID' num2str(ID)];
-saveas(FigHOnset, fullfile(fname, filename), 'fig');
+saveas(FigHOns, fullfile(fname, filename), 'fig');
 
 
 %% new sec

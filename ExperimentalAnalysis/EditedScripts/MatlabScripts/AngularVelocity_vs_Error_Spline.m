@@ -5,7 +5,7 @@ clear all;
 chk = exist('Nodes','var');
 if ~chk
     
-    ID = 1;
+    ID = 14;
     ID = num2str(ID);
     ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\UnprocessedData';
     ID_folder =  [ID_folder '\'];
@@ -58,8 +58,8 @@ Polh_Fields = fieldnames(Pol_filteredStruct_slow);
 subStrHolo = '_HoloData';
 Holo_filteredStruct_slow = rmfield( slow_filteredStruct, namesslow(find(cellfun(@isempty, strfind( namesslow, subStrHolo)))));
 Holo_Fields = fieldnames(Holo_filteredStruct_slow);
-lag_term_slow = 0.2;
-calibration_term_slow = 4;
+lag_term_slow = 0.15;
+calibration_term_slow = 2.8;
 lag_term_medium = 0.2;
 calibration_term_medium = 4;
 lag_term_fast = 0.2;
@@ -68,10 +68,9 @@ calibration_term_fast = 4;
 %% slow
 vels_cell_slow_ID_1 = cell(0, 12);
 integer = 0;
-for trialnum = 1:length(Polh_Fields)
-%     for trialnum = 1
+% for trialnum = 1:length(Polh_Fields)
+for trialnum = 20
        
-
     pol_dynamic = [string(Polh_Fields(trialnum - integer))]; 
     
     if trialnum < length(Holo_Fields)
@@ -96,12 +95,28 @@ for trialnum = 1:length(Polh_Fields)
 %         pol_millis = Pol_data.Milliseconds;
 
         t = (Pol_data{:,1});
+%         y_angular = Pol_data.AngularVelocity;
 
         dt = diff(t);
         try
+%         y_angular = (diff(y_pol)./seconds(dt));
         v = (lowpass(diff(y_pol)./seconds(dt), 5, 1/mean(seconds(dt))));
         
-        
+%         time = seconds(t(2:end,1)- t(1,1));
+%         figure(1)
+%         plot( time ,y_angular )
+%         xlabel('Time (s)', 'FontSize', 20)
+%         ylabel('Raw velocity (deg/s)', 'FontSize', 16)
+%         
+%         
+%         
+%         figure(2)
+%         plot( time,v(:) )
+%         hold on
+%         xlabel('Time (s)', 'FontSize', 20)
+%         ylabel('Filtered velocity (deg/s)', 'FontSize', 16)
+%         hold off
+
         % % plot holo data with points and a spline overlaid
         x_holo = seconds(Holo_data.Timestamp) - lag_term_slow;
         seconds_diff = diff(seconds(Holo_data.Timestamp));
@@ -316,13 +331,17 @@ for trialnum = 1:length(Polh_Fields)
 %             title(['onset time: ' num2str(onset_time)], ['rmse with raw data: ' num2str(rmse)])
 % %             title(['max v ' num2str(max_v)], ['start ind ' num2str(start_ind)])
 %             hold off 
-            if trialnum == 8
-            figure(4)
+%             if trialnum == 8
+            figure(trialnum)
             plot(x_holo_spline - x_pol(1), y_holo_spline)
             hold on
             plot(x_pol- x_pol(1), y_pol)
+            xlim([0,7])
             hold off 
-            end
+            legend('Hololens 2 data', 'Polhemus data','Location','SouthEast','FontSize', 16)
+            ylabel('Angle (deg)','FontSize', 16)
+            xlabel('Time (s)','FontSize', 16)
+%             end
 % %             
 %             subplot(2,1,2)
 %             plot(xx_holo_spline_post-pol_comp(1,1), yy_holo_spline_post);

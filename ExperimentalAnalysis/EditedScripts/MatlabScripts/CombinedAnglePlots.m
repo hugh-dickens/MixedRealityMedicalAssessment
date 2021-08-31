@@ -6,9 +6,9 @@ clear all;
 chk = exist('Nodes','var');
 if ~chk
      
-    ID = 13;
+    ID = 17;
     ID = num2str(ID);
-    ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data_MATLAB\UnprocessedData';
+    ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\UnprocessedData';
     ID_folder =  [ID_folder '\'];
     mat_data = ['Data_' ID];
 
@@ -34,7 +34,7 @@ subStrPol = '_POLGroundTruth';
 Pol_filteredStruct = rmfield( slow_filteredStruct, namesSlow(find(cellfun(@isempty, strfind( namesSlow, subStrPol)))));
 Polh_Fields = fieldnames(Pol_filteredStruct);
 for trialnum = 1:length(Holo_Fields)
-    
+%     for trialnum = 13
     holo_dynamic = [string(Holo_Fields(trialnum))];
     try
     pol_dynamic = [string(Polh_Fields(trialnum))] ;
@@ -242,23 +242,24 @@ Holo_Fields = fieldnames(Holo_filteredStruct);
 subStrPol = '_POLGroundTruth';
 Pol_filteredStruct = rmfield( fast_filteredStruct, namesFast(find(cellfun(@isempty, strfind( namesFast, subStrPol)))));
 Polh_Fields = fieldnames(Pol_filteredStruct);
-
-for trialnum = 1:length(Holo_Fields)
-    
+time_lag = 0.15;
+offset = 2;
+% for trialnum = 1:length(Holo_Fields)
+ for trialnum = 25 
     holo_dynamic = [string(Holo_Fields(trialnum ))];
     try
     pol_dynamic = [string(Polh_Fields(trialnum))] ;
 % for i=1:30
 % i=1;
-       figure(trialnum+80)
+%        figure(trialnum)
         
         if isfield(experiment_data,pol_dynamic) == 1
         Holo_data = experiment_data.(holo_dynamic);
         Pol_data = experiment_data.(pol_dynamic);
 
         % % plot holo data with points and a spline overlaid
-        x_holo = seconds(Holo_data.Timestamp);
-        y_holo = Holo_data.Angle;
+        x_holo = seconds(Holo_data.Timestamp) - time_lag;
+        y_holo = Holo_data.Angle + offset;
         if length(y_holo) > 1
         more_rowsToDelete =  x_holo > (x_holo(1)+1000);
         rowsToDelete = y_holo < 0 | y_holo > 180;
@@ -304,18 +305,36 @@ for trialnum = 1:length(Holo_Fields)
         
         
 %         subplot(2,1,1);
-        plot(x_holo_spline - lag,y_holo_spline,'o',xx_holo_spline -lag,yy_holo_spline);
+        figure(1)
+        plot(x_holo_spline - x_pol(1),y_holo_spline,'o',xx_holo_spline- x_pol(1) ,yy_holo_spline);
+        xlim([0 7])
         hold on
         
-        plot(x_pol, sgf);
+        plot(x_pol- x_pol(1), sgf);
 % 
-        xlabel('Time')
-        ylabel('Angle')
-        title('Fast trial')
-        legend('Holo Data','Holo Spline','Polh Data')
+        xlabel('Time (s)', 'FontSize', 16)
+        ylabel('Angle (deg)', 'FontSize', 16)
+%         title('Fast trial')
+        legend('Hololens 2 data','Hololens 2 spline','Polhemus data', 'FontSize', 16, 'Location','Northwest')
+        xlim([2 4])
         
         hold off
         
+%         subplot(2,1,2);
+        figure(2)
+        plot(x_holo_spline- x_pol(1),y_holo_spline, '-x');
+%          xlim([0 7])
+        hold on
+        
+        plot(x_pol- x_pol(1), sgf);
+% 
+        xlabel('Time (s)', 'FontSize', 16)
+        ylabel('Angle (deg)', 'FontSize', 16)
+%         title('Fast trial')
+        legend('Hololens 2 data','Polhemus data', 'FontSize', 16, 'Location','Northwest')
+        xlim([2 4])
+        
+        hold off
         
         else
             fprintf('Not enough Hololens data for trial %i; fast trial \n',i)
