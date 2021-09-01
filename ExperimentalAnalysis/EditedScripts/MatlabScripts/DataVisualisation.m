@@ -200,7 +200,14 @@ mkdir 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAn
 filename = ['SplinePlot'];
 % filename = ['\VelErrorID' num2str(ID)];
 % saveas(FigH_spline, fullfile(fname, filename), 'fig');
+%% Linear model statistics:
+[brob_raw,stats_raw] = robustfit(x,y_raw)
+[brob_spline,stats_spline] = robustfit(x,y_spline)
+rsquare_robustfit_raw = corr(y_raw,brob_raw(1)+brob_raw(2)*x)^2
+rsquare_robustfit_spline = corr(y_spline,brob_spline(1)+brob_spline(2)*x)^2
 
+mdl_raw = fitlm(x,y_raw)
+mdl_spline = fitlm(x,y_spline)
 %%
 x_onset = [];
 mergeSlow_onset = [];
@@ -304,7 +311,17 @@ ax.FontSize = 16;
 
 filename = ['ID' num2str(ID) '\TimeOnsetErrorID' num2str(ID)];
 % filename = ['\TimeOnsetErrorID' num2str(ID)];
-saveas(FigHOnset, fullfile(fname, filename), 'fig');
+% saveas(FigHOnset, fullfile(fname, filename), 'fig');
+
+%% Linear model statistics:
+[brob_raw_onset,stats_raw_onset] = robustfit(x_onset,y_raw)
+[brob_spline_onset,stats_spline_onset] = robustfit(x_onset,y_spline)
+rsquare_robustfit_raw = corr(y_raw,brob_raw_onset(1)+brob_raw_onset(2)*x_onset)^2
+rsquare_robustfit_spline = corr(y_spline,brob_spline_onset(1)+brob_spline_onset(2)*x_onset)^2
+
+
+mdl_raw_onset = fitlm(x_onset,y_raw)
+mdl_spline_onset = fitlm(x_onset,y_spline)
 
 
 %% new sec
