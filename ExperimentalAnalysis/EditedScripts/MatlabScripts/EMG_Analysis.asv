@@ -179,7 +179,7 @@ fs = 200;
 i = bands_EMG_flex;
 dt_mean = (seconds(mean(seconds(dt))));
 % for trialnum = 1: length(Polh_Fields)
-for trialnum = 4
+for trialnum = 3
  pol_dynamic = [string(Polh_Fields(trialnum))]; 
  EMG_data_used = ['ID_',num2str(ID),'_test_EMG_data_slow']; 
  
@@ -192,7 +192,7 @@ for trialnum = 4
         y_pol = Pol_data.Angle;
         t_pol = (Pol_data{:,1});
         dt_pol = seconds(diff(t_pol));
-        v = (lowpass(diff(y_pol)./dt_pol, 5, 1/mean(dt_pol)));
+        v = (highpass(diff(y_pol)./dt_pol, 5, 1/mean(dt_pol)));
         rowsToDelete = y_pol < 0 | y_pol > 180;
         more_rowsToDelete = x_pol > (x_pol(1)+100);
         y_pol(more_rowsToDelete) = [];
@@ -245,13 +245,12 @@ for trialnum = 4
         figure(1)
         x_high = highpass(x,5,fs);
         x_band = bandstop(x_high,[49.9 50.1],fs);
-        x = lowpass(x_band,99,fs) ;
+        x = lowpass(x_band,100,fs) ;
         
         %%%time based analysis
 %         x_abs = abs(x);
         movRMS = sqrt(movmean(x.^2,10));
-        x = 0:0.005:(length(movRMS) - 1) * 0.005;
-        plot(x, movRMS)
+        plot(movRMS)
         hold on
         
 %         %%%this is frequency analysis
@@ -290,7 +289,7 @@ fs = 200;
 i = bands_EMG_flex;
 dt_mean = (seconds(mean(seconds(dt))));
 % for trialnum = 1: length(Polh_Fields)
-for trialnum = 4
+for trialnum = 3
  pol_dynamic = [string(Polh_Fields(trialnum))]; 
  EMG_data_used = ['ID_',num2str(ID),'_test_EMG_data_medium']; 
 %  figure(22)
@@ -303,7 +302,7 @@ for trialnum = 4
         y_pol = Pol_data.Angle;
         t_pol = (Pol_data{:,1});
         dt_pol = seconds(diff(t_pol));
-        v = (lowpass(diff(y_pol)./dt_pol, 5, 1/mean(dt_pol)));
+        v = (highpass(diff(y_pol)./dt_pol, 5, 1/mean(dt_pol)));
         rowsToDelete = y_pol < 0 | y_pol > 180;
         more_rowsToDelete = x_pol > (x_pol(1)+100);
         y_pol(more_rowsToDelete) = [];
@@ -365,13 +364,12 @@ for trialnum = 4
 %         figure(3)
         x_high = highpass(x,5,fs);
         x_band = bandstop(x_high,[49.9 50.1],fs);
-        x = lowpass(x_band,99,fs) ;
+        x = lowpass(x_band,100,fs) ;
         
         %%%time based analysis
 %         x_abs = abs(x);
-         movRMS = sqrt(movmean(x.^2,10));
-        x = 0:0.005:(length(movRMS) - 1) * 0.005;
-        plot(x, movRMS)
+        movRMS = sqrt(movmean(x.^2,10));
+        plot(movRMS)
         hold on
         
 %         %%%this is frequency analysis
@@ -410,7 +408,7 @@ fs = 200;
 i = bands_EMG_flex;
 dt_mean = (seconds(mean(seconds(dt))));
 % for trialnum = 1: length(Polh_Fields)
-for trialnum = 4
+for trialnum = 3
  pol_dynamic = [string(Polh_Fields(trialnum))]; 
  EMG_data_used = ['ID_',num2str(ID),'_test_EMG_data_fast']; 
 
@@ -423,9 +421,7 @@ for trialnum = 4
         y_pol = Pol_data.Angle;
         t_pol = (Pol_data{:,1});
         dt_pol = seconds(diff(t_pol));
-        
-        v = (lowpass(diff(y_pol)./dt_pol, 5, 1/mean(dt_pol)));
-        
+        v = (highpass(diff(y_pol)./dt_pol, 5, 1/mean(dt_pol)));
         rowsToDelete = y_pol < 0 | y_pol > 180;
         more_rowsToDelete = x_pol > (x_pol(1)+100);
         y_pol(more_rowsToDelete) = [];
@@ -437,7 +433,6 @@ for trialnum = 4
         
         max_v = max(v(length_v_half:length_v_end_part));
         max_v_ind = find(v==max_v);
-        
         
         if max_v > 200
             end_ind = max_v_ind + 50;
@@ -485,13 +480,12 @@ for trialnum = 4
 %         figure(3)
         x_high = highpass(x,5,fs);
         x_band = bandstop(x_high,[49.9 50.1],fs);
-        x = lowpass(x_band,99,fs) ;
+        x = lowpass(x_band,100,fs) ;
         
         %%%time based analysis
 %         x_abs = abs(x);
         movRMS = sqrt(movmean(x.^2,10));
-        x = 0:0.005:(length(movRMS) - 1) * 0.005;
-        plot(x, movRMS)
+        plot(movRMS)
         hold on
         
 %         %%%this is frequency analysis
@@ -518,6 +512,5 @@ for trialnum = 4
     
 end
 legend('Slow', 'Medium', 'Fast')
-xlabel('Time after catch (s)')
-ylabel('RMS Voltage (mV)')
+ylabel('Time after catch
 hold off
