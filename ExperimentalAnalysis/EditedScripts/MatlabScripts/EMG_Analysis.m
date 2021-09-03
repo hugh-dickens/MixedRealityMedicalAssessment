@@ -521,3 +521,21 @@ legend('Slow', 'Medium', 'Fast')
 xlabel('Time after catch (s)')
 ylabel('RMS Voltage (mV)')
 hold off
+
+%%%%%%%%%%%%%%%%%%%%%>>>>>>>>>>>>>>>>>>>>>>>>
+%Taken from EMG analysis.pdf
+
+%         %%%Matlab code to compute and plot spectra
+% %         Next lines creates vector of frequencies present in the spectra, up to the Nyquist frequency.
+%         N=length(x_flex);
+%         freqs=0:200/N:fnyq;
+% %         Next: compute fft and plot the amplitude spectrum, up to the Nyquist frequency.
+%         xfft = fft(x_flex-mean(x_flex));
+%         figure;
+%         plot(freqs,abs(xfft(1:N/2+1)));
+%         ylabel('Amplitude spectrum')
+% %         Next: compute and plot the power spectrum, up to the Nyquist frequency.
+%         Pxx = xfft.*conj(xfft);
+%         figure;
+%         plot(freqs,abs(Pxx(1:N/2+1)));
+%         ylabel('Power spectrum')
