@@ -198,6 +198,57 @@ fast_filteredStruct_v3 = rmfield( experiment_data, names( find( cellfun( @isempt
         bands_EMG_cocontract = [bands_EMG_cocontract find(top_three_cocontract(i) == cocontract_EMG_total)];
         
     end
+    
+ %% relax EMG for comparison in stat test
+fs = 200;
+fnyq=fs/2;
+fco=20;
+[b,a]=butter(2,fco*1.25/fnyq);
+
+% Filter the flex emg pod
+x_flex = (relax_EMG{1:end,bands_EMG_flex + 1});
+x_high_flex = highpass(x_flex,5,fs);
+x_band_flex = bandstop(x_high_flex,[49.9 50.1],fs);
+x_flex = lowpass(x_band_flex,99,fs) ;
+
+y_flex=abs(x_flex-mean(x_flex));
+% apply butterworth to flex
+z_flex=filtfilt(b,a,y_flex);
+t = 0:0.005:(length(x_flex) - 1) * 0.005;
+
+% Filter the flex emg pod
+x_extend = (relax_EMG{1:end,bands_EMG_extend + 1});
+x_high_extend = highpass(x_extend,5,fs);
+x_band_extend = bandstop(x_high_extend,[49.9 50.1],fs);
+x_extend = lowpass(x_band_extend,99,fs) ;
+
+y_extend=abs(x_extend-mean(x_extend));
+% apply butterworth to flex
+z_extend=filtfilt(b,a,y_extend);
+
+
+time_calib(str2num(ID)-5) = t(end);
+
+
+Int_calib_flex(str2num(ID)-5) = trapz(t, z_flex);
+Int_calib_extend(str2num(ID)-5) = trapz(t, z_extend);
+
+smoothness_flex_calib(str2num(ID)-5) = var(z_flex);
+smoothness_extend_calib(str2num(ID)-5) = var(z_extend);
+
+end
+
+Calib_Temporal.('time_calib')  = time_calib';
+
+Calib_Temporal.('Int_calib_flex')  = Int_calib_flex';
+Calib_Temporal.('Int_calib_extend')  = Int_calib_extend';
+Calib_Temporal.('smoothness_flex_calib')  = smoothness_flex_calib';
+Calib_Temporal.('smoothness_extend_calib')  = smoothness_extend_calib';
+foldersave = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\EMG_Temporal';
+filesave = ['Temporal_EMG_Calib'];
+save(fullfile(foldersave, filesave), 'Calib_Temporal')
+
+%%
 %% EMG date temp should only need to run once
 if str2num(ID) == 6 | str2num(ID) == 7 | str2num(ID) == 1 ...
         | str2num(ID) == 4 | str2num(ID) == 5
@@ -341,11 +392,10 @@ for trialnum = 1: length(Polh_Fields_slow)
         % apply butterworth to flex
         z_flex=filtfilt(b,a,y_flex);
         t = 0:0.005:(length(x_flex) - 1) * 0.005;
-        if t
-            time_slow(trialnum) = t(end);
-        else
-            time_slow(trialnum) = 0;
-        end
+        
+        %%%%%%%%%%%%%%%%%%%%%%%%%   time errors.
+        time_slow(trialnum) = t(end);
+        
         %plot flex
 %         plot(t,z_flex,'r');
 %         hold on 
@@ -369,8 +419,8 @@ for trialnum = 1: length(Polh_Fields_slow)
         
         % now calculate the integrated EMG and append it
         if z_flex
-            Int_slow_flex(trialnum) = trapz(t, z_flex)/ z_flex(end);
-            Int_slow_extend(trialnum) = trapz(t, z_extend)/ z_extend(end);
+            Int_slow_flex(trialnum) = trapz(t, z_flex);
+            Int_slow_extend(trialnum) = trapz(t, z_extend);
 
             smoothness_flex_slow(trialnum) = var(z_flex);
             smoothness_extend_slow(trialnum) = var(z_extend);
@@ -520,11 +570,9 @@ for trialnum = 1: length(Polh_Fields_medium)
         t(ind_del) = [];
         z_flex(ind_del) = [];
         %plot flex
-        if t
-            time_medium(trialnum) = t(end);
-        else
-            time_medium(trialnum) = 0;
-        end
+%%%%%%%%%%%%%%%%%%%%%%%%%   time errors.
+        time_medium(trialnum) = t(end);
+
 %         plot(t,z_flex,'r');
 %         hold on 
         
@@ -549,8 +597,8 @@ for trialnum = 1: length(Polh_Fields_medium)
         
         % now calculate the integrated EMG and append it
         if z_flex
-            Int_medium_flex(trialnum) = trapz(t, z_flex)/ z_flex(end);
-            Int_medium_extend(trialnum) = trapz(t, z_extend)/ z_extend(end);
+            Int_medium_flex(trialnum) = trapz(t, z_flex);
+            Int_medium_extend(trialnum) = trapz(t, z_extend);
 
             smoothness_flex_medium(trialnum) = var(z_flex);
             smoothness_extend_medium(trialnum) = var(z_extend);
@@ -699,11 +747,9 @@ pol_dynamic = [string(Polh_Fields_fast(trialnum))];
         t(ind_del) = [];
         z_flex(ind_del) = [];
         %plot flex
-        if t
-            time_fast(trialnum) = t(end);
-        else
-            time_fast(trialnum) = 0;
-        end
+%%%%%%%%%%%%%%%%%%%%%%%%%   time errors.
+        time_fast(trialnum) = t(end);
+
 %         plot(t,z_flex,'r');
 %         hold on 
         
@@ -728,8 +774,8 @@ pol_dynamic = [string(Polh_Fields_fast(trialnum))];
         
         % now calculate the integrated EMG and append it
         if z_flex
-            Int_fast_flex(trialnum) = trapz(t, z_flex)/ z_flex(end);
-            Int_fast_extend(trialnum) = trapz(t, z_extend)/ z_extend(end);
+            Int_fast_flex(trialnum) = trapz(t, z_flex);
+            Int_fast_extend(trialnum) = trapz(t, z_extend);
 
             smoothness_flex_fast(trialnum) = var(z_flex);
             smoothness_extend_fast(trialnum) = var(z_extend);
@@ -788,6 +834,7 @@ EMG_Temporal.('signal_extend_medium') = signal_extend_medium';
 EMG_Temporal.('signal_flex_fast') = signal_flex_fast';
 EMG_Temporal.('signal_extend_fast') = signal_extend_fast';
 
+
 %%
 ID = num2str(ID);
 foldersave = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\EMG_Temporal';
@@ -795,32 +842,9 @@ filesave = ['Temporal_EMG_ID_' ID];
 save(fullfile(foldersave, filesave), 'EMG_Temporal')
 
 end 
-end
-% 
-%% LOAD
-clc; clear all; close all;
-IDs = [6,7,8,9,10,11,12,13, 14, 15, 16, 17];
-chk = exist('Nodes','var');
-if ~chk
-for ID = IDs
-    ID = num2str(ID);
-    folderload = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\EMG_Temporal';
-    fileload = ['\Temporal_EMG_ID_' ID];
-    load([folderload fileload]);
-    fn = fieldnames(EMG_Temporal);
-    %%% could do something to filter the velocites first and then calc mean
-    %%% IEMG and smoothness...
-    ID = str2num(ID);
-    for i = 1:6
-        mean_IEMG(ID, i) = mean(EMG_Temporal.(fn{i}));
-    end
-    
-    for i = 7:12
-        mean_smoothness(ID, i - 6) = mean(EMG_Temporal.(fn{i}));
-    end
-%%%%>>>>>>>>>>>>> DO STUFF
-end
-end
+
+% end
+
 
 % 
 % %%
