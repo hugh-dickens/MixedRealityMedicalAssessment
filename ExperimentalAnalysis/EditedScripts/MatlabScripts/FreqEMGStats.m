@@ -22,77 +22,16 @@ for ID = IDs
         mean_smoothness(ID-5, i - 6) = mean(EMG_Temporal.(fn{i}));
     end
 
-    
+   
 %%%%>>>>>>>>>>>>> DO STUFF
 end
 end
 calibLoad = ['\Temporal_EMG_Calib'];
 load([folderload calibLoad]);
 
-%% plot raw IEMG 
-
-slow_flex = plot(abs(mean_IEMG(:,1)))
-hold on
-slow_extend = plot(abs(mean_IEMG(:,2)))
-hold on
-
-medium_flex = plot(abs(mean_IEMG(:,3)))
-hold on
-medium_extend = plot(abs(mean_IEMG(:,4)))
-hold on
-
-fast_flex = plot(abs(mean_IEMG(:,5)))
-hold on
-fast_extend = plot(abs(mean_IEMG(:,6)))
-hold on
-
-calib_flex = plot(Calib_Temporal.Int_calib_flex)
-hold on
-calib_extend = plot(Calib_Temporal.Int_calib_extend)
-hold on
-
-xlabel('ID')
-ylabel('Mean IEMG (mVs)')
-legend('Slow flex', 'Slow extend', 'Medium flex', 'Medium extend',...
-         'Fast flex', 'Fast extend', 'Calib flex','Calib extend')
-     
-%% Try normalising in time 
-norm_slow_flex = abs(mean_IEMG(:,1))./ 1.8;
-norm_medium_flex = abs(mean_IEMG(:,3)) ./ 0.75;
-norm_fast_flex = abs(mean_IEMG(:,5)) ./ 0.45;
-
-norm_slow_extend = abs(mean_IEMG(:,2))./ 1.8;
-norm_medium_extend = abs(mean_IEMG(:,4)) ./ 0.75;
-norm_fast_extend = abs(mean_IEMG(:,6)) ./ 0.45;
-
-norm_calib_flex = Calib_Temporal.Int_calib_flex ./ Calib_Temporal.time_calib;
-norm_calib_extend = Calib_Temporal.Int_calib_extend ./ Calib_Temporal.time_calib;
-
-slow_flex = plot(norm_slow_flex)
-hold on
-slow_extend = plot(norm_slow_extend)
-hold on
-
-medium_flex = plot(norm_medium_flex)
-hold on
-medium_extend = plot(norm_medium_extend)
-hold on
-
-fast_flex = plot(norm_fast_flex)
-hold on
-fast_extend = plot(norm_fast_extend)
-hold on
-
-calib_flex = plot(norm_calib_flex)
-hold on
-calib_extend = plot(norm_calib_extend)
-hold on
-
-xlabel('ID')
-ylabel('Mean EMG (mV)')
-legend('Slow flex', 'Slow extend', 'Medium flex', 'Medium extend',...
-         'Fast flex', 'Fast extend', 'Calib flex','Calib extend')
-title('Normalised')
+%% Find highest frequency bands
+a = max(EMG_Frequency.power_flex_slow(:,1);
+idx= find(EMG_Frequency.power_flex_slow(1,:) == a);
      
 %% Flex raw
 

@@ -144,7 +144,8 @@ fast_filteredStruct_v3 = rmfield( experiment_data, names( find( cellfun( @isempt
      % this has been done using ratios. Need to check the plots to make
      % sure this works for the specific participant. Generally, 2 or 3=
      % flex and 6-7 extend
-        cocontract_EMG = Arr_emg_data(round(0.73 * length(EMG_calib_total)) + 1 : end, :)  ;
+     % cocontract data
+     cocontract_EMG = Arr_emg_data(round(0.73 * length(EMG_calib_total)) + 1 : end, :)  ;
      cocon_to_MVC = table2array(cocontract_EMG(:,2:9));
      MVC = mean(mean(abs(cocon_to_MVC)));
      
@@ -155,6 +156,8 @@ fast_filteredStruct_v3 = rmfield( experiment_data, names( find( cellfun( @isempt
     flex_EMG = Arr_emg_data(round(0.33 * length(EMG_calib_total)) + 1 : round(0.53 * length(EMG_calib_total)), :)  ;
     % extend data
     extend_EMG = Arr_emg_data(round(0.53 * length(EMG_calib_total)) + 1 : round(0.73 * length(EMG_calib_total)), :)  ;
+        
+     
         
      relax_EMG_total = zeros(8,1);
      flex_EMG_total = zeros(8,1);
@@ -206,58 +209,61 @@ fast_filteredStruct_v3 = rmfield( experiment_data, names( find( cellfun( @isempt
     if abs(bands_EMG_flex - bands_EMG_extend) < 2
         bands_EMG_extend = 6
     end
-    
  %% relax EMG for comparison in stat test
-    fs = 200;
-    fnyq=fs/2;
-    fco=20;
-    [b,a]=butter(2,fco*1.25/fnyq);
+fs = 200;
+fnyq=fs/2;
 
-    % Filter the flex emg pod
-    x_flex = (relax_EMG{1:end,bands_EMG_flex + 1});
-    x_high_flex = highpass(x_flex,5,fs);
-    x_band_flex = bandstop(x_high_flex,[49.9 50.1],fs);
-    x_flex = lowpass(x_band_flex,99,fs) ;
+% Filter the flex emg pod
+x_flex = (relax_EMG{1:end,bands_EMG_flex + 1});
+x_high_flex = highpass(x_flex,5,fs);
+x_band_flex = bandstop(x_high_flex,[49.9 50.1],fs);
+x_flex = lowpass(x_band_flex,99,fs) ;
 
-    y_flex=abs(x_flex-mean(x_flex));
-    % apply butterworth to flex
-    z_flex=filtfilt(b,a,y_flex);
-    t = 0:0.005:(length(x_flex) - 1) * 0.005;
-
-    % Filter the flex emg pod
-    x_extend = (relax_EMG{1:end,bands_EMG_extend + 1});
-    x_high_extend = highpass(x_extend,5,fs);
-    x_band_extend = bandstop(x_high_extend,[49.9 50.1],fs);
-    x_extend = lowpass(x_band_extend,99,fs) ;
-
-    y_extend=abs(x_extend-mean(x_extend));
-    % apply butterworth to flex
-    z_extend=filtfilt(b,a,y_extend);
+% Filter the flex emg pod
+x_extend = (relax_EMG{1:end,bands_EMG_extend + 1});
+x_high_extend = highpass(x_extend,5,fs);
+x_band_extend = bandstop(x_high_extend,[49.9 50.1],fs);
+x_extend = lowpass(x_band_extend,99,fs) ;
 
 
-    time_calib(str2num(ID)-5) = t(end);
+% % % % Taken from EMG analysis.pdf
+
+        %%%Matlab code to compute and plot spectra
+%         Next lines creates vector of frequencies present in the spectra, up to the Nyquist frequency.
+        N=length(x_flex);
+        freqs=0:200/N:fnyq;
+%         Next: compute fft and plot the amplitude spectrum, up to the Nyquist frequency.
+        xfft_flex = fft(x_flex-mean(x_flex));
+        xfft_extend = fft(x_extend-mean(x_extend));
+%         figure;
+%         plot(freqs,abs(xfft_flex(1:N/2+1)));
+%         hold on
+%         plot(freqs, abs(xfft_extend(1:N/2+1)));
+%         ylabel('Amplitude spectrum')
+%         hold off
+%         Next: compute and plot the power spectrum, up to the Nyquist frequency.
+        Pxx_flex = xfft_flex.*conj(xfft_flex);
+        Pxx_extend = xfft_extend.*conj(xfft_extend);
+%         figure;
+%         plot(freqs,abs(Pxx_flex(1:N/2+1)));
+%         hold on 
+%         plot(freqs, abs(Pxx_extend(1:N/2+1)));
+%         ylabel('Power spectrum')
+%         hold off
 
 
-    Int_calib_flex(str2num(ID)-5) = trapz(t, z_flex);
-    Int_calib_extend(str2num(ID)-5) = trapz(t, z_extend);
+% end
 
-    smoothness_flex_calib(str2num(ID)-5) = var(z_flex);
-    smoothness_extend_calib(str2num(ID)-5) = var(z_extend);
-
-
-
-    Calib_Temporal.('time_calib')  = time_calib';
-
-    Calib_Temporal.('Int_calib_flex')  = Int_calib_flex';
-    Calib_Temporal.('Int_calib_extend')  = Int_calib_extend';
-    Calib_Temporal.('smoothness_flex_calib')  = smoothness_flex_calib';
-    Calib_Temporal.('smoothness_extend_calib')  = smoothness_extend_calib';
-    foldersave = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\EMG_Temporal';
-    filesave = ['Temporal_EMG_Calib' ID];
-    save(fullfile(foldersave, filesave), 'Calib_Temporal')
+Calib_Frequency.('Power_flex_calib')  = Pxx_flex';
+Calib_Frequency.('Power_extend_calib')  = Pxx_extend';
+Calib_Frequency.('Amplitude_flex_calib')  = xfft_flex';
+Calib_Frequency.('Amplitude_extend_calib')  = xfft_extend';
+Calib_Frequency.('freqs_calib')  = freqs';
+foldersave = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\EMG_Frequency';
+filesave = ['Frequency_EMG_Calib' ID];
+save(fullfile(foldersave, filesave), 'Calib_Frequency')
 
 
-%%
 %% EMG date temp should only need to run once
 if str2num(ID) == 6 | str2num(ID) == 7 | str2num(ID) == 1 ...
         | str2num(ID) == 4 | str2num(ID) == 5
@@ -383,67 +389,57 @@ for trialnum = 1: length(Polh_Fields_slow)
         EMG_catch = EMG_data(EMG_indexes,:);
 
 
-%         %%%Matlab code to find linear envelope of a signal
-%         %%%Taken from EMG analysis.pdf
-
-%         Butterworth filter
         fnyq=fs/2;
-        fco=20;
-        [b,a]=butter(2,fco*1.25/fnyq);
         
         % Filter the flex emg pod
         x_flex = table2array(EMG_catch(:,bands_EMG_flex));
         x_high_flex = highpass(x_flex,5,fs);
         x_band_flex = bandstop(x_high_flex,[49.9 50.1],fs);
         x_flex = lowpass(x_band_flex,99,fs) ;
-
-        y_flex=abs(x_flex-mean(x_flex));
-        % apply butterworth to flex
-        z_flex=filtfilt(b,a,y_flex);
-        t = 0:0.005:(length(x_flex) - 1) * 0.005;
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%   time errors.
-        time_slow(trialnum) = t(end);
-        
-        %plot flex
-%         plot(t,z_flex,'r');
-%         hold on 
-        
+      
         % do the same for extend pod
         x_extend = table2array(EMG_catch(:,bands_EMG_extend));
         x_high_extend = highpass(x_extend,5,fs);
         x_band_extend = bandstop(x_high_extend,[49.9 50.1],fs);
         x_extend = lowpass(x_band_extend,99,fs) ;
 
-        y_extend=abs(x_extend-mean(x_extend));
-        % same filter used
-        z_extend=filtfilt(b,a,y_extend);
-        % time should be the same as well
-%         t = 0:0.005:(length(x_extend) - 1) * 0.005;
-%         plot(t,z_extend,'b');
-%         xlabel('Time after catch (s)', 'FontSize', 16); ylabel('EMG (mV)', 'FontSize', 16);
-%         legend('Linear envelope', 'FontSize', 10);
+            %%%Matlab code to compute and plot spectra
+%         Next lines creates vector of frequencies present in the spectra, up to the Nyquist frequency.
+        N=length(x_flex);
+        freqs=0:200/N:fnyq;
+%         Next: compute fft and plot the amplitude spectrum, up to the Nyquist frequency.
+        xfft_flex = fft(x_flex-mean(x_flex));
+        xfft_extend = fft(x_extend-mean(x_extend));
+%         figure(1);
+%         plot(freqs,abs(xfft_flex(1:N/2+1)));
+%         ylabel('Amplitude spectrum')
+%         title('Flex')
+%         hold on
+%         figure(2);
+%         plot(freqs, abs(xfft_extend(1:N/2+1)));
+%         ylabel('Amplitude spectrum')
+%         title('Extend')
 %         hold on
         
+%         Next: compute and plot the power spectrum, up to the Nyquist frequency.
+        Pxx_flex = xfft_flex.*conj(xfft_flex);
+        Pxx_extend = xfft_extend.*conj(xfft_extend);
+%         figure(3);
+%         plot(freqs,abs(Pxx_flex(1:N/2+1)));
+%         ylabel('Power spectrum')
+%         title('Flex')
+%         hold on
+%         figure(4);
+%         plot(freqs, abs(Pxx_extend(1:N/2+1)));
+%         ylabel('Power spectrum')
+%         title('Extend')
+%         hold on
         
-        % now calculate the integrated EMG and append it
-        if z_flex
-            Int_slow_flex(trialnum) = trapz(t, z_flex);
-            Int_slow_extend(trialnum) = trapz(t, z_extend);
-
-            smoothness_flex_slow(trialnum) = var(z_flex);
-            smoothness_extend_slow(trialnum) = var(z_extend);
-        else
-            Int_slow_flex(trialnum) = 0;
-            Int_slow_extend(trialnum) = 0;
-
-            smoothness_flex_slow(trialnum) = 0;
-            smoothness_extend_slow(trialnum) = 0;
-        end
-        %%%%>>>>>>>>>>>>>>>> OLD code slotted in here
-        
-        signal_flex_slow(1:length(z_flex), trialnum)= z_flex;
-        signal_extend_slow(1:length(z_extend), trialnum)= z_extend;
+        power_flex_slow(1:length(Pxx_flex(1:N/2+1)), trialnum)= Pxx_flex(1:N/2+1);
+        power_extend_slow(1:length(Pxx_extend(1:N/2+1)), trialnum)= Pxx_extend(1:N/2+1);
+        amplitude_flex_slow(1:length(xfft_flex(1:N/2+1)), trialnum)= xfft_flex(1:N/2+1);
+        amplitude_extend_slow(1:length(xfft_extend(1:N/2+1)), trialnum)= xfft_extend(1:N/2+1);
+        frequencies_slow(1:length(freqs), trialnum) = freqs;
         catch me
             fprintf('Polh timing issues');
             counter_fail = counter_fail + 1 
@@ -451,10 +447,6 @@ for trialnum = 1: length(Polh_Fields_slow)
     end
 end
 
-
-% title('Slow', ['Flex IEMG:  ' num2str(mean(Int_slow_flex)) ' smooth ' num2str(mean(smoothness_flex_slow)) ' :Extend  '...
-%     num2str(mean(Int_slow_extend)) ' Smooth  ' num2str(mean(smoothness_extend_slow))])
-% hold off
 
 
 
@@ -557,82 +549,64 @@ for trialnum = 1: length(Polh_Fields_medium)
             EMG_indexes = (EMG_date_timestamp >= timestamp_start ) & (EMG_date_timestamp <= timestamp_end) ;
             EMG_catch = EMG_data(EMG_indexes,:);
         
-        %         %%%Matlab code to find linear envelope of a signal
-%         %%%Taken from EMG analysis.pdf
 
-%         Butterworth filter
         fnyq=fs/2;
-        fco=20;
-        [b,a]=butter(2,fco*1.25/fnyq);
         
         % Filter the flex emg pod
         x_flex = table2array(EMG_catch(:,bands_EMG_flex));
         x_high_flex = highpass(x_flex,5,fs);
         x_band_flex = bandstop(x_high_flex,[49.9 50.1],fs);
         x_flex = lowpass(x_band_flex,99,fs) ;
-
-        y_flex=abs(x_flex-mean(x_flex));
-        % apply butterworth to flex
-        z_flex=filtfilt(b,a,y_flex);
-        t = 0:0.005:(length(x_flex) - 1) * 0.005;
-        ind_del = t > 0.75;
-        t(ind_del) = [];
-        z_flex(ind_del) = [];
-        %plot flex
-%%%%%%%%%%%%%%%%%%%%%%%%%   time errors.
-        time_medium(trialnum) = t(end);
-
-%         plot(t,z_flex,'r');
-%         hold on 
-        
+      
         % do the same for extend pod
         x_extend = table2array(EMG_catch(:,bands_EMG_extend));
         x_high_extend = highpass(x_extend,5,fs);
         x_band_extend = bandstop(x_high_extend,[49.9 50.1],fs);
         x_extend = lowpass(x_band_extend,99,fs) ;
 
-        y_extend=abs(x_extend-mean(x_extend));
-        % same filter used
-        z_extend=filtfilt(b,a,y_extend);
-        
-        z_extend(ind_del) = [];
-        % time should be the same as well
-%         t = 0:0.005:(length(x_extend) - 1) * 0.005;
-%         plot(t,z_extend,'b');
-%         xlabel('Time after catch (s)', 'FontSize', 16); ylabel('EMG (mV)', 'FontSize', 16);
-%         legend('Linear envelope', 'FontSize', 10);
+            %%%Matlab code to compute and plot spectra
+%         Next lines creates vector of frequencies present in the spectra, up to the Nyquist frequency.
+        N=length(x_flex);
+        freqs=0:200/N:fnyq;
+%         Next: compute fft and plot the amplitude spectrum, up to the Nyquist frequency.
+        xfft_flex = fft(x_flex-mean(x_flex));
+        xfft_extend = fft(x_extend-mean(x_extend));
+%         figure(5);
+%         plot(freqs,abs(xfft_flex(1:N/2+1)));
+%         ylabel('Amplitude spectrum')
+%         title('Flex')
+%         hold on
+%         figure(6);
+%         plot(freqs, abs(xfft_extend(1:N/2+1)));
+%         ylabel('Amplitude spectrum')
+%         title('Extend')
 %         hold on
         
+%         Next: compute and plot the power spectrum, up to the Nyquist frequency.
+        Pxx_flex = xfft_flex.*conj(xfft_flex);
+        Pxx_extend = xfft_extend.*conj(xfft_extend);
+%         figure(7);
+%         plot(freqs,abs(Pxx_flex(1:N/2+1)));
+%         ylabel('Power spectrum')
+%         title('Flex')
+%         hold on
+%         figure(8);
+%         plot(freqs, abs(Pxx_extend(1:N/2+1)));
+%         ylabel('Power spectrum')
+%         title('Extend')
+%         hold on
         
-        % now calculate the integrated EMG and append it
-        if z_flex
-            Int_medium_flex(trialnum) = trapz(t, z_flex);
-            Int_medium_extend(trialnum) = trapz(t, z_extend);
-
-            smoothness_flex_medium(trialnum) = var(z_flex);
-            smoothness_extend_medium(trialnum) = var(z_extend);
-        else
-            Int_medium_flex(trialnum) = 0;
-            Int_medium_extend(trialnum) = 0;
-
-            smoothness_flex_medium(trialnum) = 0;
-            smoothness_extend_medium(trialnum) = 0;
-        end
-        %%%%>>>>>>>>>>>>>>>> OLD code slotted in here
-              
-        signal_flex_medium(1:length(z_flex), trialnum)= z_flex;
-        signal_extend_medium(1:length(z_extend), trialnum)= z_extend;
+        power_flex_medium(1:length(Pxx_flex(1:N/2+1)), trialnum)= Pxx_flex(1:N/2+1);
+        power_extend_medium(1:length(Pxx_extend(1:N/2+1)), trialnum)= Pxx_extend(1:N/2+1);
+        amplitude_flex_medium(1:length(xfft_flex(1:N/2+1)), trialnum)= xfft_flex(1:N/2+1);
+        amplitude_extend_medium(1:length(xfft_extend(1:N/2+1)), trialnum)= xfft_extend(1:N/2+1);
+        frequencies_medium(1:length(freqs), trialnum) = freqs;
         catch me
             fprintf('Polh timing issues');
-            counter_fail = counter_fail + 1
+            counter_fail = counter_fail + 1 
         end
     end
 end
-
-
-% title('Medium', ['Flex IEMG:  ' num2str(mean(Int_medium_flex)) ' smooth ' num2str(mean(smoothness_flex_medium)) ' :Extend  '...
-%     num2str(mean(Int_medium_extend)) ' Smooth  ' num2str(mean(smoothness_extend_medium))])
-% hold off
 
 
 %% fast
@@ -734,169 +708,98 @@ pol_dynamic = [string(Polh_Fields_fast(trialnum))];
         EMG_indexes = (EMG_date_timestamp >= timestamp_start ) & (EMG_date_timestamp <= timestamp_end) ;
         EMG_catch = EMG_data(EMG_indexes,:);
 
-        %         %%%Matlab code to find linear envelope of a signal
-%         %%%Taken from EMG analysis.pdf
-
-%         Butterworth filter
         fnyq=fs/2;
-        fco=20;
-        [b,a]=butter(2,fco*1.25/fnyq);
         
         % Filter the flex emg pod
         x_flex = table2array(EMG_catch(:,bands_EMG_flex));
         x_high_flex = highpass(x_flex,5,fs);
         x_band_flex = bandstop(x_high_flex,[49.9 50.1],fs);
         x_flex = lowpass(x_band_flex,99,fs) ;
-
-        y_flex=abs(x_flex-mean(x_flex));
-        % apply butterworth to flex
-        z_flex=filtfilt(b,a,y_flex);
-        t = 0:0.005:(length(x_flex) - 1) * 0.005;
-        ind_del = t > 0.45;
-        t(ind_del) = [];
-        z_flex(ind_del) = [];
-        %plot flex
-%%%%%%%%%%%%%%%%%%%%%%%%%   time errors.
-        time_fast(trialnum) = t(end);
-
-%         plot(t,z_flex,'r');
-%         hold on 
-        
+      
         % do the same for extend pod
         x_extend = table2array(EMG_catch(:,bands_EMG_extend));
         x_high_extend = highpass(x_extend,5,fs);
         x_band_extend = bandstop(x_high_extend,[49.9 50.1],fs);
         x_extend = lowpass(x_band_extend,99,fs) ;
 
-        y_extend=abs(x_extend-mean(x_extend));
-        % same filter used
-        z_extend=filtfilt(b,a,y_extend);
-        
-        z_extend(ind_del) = [];
-        % time should be the same as well
-%         t = 0:0.005:(length(x_extend) - 1) * 0.005;
-%         plot(t,z_extend,'b');
-%         xlabel('Time after catch (s)', 'FontSize', 16); ylabel('EMG (mV)', 'FontSize', 16);
-%         legend('Linear envelope', 'FontSize', 10);
+            %%%Matlab code to compute and plot spectra
+%         Next lines creates vector of frequencies present in the spectra, up to the Nyquist frequency.
+        N=length(x_flex);
+        freqs=0:200/N:fnyq;
+%         Next: compute fft and plot the amplitude spectrum, up to the Nyquist frequency.
+        xfft_flex = fft(x_flex-mean(x_flex));
+        xfft_extend = fft(x_extend-mean(x_extend));
+%         figure(9);
+%         plot(freqs,abs(xfft_flex(1:N/2+1)));
+%         ylabel('Amplitude spectrum')
+%         title('Flex')
+%         hold on
+%         figure(10);
+%         plot(freqs, abs(xfft_extend(1:N/2+1)));
+%         ylabel('Amplitude spectrum')
+%         title('Extend')
 %         hold on
         
+%         Next: compute and plot the power spectrum, up to the Nyquist frequency.
+        Pxx_flex = xfft_flex.*conj(xfft_flex);
+        Pxx_extend = xfft_extend.*conj(xfft_extend);
+%         figure(11);
+%         plot(freqs,abs(Pxx_flex(1:N/2+1)));
+%         ylabel('Power spectrum')
+%         title('Flex')
+%         hold on
+%         figure(12);
+%         plot(freqs, abs(Pxx_extend(1:N/2+1)));
+%         ylabel('Power spectrum')
+%         title('Extend')
+%         hold on
         
-        % now calculate the integrated EMG and append it
-        if z_flex
-            Int_fast_flex(trialnum) = trapz(t, z_flex);
-            Int_fast_extend(trialnum) = trapz(t, z_extend);
-
-            smoothness_flex_fast(trialnum) = var(z_flex);
-            smoothness_extend_fast(trialnum) = var(z_extend);
-        
-        else
-            Int_fast_flex(trialnum) = 0;
-            Int_fast_extend(trialnum) = 0;
-
-            smoothness_flex_fast(trialnum) = 0;
-            smoothness_extend_fast(trialnum) = 0;
-        end
-        %%%%>>>>>>>>>>>>>>>> OLD code slotted in here
-             
-        signal_flex_fast(1:length(z_flex), trialnum)= z_flex;
-        signal_extend_fast(1:length(z_extend), trialnum)= z_extend;
+        power_flex_fast(1:length(Pxx_flex(1:N/2+1)), trialnum)= Pxx_flex(1:N/2+1);
+        power_extend_fast(1:length(Pxx_extend(1:N/2+1)), trialnum)= Pxx_extend(1:N/2+1);
+        amplitude_flex_fast(1:length(xfft_flex(1:N/2+1)), trialnum)= xfft_flex(1:N/2+1);
+        amplitude_extend_fast(1:length(xfft_extend(1:N/2+1)), trialnum)= xfft_extend(1:N/2+1);
+        frequencies_fast(1:length(freqs), trialnum) = freqs;
         catch me
             fprintf('Polh timing issues');
-            counter_fail = counter_fail + 1
+            counter_fail = counter_fail + 1 
         end
     end
 end
 
-
-% title('fast', ['Flex IEMG:  ' num2str(mean(Int_fast_flex)) ' smooth ' num2str(mean(smoothness_flex_fast)) ' :Extend  '...
-%     num2str(mean(Int_fast_extend)) ' Smooth  ' num2str(mean(smoothness_extend_fast))])
-% hold off
-
-
 %%
-EMG_Temporal.('Int_slow_flex') = Int_slow_flex';
-EMG_Temporal.('Int_slow_extend') = Int_slow_extend';
-EMG_Temporal.('Int_medium_flex') = Int_medium_flex';
-EMG_Temporal.('Int_medium_extend') = Int_medium_extend';
-EMG_Temporal.('Int_fast_flex') = Int_fast_flex';
-EMG_Temporal.('Int_fast_extend') = Int_fast_extend';
+EMG_Frequency.('power_flex_slow') = power_flex_slow';
+EMG_Frequency.('power_extend_slow') = power_extend_slow';
+EMG_Frequency.('power_flex_medium') = power_flex_medium';
+EMG_Frequency.('power_extend_medium') = power_extend_medium';
+EMG_Frequency.('power_flex_fast') = power_flex_fast';
+EMG_Frequency.('power_extend_fast') = power_extend_fast';
 
-EMG_Temporal.('smoothness_flex_slow') = smoothness_flex_slow';
-EMG_Temporal.('smoothness_extend_slow') = smoothness_extend_slow';
-EMG_Temporal.('smoothness_flex_medium') = smoothness_flex_medium';
-EMG_Temporal.('smoothness_extend_medium') = smoothness_extend_medium';
-EMG_Temporal.('smoothness_flex_fast') = smoothness_flex_fast';
-EMG_Temporal.('smoothness_extend_fast') = smoothness_extend_fast';
+EMG_Frequency.('amplitude_flex_slow') = amplitude_flex_slow';
+EMG_Frequency.('amplitude_extend_slow') = amplitude_extend_slow';
+EMG_Frequency.('amplitude_flex_medium') = amplitude_flex_medium';
+EMG_Frequency.('amplitude_extend_medium') = amplitude_extend_medium';
+EMG_Frequency.('amplitude_flex_fast') = amplitude_flex_fast';
+EMG_Frequency.('amplitude_extend_fast') = amplitude_extend_fast';
 
-EMG_Temporal.('velocities_slow') = velocities_slow';
-EMG_Temporal.('velocities_medium') = velocities_medium';
-EMG_Temporal.('velocities_fast') = velocities_fast';
-
-EMG_Temporal.('time_slow') = time_slow';
-EMG_Temporal.('time_medium') = time_medium';
-EMG_Temporal.('time_fast') = time_fast';
-
-EMG_Temporal.('signal_flex_slow') = signal_flex_slow';
-EMG_Temporal.('signal_extend_slow') = signal_extend_slow';
-EMG_Temporal.('signal_flex_medium') = signal_flex_medium';
-EMG_Temporal.('signal_extend_medium') = signal_extend_medium';
-EMG_Temporal.('signal_flex_fast') = signal_flex_fast';
-EMG_Temporal.('signal_extend_fast') = signal_extend_fast';
-
+EMG_Frequency.('frequencies_slow') = frequencies_slow';
+EMG_Frequency.('frequencies_medium') = frequencies_medium';
+EMG_Frequency.('frequencies_fast') = frequencies_fast';
 
 %%
 ID = num2str(ID);
-foldersave = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\EMG_Temporal';
-filesave = ['Temporal_EMG_ID_' ID];
-save(fullfile(foldersave, filesave), 'EMG_Temporal')
-% 
+foldersave = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\EMG_Frequency';
+filesave = ['Frequency_EMG_ID_' ID];
+save(fullfile(foldersave, filesave), 'EMG_Frequency')
+
 end 
-% 
+
 end
 
 
-% 
-% %%
+% % 
+% % 
+% % % 
+% % % %%
+% % %
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% % OLD CODE:
-%         %%%%%%%%%%%%>>>>>>>>> UNCOMMENT HERE!
-% % % %         length(x_flex);
-% % % % 
-% %         figure(2)
-% %         x_high_flex = highpass(x_flex,5,fs);
-% %         x_band_flex = bandstop(x_high_flex,[49.9 50.1],fs);
-% %         x_flex = lowpass(x_band_flex,99,fs) ;
-% %         
-% 
-% %         movRMS_flex_50 = sqrt(movmean(x_flex.^2,10));
-% %         movRMS_flex_25 = sqrt(movmean(x_flex.^2,5));
-% %         x_time_50 = 0:0.005:(length(movRMS_flex_50) - 1) * 0.005;
-% %         x_time_25 = 0:0.005:(length(movRMS_flex_25) - 1) * 0.005;
-% % %         subplot(2,1,1)
-% %         plot(x_time_50, movRMS_flex_50,'b')
-% %         hold on
-% %         plot(x_time_25, movRMS_flex_25,'r')
-% %         Int_slow_flex(trialnum) = trapz(x_time_50, movRMS_flex_50)/ x_time_50(end);
-% %         
-% %         xlabel('Time after catch (s)', 'FontSize', 16)
-% %         ylabel('RMS Voltage (mV)', 'FontSize', 16)
-% %         legend('Sliding window of 50ms', 'Sliding window of 25ms', 'FontSize', 10)
-% % %         title('Top is flexor, bottom is extensor')
-% %         hold on
-% % % %         
-% % % %         x_extend= table2array(EMG_catch(:,bands_EMG_extend));
-% % % %         length(x_extend);
-% % % % 
-% % % %         subplot(2,1,2)
-% % % %         x_slow_extend = highpass(x_extend,5,fs);
-% % % %         x_band_extend = bandstop(x_slow_extend,[49.9 50.1],fs);
-% % % %         x_extend = lowpass(x_band_extend,99,fs) ;
-% % % %         
-% % % % 
-% % % %         movRMS_extend = sqrt(movmean(x_extend.^2,10));
-% % % %         x_extend = 0:0.005:(length(movRMS_extend) - 1) * 0.005;
-% % % %         plot(x_extend, movRMS_extend)
-% % % %         Int_slow_extend(trialnum) = trapz(x_extend, movRMS_extend)/ x_extend(end);
-% % % %         xlabel('Time after catch (s)')
-% % % %         ylabel('RMS Voltage (mV)')
-% % % %         hold on
+
