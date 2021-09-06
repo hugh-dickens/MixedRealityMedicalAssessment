@@ -144,7 +144,7 @@ fast_filteredStruct_v3 = rmfield( experiment_data, names( find( cellfun( @isempt
      % this has been done using ratios. Need to check the plots to make
      % sure this works for the specific participant. Generally, 2 or 3=
      % flex and 6-7 extend
-        cocontract_EMG = Arr_emg_data(round(0.73 * length(EMG_calib_total)) + 1 : end, :)  ;
+     cocontract_EMG = Arr_emg_data(round(0.73 * length(EMG_calib_total)) + 1 : end, :)  ;
      cocon_to_MVC = table2array(cocontract_EMG(:,2:9));
      MVC = mean(mean(abs(cocon_to_MVC)));
      
@@ -299,12 +299,15 @@ dt_mean = (seconds(mean(seconds(dt))));
  EMG_extra2 = ['ID_',num2str(ID),'_test_EMG_data_slowv3'];
  
 EMG_data = experiment_data.(EMG_data_used);
+EMG_data{:,1:8}=EMG_data{:,1:8}./MVC;
 try 
     EMG_data1 = experiment_data.(EMG_extra1);
+    EMG_data1{:,1:8}=EMG_data1{:,1:8}./MVC;
     EMG_data = [EMG_data; EMG_data1];
 end
 try 
     EMG_data2 = experiment_data.(EMG_extra2);
+    EMG_data2{:,1:8}=EMG_data2{:,1:8}./MVC;
     EMG_data = [EMG_data; EMG_data2];
 end
 
@@ -464,12 +467,15 @@ EMG_extra1 = ['ID_',num2str(ID),'_test_EMG_data_mediumv2'];
 EMG_extra2 = ['ID_',num2str(ID),'_test_EMG_data_mediumv3'];
 
 EMG_data = experiment_data.(EMG_data_used);
+EMG_data{:,1:8}=EMG_data{:,1:8}./MVC;
 try
     EMG_data1 = experiment_data.(EMG_extra1);
+    EMG_data1{:,1:8}=EMG_data1{:,1:8}./MVC;
     EMG_data = [EMG_data; EMG_data1];
 end
 try
     EMG_data2 = experiment_data.(EMG_extra2);
+    EMG_data2{:,1:8}=EMG_data2{:,1:8}./MVC;
     EMG_data = [EMG_data; EMG_data2];
 end
 
@@ -641,12 +647,15 @@ EMG_extra1 = ['ID_',num2str(ID),'_test_EMG_data_fastv2'];
 EMG_extra2 = ['ID_',num2str(ID),'_test_EMG_data_fastv3'];
 
 EMG_data = experiment_data.(EMG_data_used);
+EMG_data{:,1:8}=EMG_data{:,1:8}./MVC;
 try
     EMG_data1 = experiment_data.(EMG_extra1);
+    EMG_data1{:,1:8}=EMG_data1{:,1:8}./MVC;
     EMG_data = [EMG_data; EMG_data1];
 end
 try
     EMG_data2 = experiment_data.(EMG_extra2);
+    EMG_data2{:,1:8}=EMG_data2{:,1:8}./MVC;
     EMG_data = [EMG_data; EMG_data2];
 end
 

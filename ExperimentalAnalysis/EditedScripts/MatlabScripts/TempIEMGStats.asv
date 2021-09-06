@@ -66,9 +66,9 @@ for ID = IDs
     slow_idx = velocities < 64.4;
     med_idx = velocities >=64.4 & velocities < 141;
     fast_idx = velocities > 141;
-    
-    Time = [EMG_Temporal.time_slow;EMG_Temporal.time_medium; EMG_Temporal.time_fast];
-        
+    slowTime = EMG_Temporal.time_slow;
+    medTime = EMG_Temporal.time_medium;
+    fastTime = EMG_Temporal.time_fast;
     IEMG_flex_slow(ID - 5) = nanmean(IEMG_flex(slow_idx));
     IEMG_flex_med(ID - 5) = nanmean(IEMG_flex(med_idx));
     IEMG_flex_fast(ID - 5) = nanmean(IEMG_flex(fast_idx));
@@ -77,13 +77,13 @@ for ID = IDs
     IEMG_extend_med(ID - 5) = nanmean(IEMG_extend(med_idx));
     IEMG_extend_fast(ID - 5) = nanmean(IEMG_extend(fast_idx));
     
-    IEMG_flex_slow_norm(ID - 5) = nanmean(IEMG_flex(slow_idx)./Time(slow_idx)');
-    IEMG_flex_med_norm(ID - 5) = nanmean(IEMG_flex(med_idx)./Time(med_idx)');
-    IEMG_flex_fast_norm(ID - 5) = nanmean(IEMG_flex(fast_idx)./Time(fast_idx)');
+    IEMG_flex_slow_norm(ID - 5) = nanmean((IEMG_flex(slow_idx)/));
+    IEMG_flex_med_norm(ID - 5) = nanmean(IEMG_flex(med_idx)/);
+    IEMG_flex_fast_norm(ID - 5) = nanmean(IEMG_flex(fast_idx)/);
     
-    IEMG_extend_slow_norm(ID - 5) = nanmean(IEMG_extend(slow_idx)./Time(slow_idx)');
-    IEMG_extend_med_norm(ID - 5) = nanmean(IEMG_extend(med_idx)./Time(med_idx)');
-    IEMG_extend_fast_norm(ID - 5) = nanmean(IEMG_extend(fast_idx)./Time(fast_idx)');
+    IEMG_extend_slow_norm(ID - 5) = nanmean(IEMG_extend(slow_idx)/EMG_Temporal.time_slow);
+    IEMG_extend_med_norm(ID - 5) = nanmean(IEMG_extend(med_idx)/EMG_Temporal.time_medium);
+    IEMG_extend_fast_norm(ID - 5) = nanmean(IEMG_extend(fast_idx)/EMG_Temporal.time_fast);
     
     smoothness_flex_slow(ID - 5) = nanmean(smoothness_flex(slow_idx));
     smoothness_flex_med(ID - 5) = nanmean(smoothness_flex(med_idx));
@@ -136,21 +136,13 @@ legend('Slow flex', 'Slow extend', 'Medium flex', 'Medium extend',...
          'Fast flex', 'Fast extend', 'Calib flex','Calib extend')
      
 %% Try normalising in time 
-% norm_slow_flex = abs(mean_IEMG(:,1))./ 1.8;
-% norm_medium_flex = abs(mean_IEMG(:,3)) ./ 0.75;
-% norm_fast_flex = abs(mean_IEMG(:,5)) ./ 0.45;
-% 
-% norm_slow_extend = abs(mean_IEMG(:,2))./ 1.8;
-% norm_medium_extend = abs(mean_IEMG(:,4)) ./ 0.75;
-% norm_fast_extend = abs(mean_IEMG(:,6)) ./ 0.45;
+norm_slow_flex = abs(mean_IEMG(:,1))./ 1.8;
+norm_medium_flex = abs(mean_IEMG(:,3)) ./ 0.75;
+norm_fast_flex = abs(mean_IEMG(:,5)) ./ 0.45;
 
-norm_slow_flex = IEMG_flex_slow_norm;
-norm_medium_flex = IEMG_flex_med_norm;
-norm_fast_flex = IEMG_flex_fast_norm;
-
-norm_slow_extend = IEMG_extend_slow_norm;
-norm_medium_extend = IEMG_extend_med_norm;
-norm_fast_extend = IEMG_extend_fast_norm;
+norm_slow_extend = abs(mean_IEMG(:,2))./ 1.8;
+norm_medium_extend = abs(mean_IEMG(:,4)) ./ 0.75;
+norm_fast_extend = abs(mean_IEMG(:,6)) ./ 0.45;
 
 norm_calib_flex = Calib_Temporal.Int_calib_flex ./ Calib_Temporal.time_calib;
 norm_calib_extend = Calib_Temporal.Int_calib_extend ./ Calib_Temporal.time_calib;
@@ -195,16 +187,16 @@ Anova_all_IEMG = [mean_IEMG(:,1) mean_IEMG(:,2) mean_IEMG(:,3) mean_IEMG(:,4) me
 [p,tbl,stats] = anova1(Anova_all_IEMG)
 multcompare(stats)
 %% Flex normalised
-Anova_flex_IEMG_norm = [norm_slow_flex; norm_medium_flex; norm_fast_flex ]';
+Anova_flex_IEMG_norm = [norm_slow_flex norm_medium_flex norm_fast_flex ];
 [p,tbl,stats] = anova1(Anova_flex_IEMG_norm)
 
 %% Extend normalised
-Anova_extend_IEMG_norm = [norm_slow_extend; norm_medium_extend; norm_fast_extend ]';
+Anova_extend_IEMG_norm = [norm_slow_extend norm_medium_extend norm_fast_extend ];
 [p,tbl,stats] = anova1(Anova_extend_IEMG_norm)
 multcompare(stats)
 %% All normalised
-Anova_all_IEMG_norm = [norm_slow_flex; norm_medium_flex; norm_fast_flex;  ...
-    norm_slow_extend; norm_medium_extend; norm_fast_extend  ]';
+Anova_all_IEMG_norm = [norm_slow_flex norm_medium_flex norm_fast_flex  ...
+    norm_slow_extend norm_medium_extend norm_fast_extend  ];
 [p,tbl,stats] = anova1(Anova_all_IEMG_norm)
 multcompare(stats)
 
@@ -252,7 +244,13 @@ norm_slow_extend = abs(mean_smoothness(:,2))./ 1.8;
 norm_medium_extend = abs(mean_smoothness(:,4)) ./ 0.75;
 norm_fast_extend = abs(mean_smoothness(:,6)) ./ 0.45;
 
+norm_slow_flex = IEMG_flex_slow_norm;
+norm_medium_flex = IEMG_flex_med_norm;
+norm_fast_flex = IEMG_flex_fast_norm;
 
+norm_slow_extend = IEMG_extend_slow_norm;
+norm_medium_extend = IEMG_extend_med_norm;
+norm_fast_extend = IEMG_extend_fast_norm;
 
 norm_calib_flex = Calib_Temporal.smoothness_flex_calib ./ Calib_Temporal.time_calib;
 norm_calib_extend = Calib_Temporal.smoothness_extend_calib ./ Calib_Temporal.time_calib;

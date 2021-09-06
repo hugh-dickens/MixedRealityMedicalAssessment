@@ -21,13 +21,13 @@ for ID = IDs
     for i = 7:12
         mean_smoothness(ID-5, i - 6) = mean(EMG_Temporal.(fn{i}));
     end
-
+    calibLoad = ['\Temporal_EMG_Calib' num2str(ID)];
+    load([folderload calibLoad]);
    
 %%%%>>>>>>>>>>>>> DO STUFF
 end
 end
-calibLoad = ['\Temporal_EMG_Calib'];
-load([folderload calibLoad]);
+
 
 %% plot raw smoothness 
 

@@ -7,7 +7,7 @@ IDs = [6,7,8,9,10,11,12,13, 14, 15, 16, 17];
 counter_fail = 0;
 chk = exist('Nodes','var');
 if ~chk
-for ID = IDs
+for ID = 6
     ID = num2str(ID)
     
     ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\UnprocessedData';
@@ -305,15 +305,13 @@ dt_mean = (seconds(mean(seconds(dt))));
  EMG_extra2 = ['ID_',num2str(ID),'_test_EMG_data_slowv3'];
  
 EMG_data = experiment_data.(EMG_data_used);
-EMG_data{:,1:8}=EMG_data{:,1:8}./MVC;
+EMG_data{:,1:8}=Arr_emg_data{:,2:9}./MVC;
 try 
     EMG_data1 = experiment_data.(EMG_extra1);
-    EMG_data1{:,1:8}=EMG_data1{:,1:8}./MVC;
     EMG_data = [EMG_data; EMG_data1];
 end
 try 
     EMG_data2 = experiment_data.(EMG_extra2);
-    EMG_data2{:,1:8}=EMG_data2{:,1:8}./MVC;
     EMG_data = [EMG_data; EMG_data2];
 end
 
@@ -443,7 +441,6 @@ for trialnum = 1: length(Polh_Fields_slow)
         amplitude_flex_slow(1:length(xfft_flex(1:N/2+1)), trialnum)= xfft_flex(1:N/2+1);
         amplitude_extend_slow(1:length(xfft_extend(1:N/2+1)), trialnum)= xfft_extend(1:N/2+1);
         frequencies_slow(1:length(freqs), trialnum) = freqs;
-        
         catch me
             fprintf('Polh timing issues');
             counter_fail = counter_fail + 1 
@@ -460,16 +457,12 @@ EMG_extra1 = ['ID_',num2str(ID),'_test_EMG_data_mediumv2'];
 EMG_extra2 = ['ID_',num2str(ID),'_test_EMG_data_mediumv3'];
 
 EMG_data = experiment_data.(EMG_data_used);
-EMG_data{:,1:8}=EMG_data{:,1:8}./MVC;
 try
     EMG_data1 = experiment_data.(EMG_extra1);
-    EMG_data1{:,1:8}=EMG_data1{:,1:8}./MVC;
     EMG_data = [EMG_data; EMG_data1];
-    
 end
 try
     EMG_data2 = experiment_data.(EMG_extra2);
-    EMG_data2{:,1:8}=EMG_data2{:,1:8}./MVC;
     EMG_data = [EMG_data; EMG_data2];
 end
 
@@ -623,15 +616,12 @@ EMG_extra1 = ['ID_',num2str(ID),'_test_EMG_data_fastv2'];
 EMG_extra2 = ['ID_',num2str(ID),'_test_EMG_data_fastv3'];
 
 EMG_data = experiment_data.(EMG_data_used);
-EMG_data{:,1:8}=EMG_data{:,1:8}./MVC;
 try
     EMG_data1 = experiment_data.(EMG_extra1);
-    EMG_data1{:,1:8}=EMG_data1{:,1:8}./MVC;
     EMG_data = [EMG_data; EMG_data1];
 end
 try
     EMG_data2 = experiment_data.(EMG_extra2);
-    EMG_data2{:,1:8}=EMG_data2{:,1:8}./MVC;
     EMG_data = [EMG_data; EMG_data2];
 end
 
@@ -795,11 +785,6 @@ EMG_Frequency.('amplitude_extend_fast') = amplitude_extend_fast';
 EMG_Frequency.('frequencies_slow') = frequencies_slow';
 EMG_Frequency.('frequencies_medium') = frequencies_medium';
 EMG_Frequency.('frequencies_fast') = frequencies_fast';
-
-EMG_Frequency.('velocities_slow') = velocities_slow';
-EMG_Frequency.('velocities_medium') = velocities_medium';
-EMG_Frequency.('velocities_fast') = velocities_fast';
-
 
 %%
 ID = num2str(ID);
