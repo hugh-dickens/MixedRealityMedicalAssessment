@@ -7,7 +7,7 @@ IDs = [6,7,8,9,10,11,12,13, 14, 15, 16, 17];
 counter_fail = 0;
 chk = exist('Nodes','var');
 if ~chk
-for ID = IDs
+for ID = 6
     ID = num2str(ID)
     
     ID_folder = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\UnprocessedData';
@@ -144,13 +144,17 @@ fast_filteredStruct_v3 = rmfield( experiment_data, names( find( cellfun( @isempt
      % this has been done using ratios. Need to check the plots to make
      % sure this works for the specific participant. Generally, 2 or 3=
      % flex and 6-7 extend
-        relax_EMG = Arr_emg_data(1: round(0.33 * length(EMG_calib_total)), :)  ;
-        % flex data
-        flex_EMG = Arr_emg_data(round(0.33 * length(EMG_calib_total)) + 1 : round(0.53 * length(EMG_calib_total)), :)  ;
-        % extend data
-        extend_EMG = Arr_emg_data(round(0.53 * length(EMG_calib_total)) + 1 : round(0.73 * length(EMG_calib_total)), :)  ;
-        % cocontract data
-        cocontract_EMG = Arr_emg_data(round(0.73 * length(EMG_calib_total)) + 1 : end, :)  ;
+     cocontract_EMG = Arr_emg_data(round(0.73 * length(EMG_calib_total)) + 1 : end, :)  ;
+     cocon_to_MVC = table2array(cocontract_EMG(:,2:9));
+     MVC = mean(mean(abs(cocon_to_MVC)));
+     
+     Arr_emg_data{:,2:9}=Arr_emg_data{:,2:9}./MVC;
+     
+    relax_EMG = Arr_emg_data(1: round(0.33 * length(EMG_calib_total)), :)  ;
+    % flex data
+    flex_EMG = Arr_emg_data(round(0.33 * length(EMG_calib_total)) + 1 : round(0.53 * length(EMG_calib_total)), :)  ;
+    % extend data
+    extend_EMG = Arr_emg_data(round(0.53 * length(EMG_calib_total)) + 1 : round(0.73 * length(EMG_calib_total)), :)  ;
         
      relax_EMG_total = zeros(8,1);
      flex_EMG_total = zeros(8,1);
@@ -204,7 +208,6 @@ fast_filteredStruct_v3 = rmfield( experiment_data, names( find( cellfun( @isempt
     end
     
  %% relax EMG for comparison in stat test
-if ID == 6
     fs = 200;
     fnyq=fs/2;
     fco=20;
@@ -242,18 +245,19 @@ if ID == 6
     smoothness_extend_calib(str2num(ID)-5) = var(z_extend);
 
 
+% 
+%     Calib_Temporal.('time_calib')  = time_calib';
+% 
+%     Calib_Temporal.('Int_calib_flex')  = Int_calib_flex';
+%     Calib_Temporal.('Int_calib_extend')  = Int_calib_extend';
+%     Calib_Temporal.('smoothness_flex_calib')  = smoothness_flex_calib';
+%     Calib_Temporal.('smoothness_extend_calib')  = smoothness_extend_calib';
+%     foldersave = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\EMG_Temporal';
+%     filesave = ['Temporal_EMG_Calib' ID];
+%     save(fullfile(foldersave, filesave), 'Calib_Temporal')
 
-    Calib_Temporal.('time_calib')  = time_calib';
-
-    Calib_Temporal.('Int_calib_flex')  = Int_calib_flex';
-    Calib_Temporal.('Int_calib_extend')  = Int_calib_extend';
-    Calib_Temporal.('smoothness_flex_calib')  = smoothness_flex_calib';
-    Calib_Temporal.('smoothness_extend_calib')  = smoothness_extend_calib';
-    foldersave = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\EMG_Temporal';
-    filesave = ['Temporal_EMG_Calib'];
-    save(fullfile(foldersave, filesave), 'Calib_Temporal')
 end
-
+end
 %%
 %% EMG date temp should only need to run once
 if str2num(ID) == 6 | str2num(ID) == 7 | str2num(ID) == 1 ...
@@ -296,17 +300,20 @@ dt_mean = (seconds(mean(seconds(dt))));
  EMG_extra2 = ['ID_',num2str(ID),'_test_EMG_data_slowv3'];
  
 EMG_data = experiment_data.(EMG_data_used);
+EMG_data{:,1:8}=EMG_data{:,1:8}./MVC;
 try 
     EMG_data1 = experiment_data.(EMG_extra1);
+    EMG_data1{:,1:8}=EMG_data1{:,1:8}./MVC;
     EMG_data = [EMG_data; EMG_data1];
 end
 try 
     EMG_data2 = experiment_data.(EMG_extra2);
+    EMG_data2{:,1:8}=EMG_data2{:,1:8}./MVC;
     EMG_data = [EMG_data; EMG_data2];
 end
 
 
-for trialnum = 1: length(Polh_Fields_slow)
+for trialnum = 1 %: length(Polh_Fields_slow)
 %     figure(10)
 % for trialnum = 1
  pol_dynamic = [string(Polh_Fields_slow(trialnum))]; 
@@ -384,43 +391,55 @@ for trialnum = 1: length(Polh_Fields_slow)
 %         %%%Taken from EMG analysis.pdf
 
 %         Butterworth filter
-        fnyq=fs/2;
-        fco=20;
-        [b,a]=butter(2,fco*1.25/fnyq);
-        
+
+%         fnyq=fs/2;
+%         fco=20;
+%         [b,a]=butter(2,fco*1.25/fnyq);
+%         
         % Filter the flex emg pod
         x_flex = table2array(EMG_catch(:,bands_EMG_flex));
         x_high_flex = highpass(x_flex,5,fs);
         x_band_flex = bandstop(x_high_flex,[49.9 50.1],fs);
         x_flex = lowpass(x_band_flex,99,fs) ;
-
-        y_flex=abs(x_flex-mean(x_flex));
-        % apply butterworth to flex
-        z_flex=filtfilt(b,a,y_flex);
-        t = 0:0.005:(length(x_flex) - 1) * 0.005;
-        
-        %%%%%%%%%%%%%%%%%%%%%%%%%   time errors.
-        time_slow(trialnum) = t(end);
-        
-        %plot flex
-%         plot(t,z_flex,'r');
-%         hold on 
-        
-        % do the same for extend pod
-        x_extend = table2array(EMG_catch(:,bands_EMG_extend));
-        x_high_extend = highpass(x_extend,5,fs);
-        x_band_extend = bandstop(x_high_extend,[49.9 50.1],fs);
-        x_extend = lowpass(x_band_extend,99,fs) ;
-
-        y_extend=abs(x_extend-mean(x_extend));
-        % same filter used
-        z_extend=filtfilt(b,a,y_extend);
+% 
+%         y_flex=abs(x_flex-mean(x_flex));
+%         % apply butterworth to flex
+%         z_flex=filtfilt(b,a,y_flex);
+%         t = 0:0.005:(length(x_flex) - 1) * 0.005;
+%         
+%         %%%%%%%%%%%%%%%%%%%%%%%%%   time errors.
+%         time_slow(trialnum) = t(end);
+%         
+%         %plot flex
+% %         plot(t,z_flex,'r');
+% %         hold on 
+%         
+%         % do the same for extend pod
+%         x_extend = table2array(EMG_catch(:,bands_EMG_extend));
+%         x_high_extend = highpass(x_extend,5,fs);
+%         x_band_extend = bandstop(x_high_extend,[49.9 50.1],fs);
+%         x_extend = lowpass(x_band_extend,99,fs) ;
+% 
+%         y_extend=abs(x_extend-mean(x_extend));
+%         % same filter used
+%         z_extend=filtfilt(b,a,y_extend);
         % time should be the same as well
 %         t = 0:0.005:(length(x_extend) - 1) * 0.005;
 %         plot(t,z_extend,'b');
 %         xlabel('Time after catch (s)', 'FontSize', 16); ylabel('EMG (mV)', 'FontSize', 16);
 %         legend('Linear envelope', 'FontSize', 10);
 %         hold on
+
+%%getting some plots
+
+    Fnyq=Fs/2; 
+    y=abs(x_flex-mean(x_)); 
+    fco=20;   
+    [b,a]=butter(2,fco*1.25/fnyq); 
+    z=filtfilt(b,a,y); 
+    plot(t,x-mean(x)-4,'b',t,y,'g',t,z,'r'); 
+    xlabel('Time (s)'); ylabel('EMG (V)'); 
+    legend('Raw (offset)','Rectified','Linear envelope'); 
         
         
         % now calculate the integrated EMG and append it
@@ -461,12 +480,15 @@ EMG_extra1 = ['ID_',num2str(ID),'_test_EMG_data_mediumv2'];
 EMG_extra2 = ['ID_',num2str(ID),'_test_EMG_data_mediumv3'];
 
 EMG_data = experiment_data.(EMG_data_used);
+EMG_data{:,1:8}=EMG_data{:,1:8}./MVC;
 try
     EMG_data1 = experiment_data.(EMG_extra1);
+    EMG_data1{:,1:8}=EMG_data1{:,1:8}./MVC;
     EMG_data = [EMG_data; EMG_data1];
 end
 try
     EMG_data2 = experiment_data.(EMG_extra2);
+    EMG_data2{:,1:8}=EMG_data2{:,1:8}./MVC;
     EMG_data = [EMG_data; EMG_data2];
 end
 
@@ -638,12 +660,15 @@ EMG_extra1 = ['ID_',num2str(ID),'_test_EMG_data_fastv2'];
 EMG_extra2 = ['ID_',num2str(ID),'_test_EMG_data_fastv3'];
 
 EMG_data = experiment_data.(EMG_data_used);
+EMG_data{:,1:8}=EMG_data{:,1:8}./MVC;
 try
     EMG_data1 = experiment_data.(EMG_extra1);
+    EMG_data1{:,1:8}=EMG_data1{:,1:8}./MVC;
     EMG_data = [EMG_data; EMG_data1];
 end
 try
     EMG_data2 = experiment_data.(EMG_extra2);
+    EMG_data2{:,1:8}=EMG_data2{:,1:8}./MVC;
     EMG_data = [EMG_data; EMG_data2];
 end
 
@@ -811,44 +836,44 @@ end
 
 
 %%
-EMG_Temporal.('Int_slow_flex') = Int_slow_flex';
-EMG_Temporal.('Int_slow_extend') = Int_slow_extend';
-EMG_Temporal.('Int_medium_flex') = Int_medium_flex';
-EMG_Temporal.('Int_medium_extend') = Int_medium_extend';
-EMG_Temporal.('Int_fast_flex') = Int_fast_flex';
-EMG_Temporal.('Int_fast_extend') = Int_fast_extend';
-
-EMG_Temporal.('smoothness_flex_slow') = smoothness_flex_slow';
-EMG_Temporal.('smoothness_extend_slow') = smoothness_extend_slow';
-EMG_Temporal.('smoothness_flex_medium') = smoothness_flex_medium';
-EMG_Temporal.('smoothness_extend_medium') = smoothness_extend_medium';
-EMG_Temporal.('smoothness_flex_fast') = smoothness_flex_fast';
-EMG_Temporal.('smoothness_extend_fast') = smoothness_extend_fast';
-
-EMG_Temporal.('velocities_slow') = velocities_slow';
-EMG_Temporal.('velocities_medium') = velocities_medium';
-EMG_Temporal.('velocities_fast') = velocities_fast';
-
-EMG_Temporal.('time_slow') = time_slow';
-EMG_Temporal.('time_medium') = time_medium';
-EMG_Temporal.('time_fast') = time_fast';
-
-EMG_Temporal.('signal_flex_slow') = signal_flex_slow';
-EMG_Temporal.('signal_extend_slow') = signal_extend_slow';
-EMG_Temporal.('signal_flex_medium') = signal_flex_medium';
-EMG_Temporal.('signal_extend_medium') = signal_extend_medium';
-EMG_Temporal.('signal_flex_fast') = signal_flex_fast';
-EMG_Temporal.('signal_extend_fast') = signal_extend_fast';
-
-
-%%
-ID = num2str(ID);
-foldersave = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\EMG_Temporal';
-filesave = ['Temporal_EMG_ID_' ID];
-save(fullfile(foldersave, filesave), 'EMG_Temporal')
+% EMG_Temporal.('Int_slow_flex') = Int_slow_flex';
+% EMG_Temporal.('Int_slow_extend') = Int_slow_extend';
+% EMG_Temporal.('Int_medium_flex') = Int_medium_flex';
+% EMG_Temporal.('Int_medium_extend') = Int_medium_extend';
+% EMG_Temporal.('Int_fast_flex') = Int_fast_flex';
+% EMG_Temporal.('Int_fast_extend') = Int_fast_extend';
 % 
-end 
+% EMG_Temporal.('smoothness_flex_slow') = smoothness_flex_slow';
+% EMG_Temporal.('smoothness_extend_slow') = smoothness_extend_slow';
+% EMG_Temporal.('smoothness_flex_medium') = smoothness_flex_medium';
+% EMG_Temporal.('smoothness_extend_medium') = smoothness_extend_medium';
+% EMG_Temporal.('smoothness_flex_fast') = smoothness_flex_fast';
+% EMG_Temporal.('smoothness_extend_fast') = smoothness_extend_fast';
 % 
+% EMG_Temporal.('velocities_slow') = velocities_slow';
+% EMG_Temporal.('velocities_medium') = velocities_medium';
+% EMG_Temporal.('velocities_fast') = velocities_fast';
+% 
+% EMG_Temporal.('time_slow') = time_slow';
+% EMG_Temporal.('time_medium') = time_medium';
+% EMG_Temporal.('time_fast') = time_fast';
+% 
+% EMG_Temporal.('signal_flex_slow') = signal_flex_slow';
+% EMG_Temporal.('signal_extend_slow') = signal_extend_slow';
+% EMG_Temporal.('signal_flex_medium') = signal_flex_medium';
+% EMG_Temporal.('signal_extend_medium') = signal_extend_medium';
+% EMG_Temporal.('signal_flex_fast') = signal_flex_fast';
+% EMG_Temporal.('signal_extend_fast') = signal_extend_fast';
+% 
+% 
+% %%
+% ID = num2str(ID);
+% foldersave = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\EMG_Temporal';
+% filesave = ['Temporal_EMG_ID_' ID];
+% save(fullfile(foldersave, filesave), 'EMG_Temporal')
+% % 
+% end 
+% % 
 % end
 
 

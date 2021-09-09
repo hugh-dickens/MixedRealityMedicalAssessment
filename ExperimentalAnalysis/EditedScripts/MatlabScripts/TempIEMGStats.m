@@ -89,9 +89,9 @@ for ID = IDs
     smoothness_flex_med(ID - 5) = nanmean(smoothness_flex(med_idx));
     smoothness_flex_fast(ID - 5) = nanmean(smoothness_flex(fast_idx));
     
-    smoothness_extend_slow(ID - 5) = nanmean(smoothness_flex(slow_idx));
-    smoothness_extend_med(ID - 5) = nanmean(smoothness_flex(med_idx));
-    smoothness_extend_fast(ID - 5) = nanmean(smoothness_flex(fast_idx));
+    smoothness_extend_slow(ID - 5) = nanmean(smoothness_extend(slow_idx));
+    smoothness_extend_med(ID - 5) = nanmean(smoothness_extend(med_idx));
+    smoothness_extend_fast(ID - 5) = nanmean(smoothness_extend(fast_idx));
     
     calibLoad = ['\Temporal_EMG_Calib' num2str(ID)];
     load([folderload calibLoad]);
@@ -208,6 +208,18 @@ Anova_all_IEMG_norm = [norm_slow_flex; norm_medium_flex; norm_fast_flex;  ...
 [p,tbl,stats] = anova1(Anova_all_IEMG_norm)
 multcompare(stats)
 
+%% Try some boxplots
+
+figure(1)
+boxplot(mean_IEMG)
+% xlabel('Condition','FontSize', 16)
+ylabel('Mean IEMG (mVs)','FontSize', 16)
+
+figure(2)
+boxplot(Anova_all_IEMG_norm)
+% xlabel('Condition')
+ylabel('Mean IEMG normalised in time (mV)','FontSize', 16)
+
 %%%%%%%%%%%%%%%%%%>>>>>>>>>>>>>>>>>>>>>>>>>>>
 %% Smoothness
 %% plot raw smoothness 
@@ -243,33 +255,25 @@ ylabel('Mean smoothness / variance')
 legend('Slow flex', 'Slow extend', 'Medium flex', 'Medium extend',...
          'Fast flex', 'Fast extend', 'Calib flex','Calib extend')
      
-%% Try normalising in time 
-norm_slow_flex = abs(mean_smoothness(:,1))./ 1.8;
-norm_medium_flex = abs(mean_smoothness(:,3)) ./ 0.75;
-norm_fast_flex = abs(mean_smoothness(:,5)) ./ 0.45;
+%% Try normalizing ID 10 (15)
+% mean_smoothness(10,:) = mean_smoothness(10,:)* 0.1;
 
-norm_slow_extend = abs(mean_smoothness(:,2))./ 1.8;
-norm_medium_extend = abs(mean_smoothness(:,4)) ./ 0.75;
-norm_fast_extend = abs(mean_smoothness(:,6)) ./ 0.45;
+% norm_calib_flex = Calib_Temporal.smoothness_flex_calib ./ Calib_Temporal.time_calib;
+% norm_calib_extend = Calib_Temporal.smoothness_extend_calib ./ Calib_Temporal.time_calib;
 
-
-
-norm_calib_flex = Calib_Temporal.smoothness_flex_calib ./ Calib_Temporal.time_calib;
-norm_calib_extend = Calib_Temporal.smoothness_extend_calib ./ Calib_Temporal.time_calib;
-
-slow_flex = plot(norm_slow_flex)
+slow_flex = plot(abs(mean_smoothness(:,1)))
 hold on
-slow_extend = plot(norm_slow_extend)
+slow_extend = plot(abs(mean_smoothness(:,2)))
 hold on
 
-medium_flex = plot(norm_medium_flex)
+medium_flex = plot(abs(mean_smoothness(:,3)))
 hold on
-medium_extend = plot(norm_medium_extend)
+medium_extend = plot(abs(mean_smoothness(:,4)))
 hold on
 
-fast_flex = plot(norm_fast_flex)
+fast_flex = plot(abs(mean_smoothness(:,5)))
 hold on
-fast_extend = plot(norm_fast_extend)
+fast_extend = plot(abs(mean_smoothness(:,6)))
 hold on
 
 % calib_flex = plot(norm_calib_flex)
@@ -308,3 +312,14 @@ Anova_extend_smoothness_norm = [norm_slow_extend norm_medium_extend norm_fast_ex
 Anova_all_smoothness_norm = [norm_slow_flex norm_medium_flex norm_fast_flex  ...
     norm_slow_extend norm_medium_extend norm_fast_extend  ];
 [p,tbl,stats] = anova1(Anova_all_smoothness_norm)
+
+%%
+figure(1)
+boxplot(Anova_all_smoothness)
+% xlabel('Condition','FontSize', 16)
+ylabel('Smoothness (mV^2)','FontSize', 16)
+
+% figure(2)
+% boxplot(Anova_all_smoothness_norm)
+% % xlabel('Condition')
+% ylabel('Smoothness (mV^2)','FontSize', 16)

@@ -55,26 +55,56 @@ for ID = IDs
     freq_slow = temp_freq(slow_idx, :);
     freq_med = temp_freq(med_idx, :);
     freq_fast = temp_freq(fast_idx, :);
+    for speed = 1 : 3
+        if speed== 1
     
+        for trials = 1: length(freq_slow(:,1))
+            freq_no_zeros = (nonzeros(freq_slow(trials,:)));
+            power_no_zeros_flex = (nonzeros(power_flex_slow(trials,2:end)));
+            power_no_zeros_extend = (nonzeros(power_extend_slow(trials,2:end)));
+            % bin the spectral data into 1Hz categories
+            [B,idx] = histc(freq_no_zeros,0:1:100);
+            idx_filt= idx(idx<=100);
+            temp_flex = accumarray(idx_filt(:),power_no_zeros_flex(idx<=100),[],@mean);
+            temp_extend = accumarray(idx_filt(:),power_no_zeros_extend(idx<=100),[],@mean);
+            binned_power_flex(1:length(temp_flex),trials) = temp_flex;
+            binned_power_extend(1:length(temp_flex),trials) = temp_extend;
+        end
+        elseif speed ==2
+            for trials = 1: length(freq_med(:,1))
+            freq_no_zeros = (nonzeros(freq_med(trials,:)));
+            power_no_zeros_flex = (nonzeros(power_flex_med(trials,2:end)));
+            power_no_zeros_extend = (nonzeros(power_extend_med(trials,2:end)));
+            % bin the spectral data into 1Hz categories
+            [B,idx] = histc(freq_no_zeros,0:1:100);
+            idx_filt= idx(idx<=100);
+            temp_flex = accumarray(idx_filt(:),power_no_zeros_flex(idx<=100),[],@mean);
+            temp_extend = accumarray(idx_filt(:),power_no_zeros_extend(idx<=100),[],@mean);
+            binned_power_flex(1:length(temp_flex),trials) = temp_flex;
+            binned_power_extend(1:length(temp_extend),trials) = temp_extend;
+            end
+        elseif speed ==3
+            for trials = 1: length(freq_fast(:,1))
+            freq_no_zeros = (nonzeros(freq_fast(trials,:)));
+            power_no_zeros_flex = (nonzeros(power_flex_fast(trials,2:end)));
+            power_no_zeros_extend = (nonzeros(power_extend_fast(trials,2:end)));
+            % bin the spectral data into 1Hz categories
+            [B,idx] = histc(freq_no_zeros,0:1:100);
+            idx_filt= idx(idx<=100);
+            temp_flex = accumarray(idx_filt(:),power_no_zeros_flex(idx<=100),[],@mean);
+            temp_extend = accumarray(idx_filt(:),power_no_zeros_extend(idx<=100),[],@mean);
+            binned_power_flex(1:length(temp_flex),trials) = temp_flex;
+            binned_power_extend(1:length(temp_extend),trials) = temp_extend;
+            end
+        else
+            fprintf('error')
+        end
     
-    for trials = 1: length(freq_slow(:,1))
-        freq_no_zeros = (nonzeros(freq_slow(trials,:)));
-        power_no_zeros_flex = (nonzeros(temp_power_flex(trials,2:end)));
-        power_no_zeros_extend = (nonzeros(temp_power_extend(trials,2:end)));
-        % bin the spectral data into 1Hz categories
-        [B,idx] = histc(freq_no_zeros,0:1:100);
-        idx_filt= idx(idx<=100);
-        temp_flex = accumarray(idx_filt(:),power_no_zeros_flex(idx<=100),[],@mean);
-        temp_extend = accumarray(idx_filt(:),power_no_zeros_extend(idx<=100),[],@mean);
-        binned_power_flex(1:length(temp_flex),trials) = temp_flex;
-        binned_power_extend(1:length(temp_extend),trials) = temp_extend;
+    total_power(:, speed) = total_power(:,speed) + [0; (mean(binned_power_flex, 2)); 0];
+    total_power(:, speed+3) = total_power(:,speed+3) + [0; (mean(binned_power_extend, 2)); 0];
+    individual_power(:, speed, ID-5) = [0; (mean(binned_power_flex, 2)); 0];
+    individual_power(:, speed+3, ID-5) = [0; (mean(binned_power_extend, 2)); 0];
     end
-    
-    total_power(:, speed+1) = total_power(:,speed+1) + [0; (mean(binned_power_flex, 2)); 0];
-    total_power(:, speed+4) = total_power(:,speed+4) + [0; (mean(binned_power_extend, 2)); 0];
-    individual_power(:, speed+1, ID-5) = [0; (mean(binned_power_flex, 2)); 0];
-    individual_power(:, speed+4, ID-5) = [0; (mean(binned_power_extend, 2)); 0];
-    
     
 end
 
@@ -86,12 +116,12 @@ end
 
 %     if speed == 0
     figure(1)
-    subplot(2,1,1)
+%     subplot(2,1,1)
     h1 = patch(freqs,total_power(:,1),'r');
     
     hold on
 %     elseif speed == 1
-    h2 = patch(freqs,total_power(:,2),'y');
+    h2 = patch(freqs,total_power(:,2),'g');
     hold on
 %     else speed == 2
     h3 = patch(freqs,total_power(:,3),'b');
@@ -102,19 +132,19 @@ end
     set(h1,'facealpha',0.5)
     set(h2,'facealpha',0.5)
     set(h3,'facealpha',0.5)
-    legend('Slow','Medium','Fast','Location','best')
-    xlabel('Frequency (Hz)')
-    ylabel('Spectral Power (W/Hz)')
-    title('Flexor')
+    legend('Slow','Medium','Fast','Location','best', 'FontSize',16 )
+    xlabel('Frequency (Hz)', 'FontSize',16 )
+    ylabel('Power Spectral Density (nV^2/Hz)', 'FontSize',16 )
+%     title('Flexor')
 %     ylim([0 15000])
     hold off
     
-%     figure(2)
-    subplot(2,1,2)
+    figure(2)
+%     subplot(2,1,2)
     h1 = patch(freqs,total_power(:,4),'r');
     hold on
 %     elseif speed == 1
-    h2 = patch(freqs,total_power(:,5),'y');
+    h2 = patch(freqs,total_power(:,5),'g');
     hold on
 %     else speed == 2
     h3 = patch(freqs,total_power(:,6),'b');
@@ -124,10 +154,10 @@ end
     set(h1,'facealpha',0.5)
     set(h2,'facealpha',0.5)
     set(h3,'facealpha',0.5)
-    legend('Slow','Medium','Fast','Location','best')
-    xlabel('Frequency (Hz)')
-    ylabel('Spectral Power (W/Hz)')
-    title('Extensor')
+    legend('Slow','Medium','Fast','Location','best', 'FontSize',16 )
+    xlabel('Frequency (Hz)', 'FontSize',16 )
+    ylabel('Power Spectral Density (nV^2/Hz)', 'FontSize',16 )
+%     title('Extensor')
     hold off
    
 %%%%>>>>>>>>>>>>> DO STUFF
@@ -136,7 +166,7 @@ end
 %% Running integral - cant find the source i used before?? Normalised
 
 figure(2)
-    subplot(2,1,1)
+%     subplot(2,1,1)
     Q_slow_flex = cumtrapz(total_power(2:101,1));
     norm_slow_flex = Q_slow_flex/ Q_slow_flex(end);
     below = max(norm_slow_flex(norm_slow_flex < 0.5));
@@ -169,13 +199,14 @@ figure(2)
     hold on
 %     end
     % Choose a number between 0 (invisible) and 1 (opaque) for facealpha.  
-    legend('Slow','Medium','Fast','Location','best')
+    legend('Slow','Medium','Fast','Location','best','FontSize', 16)
     xlabel('Frequency (Hz)')
     ylabel('Normalised Power')
-    title('Flexor')
+%     title('Flexor')
     hold off
     
-    subplot(2,1,2)
+%     subplot(2,1,2)
+figure(3)
     Q_slow_extensor = cumtrapz(total_power(2:101,4));
     norm_slow_extensor = Q_slow_extensor/ Q_slow_extensor(end);
     below = max(norm_slow_extensor(norm_slow_extensor < 0.5));
@@ -211,7 +242,7 @@ figure(2)
     legend('Slow','Medium','Fast','Location','best')
     xlabel('Frequency (Hz)')
     ylabel('Normalised Power')
-    title('Extensor')
+%     title('Extensor')
     hold off
     
 %% Running integral mean spectral power
@@ -367,6 +398,8 @@ multcompare(stats)
 Anova_all_freq = [slow_flex_list(:) med_flex_list(:) fast_flex_list(:) slow_ext_list(:) med_ext_list(:) fast_ext_list(:)];
 [p,tbl,stats] = anova1(Anova_all_freq)
 multcompare(stats)
+
+
 
 %% Now check relaxed phase,is there stat diff there?
 individual_power_flex = zeros(102,12);

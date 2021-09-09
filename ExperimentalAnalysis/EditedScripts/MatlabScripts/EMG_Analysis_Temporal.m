@@ -144,17 +144,13 @@ fast_filteredStruct_v3 = rmfield( experiment_data, names( find( cellfun( @isempt
      % this has been done using ratios. Need to check the plots to make
      % sure this works for the specific participant. Generally, 2 or 3=
      % flex and 6-7 extend
-     cocontract_EMG = Arr_emg_data(round(0.73 * length(EMG_calib_total)) + 1 : end, :)  ;
-     cocon_to_MVC = table2array(cocontract_EMG(:,2:9));
-     MVC = mean(mean(abs(cocon_to_MVC)));
-     
-     Arr_emg_data{:,2:9}=Arr_emg_data{:,2:9}./MVC;
-     
-    relax_EMG = Arr_emg_data(1: round(0.33 * length(EMG_calib_total)), :)  ;
-    % flex data
-    flex_EMG = Arr_emg_data(round(0.33 * length(EMG_calib_total)) + 1 : round(0.53 * length(EMG_calib_total)), :)  ;
-    % extend data
-    extend_EMG = Arr_emg_data(round(0.53 * length(EMG_calib_total)) + 1 : round(0.73 * length(EMG_calib_total)), :)  ;
+        relax_EMG = Arr_emg_data(1: round(0.33 * length(EMG_calib_total)), :)  ;
+        % flex data
+        flex_EMG = Arr_emg_data(round(0.33 * length(EMG_calib_total)) + 1 : round(0.53 * length(EMG_calib_total)), :)  ;
+        % extend data
+        extend_EMG = Arr_emg_data(round(0.53 * length(EMG_calib_total)) + 1 : round(0.73 * length(EMG_calib_total)), :)  ;
+        % cocontract data
+        cocontract_EMG = Arr_emg_data(round(0.73 * length(EMG_calib_total)) + 1 : end, :)  ;
         
      relax_EMG_total = zeros(8,1);
      flex_EMG_total = zeros(8,1);
@@ -208,55 +204,55 @@ fast_filteredStruct_v3 = rmfield( experiment_data, names( find( cellfun( @isempt
     end
     
  %% relax EMG for comparison in stat test
-    fs = 200;
-    fnyq=fs/2;
-    fco=20;
-    [b,a]=butter(2,fco*1.25/fnyq);
+fs = 200;
+fnyq=fs/2;
+fco=20;
+[b,a]=butter(2,fco*1.25/fnyq);
 
-    % Filter the flex emg pod
-    x_flex = (relax_EMG{1:end,bands_EMG_flex + 1});
-    x_high_flex = highpass(x_flex,5,fs);
-    x_band_flex = bandstop(x_high_flex,[49.9 50.1],fs);
-    x_flex = lowpass(x_band_flex,99,fs) ;
+% Filter the flex emg pod
+x_flex = (relax_EMG{1:end,bands_EMG_flex + 1});
+x_high_flex = highpass(x_flex,5,fs);
+x_band_flex = bandstop(x_high_flex,[49.9 50.1],fs);
+x_flex = lowpass(x_band_flex,99,fs) ;
 
-    y_flex=abs(x_flex-mean(x_flex));
-    % apply butterworth to flex
-    z_flex=filtfilt(b,a,y_flex);
-    t = 0:0.005:(length(x_flex) - 1) * 0.005;
+y_flex=abs(x_flex-mean(x_flex));
+% apply butterworth to flex
+z_flex=filtfilt(b,a,y_flex);
+t = 0:0.005:(length(x_flex) - 1) * 0.005;
 
-    % Filter the flex emg pod
-    x_extend = (relax_EMG{1:end,bands_EMG_extend + 1});
-    x_high_extend = highpass(x_extend,5,fs);
-    x_band_extend = bandstop(x_high_extend,[49.9 50.1],fs);
-    x_extend = lowpass(x_band_extend,99,fs) ;
+% Filter the flex emg pod
+x_extend = (relax_EMG{1:end,bands_EMG_extend + 1});
+x_high_extend = highpass(x_extend,5,fs);
+x_band_extend = bandstop(x_high_extend,[49.9 50.1],fs);
+x_extend = lowpass(x_band_extend,99,fs) ;
 
-    y_extend=abs(x_extend-mean(x_extend));
-    % apply butterworth to flex
-    z_extend=filtfilt(b,a,y_extend);
-
-
-    time_calib(str2num(ID)-5) = t(end);
+y_extend=abs(x_extend-mean(x_extend));
+% apply butterworth to flex
+z_extend=filtfilt(b,a,y_extend);
 
 
-    Int_calib_flex(str2num(ID)-5) = trapz(t, z_flex);
-    Int_calib_extend(str2num(ID)-5) = trapz(t, z_extend);
-
-    smoothness_flex_calib(str2num(ID)-5) = var(z_flex);
-    smoothness_extend_calib(str2num(ID)-5) = var(z_extend);
+time_calib(str2num(ID)-5) = t(end);
 
 
+Int_calib_flex(str2num(ID)-5) = trapz(t, z_flex);
+Int_calib_extend(str2num(ID)-5) = trapz(t, z_extend);
 
-    Calib_Temporal.('time_calib')  = time_calib';
-
-    Calib_Temporal.('Int_calib_flex')  = Int_calib_flex';
-    Calib_Temporal.('Int_calib_extend')  = Int_calib_extend';
-    Calib_Temporal.('smoothness_flex_calib')  = smoothness_flex_calib';
-    Calib_Temporal.('smoothness_extend_calib')  = smoothness_extend_calib';
-    foldersave = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\EMG_Temporal';
-    filesave = ['Temporal_EMG_Calib' ID];
-    save(fullfile(foldersave, filesave), 'Calib_Temporal')
+smoothness_flex_calib(str2num(ID)-5) = var(z_flex);
+smoothness_extend_calib(str2num(ID)-5) = var(z_extend);
 
 
+
+Calib_Temporal.('time_calib')  = time_calib';
+
+Calib_Temporal.('Int_calib_flex')  = Int_calib_flex';
+Calib_Temporal.('Int_calib_extend')  = Int_calib_extend';
+Calib_Temporal.('smoothness_flex_calib')  = smoothness_flex_calib';
+Calib_Temporal.('smoothness_extend_calib')  = smoothness_extend_calib';
+foldersave = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\EMG_Temporal';
+filesave = ['Temporal_EMG_Calib'];
+save(fullfile(foldersave, filesave), 'Calib_Temporal')
+end
+end
 %%
 %% EMG date temp should only need to run once
 if str2num(ID) == 6 | str2num(ID) == 7 | str2num(ID) == 1 ...
@@ -299,15 +295,12 @@ dt_mean = (seconds(mean(seconds(dt))));
  EMG_extra2 = ['ID_',num2str(ID),'_test_EMG_data_slowv3'];
  
 EMG_data = experiment_data.(EMG_data_used);
-EMG_data{:,1:8}=EMG_data{:,1:8}./MVC;
 try 
     EMG_data1 = experiment_data.(EMG_extra1);
-    EMG_data1{:,1:8}=EMG_data1{:,1:8}./MVC;
     EMG_data = [EMG_data; EMG_data1];
 end
 try 
     EMG_data2 = experiment_data.(EMG_extra2);
-    EMG_data2{:,1:8}=EMG_data2{:,1:8}./MVC;
     EMG_data = [EMG_data; EMG_data2];
 end
 
@@ -467,15 +460,12 @@ EMG_extra1 = ['ID_',num2str(ID),'_test_EMG_data_mediumv2'];
 EMG_extra2 = ['ID_',num2str(ID),'_test_EMG_data_mediumv3'];
 
 EMG_data = experiment_data.(EMG_data_used);
-EMG_data{:,1:8}=EMG_data{:,1:8}./MVC;
 try
     EMG_data1 = experiment_data.(EMG_extra1);
-    EMG_data1{:,1:8}=EMG_data1{:,1:8}./MVC;
     EMG_data = [EMG_data; EMG_data1];
 end
 try
     EMG_data2 = experiment_data.(EMG_extra2);
-    EMG_data2{:,1:8}=EMG_data2{:,1:8}./MVC;
     EMG_data = [EMG_data; EMG_data2];
 end
 
@@ -647,15 +637,12 @@ EMG_extra1 = ['ID_',num2str(ID),'_test_EMG_data_fastv2'];
 EMG_extra2 = ['ID_',num2str(ID),'_test_EMG_data_fastv3'];
 
 EMG_data = experiment_data.(EMG_data_used);
-EMG_data{:,1:8}=EMG_data{:,1:8}./MVC;
 try
     EMG_data1 = experiment_data.(EMG_extra1);
-    EMG_data1{:,1:8}=EMG_data1{:,1:8}./MVC;
     EMG_data = [EMG_data; EMG_data1];
 end
 try
     EMG_data2 = experiment_data.(EMG_extra2);
-    EMG_data2{:,1:8}=EMG_data2{:,1:8}./MVC;
     EMG_data = [EMG_data; EMG_data2];
 end
 
@@ -859,9 +846,9 @@ foldersave = 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\Experim
 filesave = ['Temporal_EMG_ID_' ID];
 save(fullfile(foldersave, filesave), 'EMG_Temporal')
 % 
-end 
+% end 
 % 
-end
+% end
 
 
 % 

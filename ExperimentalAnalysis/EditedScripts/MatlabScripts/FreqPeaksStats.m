@@ -116,12 +116,12 @@ end
 
 %     if speed == 0
     figure(1)
-    subplot(2,1,1)
+%     subplot(2,1,1)
     h1 = patch(freqs,total_power(:,1),'r');
     
     hold on
 %     elseif speed == 1
-    h2 = patch(freqs,total_power(:,2),'y');
+    h2 = patch(freqs,total_power(:,2),'g');
     hold on
 %     else speed == 2
     h3 = patch(freqs,total_power(:,3),'b');
@@ -132,19 +132,19 @@ end
     set(h1,'facealpha',0.5)
     set(h2,'facealpha',0.5)
     set(h3,'facealpha',0.5)
-    legend('Slow','Medium','Fast','Location','best')
-    xlabel('Frequency (Hz)')
-    ylabel('Spectral Power (W/Hz)')
-    title('Flexor')
+    legend('Slow','Medium','Fast','Location','best', 'FontSize',16 )
+    xlabel('Frequency (Hz)', 'FontSize',16 )
+    ylabel('Power spectral density (nV^2/Hz)', 'FontSize',16 )
+%     title('Flexor')
 %     ylim([0 15000])
     hold off
     
-%     figure(2)
-    subplot(2,1,2)
+    figure(2)
+%     subplot(2,1,2)
     h1 = patch(freqs,total_power(:,4),'r');
     hold on
 %     elseif speed == 1
-    h2 = patch(freqs,total_power(:,5),'y');
+    h2 = patch(freqs,total_power(:,5),'g');
     hold on
 %     else speed == 2
     h3 = patch(freqs,total_power(:,6),'b');
@@ -154,10 +154,10 @@ end
     set(h1,'facealpha',0.5)
     set(h2,'facealpha',0.5)
     set(h3,'facealpha',0.5)
-    legend('Slow','Medium','Fast','Location','best')
-    xlabel('Frequency (Hz)')
-    ylabel('Spectral Power (W/Hz)')
-    title('Extensor')
+    legend('Slow','Medium','Fast','Location','best', 'FontSize',16 )
+    xlabel('Frequency (Hz)', 'FontSize',16 )
+    ylabel('Power spectral density (nV^2/Hz)', 'FontSize',16 )
+%     title('Extensor')
     hold off
    
 %%%%>>>>>>>>>>>>> DO STUFF
@@ -166,7 +166,7 @@ end
 %% Running integral - cant find the source i used before?? Normalised
 
 figure(2)
-    subplot(2,1,1)
+%     subplot(2,1,1)
     Q_slow_flex = cumtrapz(total_power(2:101,1));
     norm_slow_flex = Q_slow_flex/ Q_slow_flex(end);
     below = max(norm_slow_flex(norm_slow_flex < 0.5));
@@ -199,13 +199,14 @@ figure(2)
     hold on
 %     end
     % Choose a number between 0 (invisible) and 1 (opaque) for facealpha.  
-    legend('Slow','Medium','Fast','Location','best')
-    xlabel('Frequency (Hz)')
-    ylabel('Normalised Power')
-    title('Flexor')
+    legend('Slow','Medium','Fast','Location','best','FontSize', 16)
+    xlabel('Frequency (Hz)','FontSize', 16)
+    ylabel('Spectral distribution function','FontSize', 16)
+%     title('Flexor')
     hold off
     
-    subplot(2,1,2)
+%     subplot(2,1,2)
+figure(3)
     Q_slow_extensor = cumtrapz(total_power(2:101,4));
     norm_slow_extensor = Q_slow_extensor/ Q_slow_extensor(end);
     below = max(norm_slow_extensor(norm_slow_extensor < 0.5));
@@ -238,16 +239,16 @@ figure(2)
     hold on
 %     end
     % Choose a number between 0 (invisible) and 1 (opaque) for facealpha.  
-    legend('Slow','Medium','Fast','Location','best')
-    xlabel('Frequency (Hz)')
-    ylabel('Normalised Power')
-    title('Extensor')
+    legend('Slow','Medium','Fast','Location','best','FontSize', 16)
+    xlabel('Frequency (Hz)','FontSize', 16)
+    ylabel('Spectral distribution function','FontSize', 16)
+%     title('Extensor')
     hold off
     
 %% Running integral mean spectral power
 
-figure(3)
-    subplot(2,1,1)
+figure(5)
+%     subplot(2,1,1)
     Q_slow_flex = cumtrapz(total_power(2:101,1));
     mean_power_flex_slow = mean(total_power(2:101,1))
     max_power_flex_slow = max(total_power(2:101,1))
@@ -267,13 +268,14 @@ figure(3)
     hold on
 %     end
     % Choose a number between 0 (invisible) and 1 (opaque) for facealpha.  
-    legend('Slow','Medium','Fast','Location','best')
-    xlabel('Frequency (Hz)')
-    ylabel('Power (W)')
-    title('Flexor')
+    legend('Slow','Medium','Fast','Location','best','FontSize', 16)
+    xlabel('Frequency (Hz)','FontSize', 16)
+    ylabel('Power (W)','FontSize', 16)
+%     title('Flexor')
     hold off
     
-    subplot(2,1,2)
+%     subplot(2,1,2)
+figure(6)
     Q_slow_extensor = cumtrapz(total_power(2:101,4));
     mean_power_extensor_slow = mean(total_power(2:101,4))
     max_power_extensor_slow = max(total_power(2:101,4))
@@ -293,10 +295,10 @@ figure(3)
     hold on
 %     end
     % Choose a number between 0 (invisible) and 1 (opaque) for facealpha.  
-    legend('Slow','Medium','Fast','Location','best')
-    xlabel('Frequency (Hz)')
-    ylabel('Power (W)')
-    title('Extensor')
+    legend('Slow','Medium','Fast','Location','best','FontSize', 16)
+    xlabel('Frequency (Hz)','FontSize', 16)
+    ylabel('Power (W)','FontSize', 16)
+%     title('Extensor')
     hold off
 
 %% Find integral etc for individual powers
@@ -393,6 +395,9 @@ multcompare(stats)
 Anova_extensor_freq = [slow_ext_list(:) med_ext_list(:) fast_ext_list(:)];
 [p,tbl,stats] = anova1(Anova_extensor_freq)
 multcompare(stats)
+mean(slow_ext_list(:))
+mean(med_ext_list(:))
+mean(fast_ext_list(:))
 %% All raw
 Anova_all_freq = [slow_flex_list(:) med_flex_list(:) fast_flex_list(:) slow_ext_list(:) med_ext_list(:) fast_ext_list(:)];
 [p,tbl,stats] = anova1(Anova_all_freq)

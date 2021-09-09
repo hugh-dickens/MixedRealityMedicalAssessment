@@ -142,21 +142,23 @@ legend([leg_vel_raw,outliers_raw, leg_raw_LR, leg_vel_spline, outliers_spline, l
 xlim=get(gca,'XLim');
 ylim=get(gca,'YLim');
 if brob_raw(2) > 0 & brob_spline(2) > 0
-    text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.62*ylim(2),['y = ' num2str(brob_raw(1)) '+' num2str(brob_raw(2)) 'x'],'Color', 'r', 'FontSize', 20)
-    text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.52*ylim(2),['y = ' num2str(brob_spline(1)) '+' num2str(brob_spline(2)) 'x'],'Color', 'b', 'FontSize', 20)
+    text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.62*ylim(2),['y = ' num2str(brob_raw(1),'%.3g') '+' num2str(brob_raw(2),'%.2f') 'x'],'Color', 'r', 'FontSize', 20)
+    text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.52*ylim(2),['y = ' num2str(brob_spline(1),'%.3g') '+' num2str(brob_spline(2),'%.3f') 'x'],'Color', 'b', 'FontSize', 20)
 elseif brob_raw(2) > 0 & brob_spline(2) < 0 
-    text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.62*ylim(2),['y = ' num2str(brob_raw(1)) '+' num2str(brob_raw(2)) 'x'],'Color', 'r', 'FontSize', 20)
-    text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.52*ylim(2),['y = ' num2str(brob_spline(1)) num2str(brob_spline(2)) 'x'],'Color', 'b', 'FontSize', 20)
+    text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.62*ylim(2),['y = ' num2str(brob_raw(1),'%.3g') '+' num2str(brob_raw(2),'%.3g') 'x'],'Color', 'r', 'FontSize', 20)
+    text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.52*ylim(2),['y = ' num2str(brob_spline(1),'%.3g') num2str(brob_spline(2),'%.3g') 'x'],'Color', 'b', 'FontSize', 20)
 elseif brob_raw(2) < 0 & brob_spline(2) > 0 
-    text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.62*ylim(2),['y = ' num2str(brob_raw(1)) num2str(brob_raw(2)) 'x'],'Color', 'r', 'FontSize', 20)
-    text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.52*ylim(2),['y = ' num2str(brob_spline(1)) '+' num2str(brob_spline(2)) 'x'],'Color', 'b', 'FontSize', 20)
+    text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.62*ylim(2),['y = ' num2str(brob_raw(1),'%.3g') num2str(brob_raw(2),'%.3g') 'x'],'Color', 'r', 'FontSize', 20)
+    text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.52*ylim(2),['y = ' num2str(brob_spline(1),'%.3g') '+' num2str(brob_spline(2),'%.3g') 'x'],'Color', 'b', 'FontSize', 20)
 else
-    text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.62*ylim(2),['y = ' num2str(brob_raw(1)) num2str(brob_raw(2)) 'x'],'Color', 'r', 'FontSize', 20)
-    text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.52*ylim(2),['y = ' num2str(brob_spline(1)) num2str(brob_spline(2)) 'x'],'Color', 'b', 'FontSize', 20)
+    text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.62*ylim(2),['y = ' num2str(brob_raw(1),'%.3g') num2str(brob_raw(2),'%.3g') 'x'],'Color', 'r', 'FontSize', 20)
+    text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.52*ylim(2),['y = ' num2str(brob_spline(1),'%.3g') num2str(brob_spline(2),'%.3g') 'x'],'Color', 'b', 'FontSize', 20)
 end
-    title(['Velocity against RMSE between Polhemus and Hololens angle readings for all participants'],'FontSize', 18)
-xlabel('Velocity (deg/s)','FontSize', 18)
-ylabel('RMSE', 'FontSize', 18)
+%     title(['Velocity against RMSE between Polhemus and Hololens angle readings for all participants'],'FontSize', 18)
+xlabel('Velocity (deg/s)','FontSize', 24)
+ylabel('RMSE', 'FontSize', 24)
+ax = gca;
+ax.FontSize = 16;
 hold off
 
 mkdir 'C:\MixedRealityDevelopment\CV4Holo\Hololens2ArUcoDetection\ExperimentalAnalysis\EditedScripts\Data\Data_MATLAB\VelocityErrorData\Plots\IDPlots'  '\ID1'
@@ -314,8 +316,8 @@ legend([leg_onset_raw_onset,outliers_raw_onset, leg_raw_LR_onset, leg_onset_spli
 xlim=get(gca,'XLim');
 ylim=get(gca,'YLim');
 if brob_raw_onset(2) > 0 & brob_spline_onset(2) > 0
-    text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.62*ylim(2),['y = ' num2str(brob_raw_onset(1)) '+' num2str(brob_raw_onset(2)) 'x'],'Color', 'r', 'FontSize', 20)
-    text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.52*ylim(2),['y = ' num2str(brob_spline_onset(1)) '+' num2str(brob_spline_onset(2)) 'x'],'Color', 'b', 'FontSize', 20)
+    text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.62*ylim(2),['y = ' num2str(brob_raw_onset(1), '%.3g') '+' num2str(brob_raw_onset(2), '%.3g') 'x'],'Color', 'r', 'FontSize', 20)
+    text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.52*ylim(2),['y = ' num2str(brob_spline_onset(1), '%.3g') '+' num2str(brob_spline_onset(2), '%.3g') 'x'],'Color', 'b', 'FontSize', 20)
 elseif brob_raw_onset(2) > 0 & brob_spline_onset(2) < 0 
     text(0.98*xlim(1)+0.02*xlim(2),0.28*ylim(1)+0.62*ylim(2),['y = ' num2str(brob_raw_onset(1)) '+' num2str(brob_raw_onset(2)) 'x'],'Color', 'r', 'FontSize', 20)
     text(0.98*xlim(1)+0.02*xlim(2),0.38*ylim(1)+0.52*ylim(2),['y = ' num2str(brob_spline_onset(1)) num2str(brob_spline_onset(2)) 'x'],'Color', 'b', 'FontSize', 20)
@@ -328,8 +330,8 @@ else
 end
 
 % title('Time onset against RMSE between Polhemus and Hololens angle recordings for participant 1', 'FontSize', 18)
-xlabel('Time onset (s)', 'FontSize',20)
-ylabel('RMSE', 'FontSize', 20)
+xlabel('Time onset (s)', 'FontSize', 24)
+ylabel('RMSE', 'FontSize', 24)
 ax = gca;
 ax.FontSize = 16;
 
@@ -436,6 +438,8 @@ yticks([0:50:300])
 hold on
 ylabel('RMSE', 'FontSize', 20)
 xlabel('Below 60 deg/s', 'FontSize', 20)
+TF = isoutlier( vel_bel_60(:,2) , 'mean' );
+sum(TF(:) == 1)
 
 subplot(3,2,2)
 boxplot(vel_60_90(:,2))
@@ -444,6 +448,8 @@ yticks([0:50:300])
 hold on
 % ylabel('RMSE')
 xlabel('60-90 deg/s','FontSize', 20)
+TF = isoutlier( vel_60_90(:,2) , 'mean' );
+sum(TF(:) == 1)
 
 subplot(3,2,3)
 boxplot(vel_90_120(:,2))
@@ -453,6 +459,8 @@ hold on
 % ylabel('RMSE')
 ylabel('RMSE', 'FontSize', 20)
 xlabel('90-120 deg/s', 'FontSize', 20)
+TF = isoutlier( vel_90_120(:,2) , 'mean' );
+sum(TF(:) == 1)
 
 subplot(3,2,4)
 boxplot(vel_120_150(:,2))
@@ -460,6 +468,8 @@ ylim([0 300])
 yticks([0:50:300])
 hold on
 xlabel('120-150 deg/s', 'FontSize', 20)
+TF = isoutlier( vel_120_150(:,2) , 'mean' );
+sum(TF(:) == 1)
 
 subplot(3,2,5)
 boxplot(vel_150_180(:,2))
@@ -469,6 +479,8 @@ hold on
 % ylabel('RMSE')
 ylabel('RMSE', 'FontSize', 20)
 xlabel('150-180 deg/s', 'FontSize', 20)
+TF = isoutlier( vel_150_180(:,2) , 'mean' );
+sum(TF(:) == 1)
 
 subplot(3,2,6)
 boxplot(vel_above_180(:,2))
@@ -477,6 +489,9 @@ yticks([0:50:300])
 hold on
 % ylabel('RMSE')
 xlabel('Above 180 deg/s', 'FontSize', 20)
+TF = isoutlier( vel_above_180(:,2) , 'mean' );
+sum(TF(:) == 1)
+
 
 sgtitle({'Boxplot of RMSE between Hololens and Polhemus angle recordings against velocity for different velocity bands'}, 'FontSize', 20)
 
