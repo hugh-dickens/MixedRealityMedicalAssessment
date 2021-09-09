@@ -388,10 +388,10 @@ for trialnum = 1 %: length(Polh_Fields_slow)
         z_flex=filtfilt(b,a,y_flex);
         t = 0:0.005:(length(x_flex) - 1) * 0.005;
 
-        figure(1)
-        plot(t,y_flex,'g',t,z_flex,'r'); 
-        xlabel('Time after stretch (s)','FontSize', 16); ylabel('EMG (mV)','FontSize', 16); 
-        legend('Rectified','Linear envelope','Location','best','FontSize', 16); 
+        
+        plot(t,x_flex-mean(x_flex),'b',t,y_flex,'g',t,z_flex,'r'); 
+        xlabel('Time (s)'); ylabel('EMG (mV)'); 
+        legend('Raw (offset)','Rectified','Linear envelope'); 
         
         x_high_flex = highpass(x_flex,5,fs);
         x_band_flex = bandstop(x_high_flex,[49.9 50.1],fs);
@@ -406,9 +406,6 @@ for trialnum = 1 %: length(Polh_Fields_slow)
         plot(x_time_50, movRMS_flex_50,'b')
         hold on
         plot(x_time_25, movRMS_flex_25,'r')
-        
-        xlabel('Time after stretch (s)','FontSize', 16); ylabel('EMG (mV)','FontSize', 16); 
-        legend('Sliding window 50ms','Sliding window 25ms','Location','best','FontSize', 16); 
         
         end
     end

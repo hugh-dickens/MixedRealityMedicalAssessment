@@ -304,8 +304,8 @@ figure(6)
 %% Find integral etc for individual powers
 
 for participant = 1:12
-figure(4)
-    subplot(2,1,1)
+% figure(4)
+    figure(1)
     Q_slow_flex = cumtrapz(individual_power(2:101,1, participant));
     norm_slow_flex = Q_slow_flex/ Q_slow_flex(end);
     below = max(norm_slow_flex(norm_slow_flex < 0.5));
@@ -313,9 +313,15 @@ figure(4)
     above = min(norm_slow_flex(norm_slow_flex > 0.5));
     above_ind = find(above == norm_slow_flex);
     slow_flex_list(participant) = above_ind - (above_ind - below_ind)/(above - below) * (above - 0.5);
-    plot(norm_slow_flex)
+    t1 = plot(norm_slow_flex, 'Color','r')
     
+%     legend
+    xlabel('Frequency (Hz)', 'FontSize', 16)
+    ylabel('Spectral distribution function', 'FontSize', 16)
+    title('Slow Flexors', 'FontSize', 16)
     hold on
+    
+    figure(2)
     Q_med_flex = cumtrapz(individual_power(2:101,2, participant));
     norm_med_flex = Q_med_flex/ Q_med_flex(end);
     below = max(norm_med_flex(norm_med_flex < 0.5));
@@ -323,10 +329,14 @@ figure(4)
     above = min(norm_med_flex(norm_med_flex > 0.5));
     above_ind = find(above == norm_med_flex);
     med_flex_list(participant) = above_ind - (above_ind - below_ind)/(above - below) * (above - 0.5);
-    plot(norm_med_flex)
+    t2 = plot(norm_med_flex, 'Color','r')
+%     legend
+    xlabel('Frequency (Hz)', 'FontSize', 16)
+    ylabel('Spectral distribution function', 'FontSize', 16)
+    title('Medium Flexors', 'FontSize', 16)
     hold on
-%     else speed == 2
 
+    figure(3)
     Q_fast_flex = cumtrapz(individual_power(2:101,3, participant));
     norm_fast_flex = Q_fast_flex/ Q_fast_flex(end);
     below = max(norm_fast_flex(norm_fast_flex < 0.5));
@@ -334,17 +344,15 @@ figure(4)
     above = min(norm_fast_flex(norm_fast_flex > 0.5));
     above_ind = find(above == norm_fast_flex);
     fast_flex_list(participant) = above_ind - (above_ind - below_ind)/(above - below) * (above - 0.5);
-    plot(norm_fast_flex)
+    t3 = plot(norm_fast_flex, 'Color','r')
+%     legend
+    xlabel('Frequency (Hz)', 'FontSize', 16)
+    ylabel('Spectral distribution function', 'FontSize', 16)
+    title('Fast Flexors', 'FontSize', 16)
     hold on
-%     end
-    % Choose a number between 0 (invisible) and 1 (opaque) for facealpha.  
-    legend('Slow','Medium','Fast','Location','best')
-    xlabel('Frequency (Hz)')
-    ylabel('Normalised Power')
-    title('Flexor')
-    hold on
+
     
-    subplot(2,1,2)
+    figure(4)
     Q_slow_extensor = cumtrapz(individual_power(2:101,4, participant));
     norm_slow_extensor = Q_slow_extensor/ Q_slow_extensor(end);
     below = max(norm_slow_extensor(norm_slow_extensor < 0.5));
@@ -352,9 +360,15 @@ figure(4)
     above = min(norm_slow_extensor(norm_slow_extensor > 0.5));
     above_ind = find(above == norm_slow_extensor);
     slow_ext_list(participant) = above_ind - (above_ind - below_ind)/(above - below) * (above - 0.5);
-    plot(norm_slow_extensor)
+    t4 = plot(norm_slow_extensor, 'Color','r')
     
+%     legend
+    xlabel('Frequency (Hz)', 'FontSize', 16)
+    ylabel('Spectral distribution function', 'FontSize', 16)
+    title('Slow Extensors', 'FontSize', 16)
     hold on
+    
+    figure(5)
     Q_med_extensor = cumtrapz(individual_power(2:101,5, participant));
     norm_med_extensor = Q_med_extensor/ Q_med_extensor(end);
     below = max(norm_med_extensor(norm_med_extensor < 0.5));
@@ -362,9 +376,15 @@ figure(4)
     above = min(norm_med_extensor(norm_med_extensor > 0.5));
     above_ind = find(above == norm_med_extensor);
     med_ext_list(participant) = above_ind - (above_ind - below_ind)/(above - below) * (above - 0.5);
-    plot(norm_med_extensor)
+    t5 = plot(norm_med_extensor, 'Color','r')
+%     legend
+    xlabel('Frequency (Hz)', 'FontSize', 16)
+    ylabel('Spectral distribution function', 'FontSize', 16)
+    title('Medium Extensors', 'FontSize', 16)
     hold on
 %     else speed == 2
+
+    figure(6)
     Q_fast_extensor = cumtrapz(individual_power(2:101,6, participant));
     
     norm_fast_extensor = Q_fast_extensor/ Q_fast_extensor(end);
@@ -373,24 +393,111 @@ figure(4)
     above = min(norm_fast_extensor(norm_fast_extensor > 0.5));
     above_ind = find(above == norm_fast_extensor);
     fast_ext_list(participant) = above_ind - (above_ind - below_ind)/(above - below) * (above - 0.5);
-    plot(norm_fast_extensor)
+    t6 = plot(norm_fast_extensor, 'Color','r')
+%     legend
+    xlabel('Frequency (Hz)', 'FontSize', 16)
+    ylabel('Spectral distribution function', 'FontSize', 16)
+    title('Fast Extensors', 'FontSize', 16)
     hold on
-%     end
-    % Choose a number between 0 (invisible) and 1 (opaque) for facealpha.  
-    legend('Slow','Medium','Fast','Location','best')
-    xlabel('Frequency (Hz)')
-    ylabel('Normalised Power')
-    title('Extensor')
     
 end
 
+figure(1)
+Q_slow_flex = cumtrapz(total_power(2:101,1));
+norm_slow_flex = Q_slow_flex/ Q_slow_flex(end);
+below = max(norm_slow_flex(norm_slow_flex < 0.5));
+below_ind = find(below == norm_slow_flex);
+above = min(norm_slow_flex(norm_slow_flex > 0.5));
+above_ind = find(above == norm_slow_flex);
+interp_freq_slow_flex = above_ind - (above_ind - below_ind)/(above - below) * (above - 0.5)
+a1 = plot(norm_slow_flex,'LineWidth',2, 'Color','b')
+hold on
+legend([t1, a1],{'Individual Participants', 'Mean'}, 'Location','best', 'FontSize', 16)
+
+figure(2)
+Q_med_flex = cumtrapz(total_power(2:101,2));
+norm_med_flex = Q_med_flex/ Q_med_flex(end);
+below = max(norm_med_flex(norm_med_flex < 0.5));
+below_ind = find(below == norm_med_flex);
+above = min(norm_med_flex(norm_med_flex > 0.5));
+above_ind = find(above == norm_med_flex);
+interp_freq_med_flex = above_ind - (above_ind - below_ind)/(above - below) * (above - 0.5)
+a2 = plot(norm_med_flex,'LineWidth',2, 'Color','b')
+hold on
+legend([t2, a2],{'Individual Participants', 'Mean'}, 'Location','best', 'FontSize', 16)
+
+figure(3)
+%     else speed == 2
+Q_fast_flex = cumtrapz(total_power(2:101,3));
+norm_fast_flex = Q_fast_flex/ Q_fast_flex(end);
+below = max(norm_fast_flex(norm_fast_flex < 0.5));
+below_ind = find(below == norm_fast_flex);
+above = min(norm_fast_flex(norm_fast_flex > 0.5));
+above_ind = find(above == norm_fast_flex);
+interp_freq_fast_flex = above_ind - (above_ind - below_ind)/(above - below) * (above - 0.5)
+a3 = plot(norm_fast_flex,'LineWidth',2, 'Color','b')
+hold on
+legend([t3, a3],{'Individual Participants', 'Mean'}, 'Location','best', 'FontSize', 16)
+
+    
+%     subplot(2,1,2)
+figure(4)
+Q_slow_extensor = cumtrapz(total_power(2:101,4));
+norm_slow_extensor = Q_slow_extensor/ Q_slow_extensor(end);
+below = max(norm_slow_extensor(norm_slow_extensor < 0.5));
+below_ind = find(below == norm_slow_extensor);
+above = min(norm_slow_extensor(norm_slow_extensor > 0.5));
+above_ind = find(above == norm_slow_extensor);
+interp_freq_slow_extensor = above_ind - (above_ind - below_ind)/(above - below) * (above - 0.5)
+a4 = plot(norm_slow_extensor,'LineWidth',2, 'Color','b')
+hold on
+legend([t4, a4],{'Individual Participants', 'Mean'}, 'Location','best', 'FontSize', 16)
+
+figure(5)
+Q_med_extensor = cumtrapz(total_power(2:101,5));
+norm_med_extensor = Q_med_extensor/ Q_med_extensor(end);
+below = max(norm_med_extensor(norm_med_extensor < 0.5));
+below_ind = find(below == norm_med_extensor);
+above = min(norm_med_extensor(norm_med_extensor > 0.5));
+above_ind = find(above == norm_med_extensor);
+interp_freq_med_extensor = above_ind - (above_ind - below_ind)/(above - below) * (above - 0.5)
+a5 = plot(norm_med_extensor,'LineWidth',2, 'Color','b')
+hold on
+legend([t5, a5],{'Individual Participants', 'Mean'}, 'Location','best', 'FontSize', 16)
+
+figure(6)
+Q_fast_extensor = cumtrapz(total_power(2:101,6));
+
+norm_fast_extensor = Q_fast_extensor/ Q_fast_extensor(end);
+below = max(norm_fast_extensor(norm_fast_extensor < 0.5));
+below_ind = find(below == norm_fast_extensor);
+above = min(norm_fast_extensor(norm_fast_extensor > 0.5));
+above_ind = find(above == norm_fast_extensor);
+interp_freq_fast_extensor = above_ind - (above_ind - below_ind)/(above - below) * (above - 0.5)
+a6 = plot(norm_fast_extensor,'LineWidth',2, 'Color','b')
+hold on
+legend([t6, a6],{'Individual Participants', 'Mean'}, 'Location','best', 'FontSize', 16)
+
+
+
 hold off
+
 
 %% Flex raw
 
 Anova_flex_freq = [slow_flex_list(:) med_flex_list(:) fast_flex_list(:)];
 [p,tbl,stats] = anova1(Anova_flex_freq)
 multcompare(stats)
+
+%% temp my_list stuff
+
+[p,tbl,stats] = anova2(my_list)
+multcompare(stats)
+%%
+boxplot(Anova_flex_freq)
+xlabel('Participant','FontSize',20)
+ylabel('Mean frequency from spectral density function','FontSize',20)
+title('Flexor','FontSize',20)
 %% Extend raw
 Anova_extensor_freq = [slow_ext_list(:) med_ext_list(:) fast_ext_list(:)];
 [p,tbl,stats] = anova1(Anova_extensor_freq)
