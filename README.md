@@ -16,3 +16,7 @@ During assessment as seen through Hololens interface before catch:
 As seen in Hololens when catch occurs:
 
 ![AngleHoloUICatch](https://user-images.githubusercontent.com/73748574/133106525-96f036c4-4af3-42d6-a6e5-018e90dd5170.PNG)
+
+Networking protocol:
+
+![NetworkingProtocol](https://user-images.githubusercontent.com/73748574/133106903-c789960f-27ad-4419-8eb1-b6efa13f69d2.png)
