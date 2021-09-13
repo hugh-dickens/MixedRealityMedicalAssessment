@@ -11,9 +11,8 @@ Overall, the system received very positive clinician feedback and will hopefully
 
 During assessment as seen through Hololens interface before catch:
 
-![AngleHoloUICatch](https://user-images.githubusercontent.com/73748574/133106525-96f036c4-4af3-42d6-a6e5-018e90dd5170.PNG)
+![AngleHoloUI](https://user-images.githubusercontent.com/73748574/133106539-a3ae3f38-8d2d-444e-afe7-cf0782f3278b.PNG)
 
 As seen in Hololens when catch occurs:
 
-![AngleHoloUI](https://user-images.githubusercontent.com/73748574/133106539-a3ae3f38-8d2d-444e-afe7-cf0782f3278b.PNG)
-
+![AngleHoloUICatch](https://user-images.githubusercontent.com/73748574/133106525-96f036c4-4af3-42d6-a6e5-018e90dd5170.PNG)
